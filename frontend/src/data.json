@@ -1,0 +1,7 @@
+{
+  "SERVER_URL": "https://example.com/api/",
+  "APP_NAME": "Course Management System",
+  "BRAND_NAME": "udith.cc",
+  "BRAND_WEBSITE": "https://udith.cc",
+  "DRAWER_WIDTH": 240
+}

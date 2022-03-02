@@ -1,0 +1,43 @@
+{
+  "root": true,
+  "env": {
+    "node": true,
+    "commonjs": true,
+    "es2021": true,
+    "jest/globals": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "prettier",
+    "plugin:jest/recommended",
+    "plugin:jest/style"
+  ],
+  "plugins": ["jest"],
+  "parserOptions": {
+    "ecmaVersion": 13,
+    "sourceType": "module"
+  },
+  "rules": {
+    "no-unused-vars": "warn",
+    "no-console": "warn",
+    "func-names": "warn",
+    "object-shorthand": "warn",
+    "class-methods-use-this": "warn",
+    "no-param-reassign": "warn",
+    "no-restricted-syntax": "warn",
+    "no-shadow": "warn",
+    "consistent-return": "warn",
+    "prefer-arrow-callback": "warn",
+    "arrow-body-style": "warn",
+    "array-callback-return": "warn",
+    "spaced-comment": "warn",
+    "dot-notation": "warn",
+    "no-underscore-dangle": "warn",
+    "no-nested-ternary": "warn",
+    "jest/no-disabled-tests": "warn",
+    "jest/no-focused-tests": "error",
+    "jest/no-identical-title": "error",
+    "jest/prefer-to-have-length": "warn",
+    "jest/valid-expect": "error"
+  }
+}

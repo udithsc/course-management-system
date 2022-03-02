@@ -1,0 +1,5 @@
+{
+  "db": "mongodb://db/cms",
+  "port": "3001",
+  "requiresAuth": true
+}
