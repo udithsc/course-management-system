@@ -1,17 +1,19 @@
+const router = require('express').Router();
+const multer = require('multer');
+const { dirname } = require('path');
 const validate = require('../middleware/validate');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
 const { Author, validateModel } = require('../models/author.model');
-const router = require('express').Router();
-const multer = require('multer');
 const validateId = require('../middleware/validateId');
+const appDir = dirname(require.main.filename);
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, '/app/data/uploads/authors');
+    cb(null, `/${appDir}/data/uploads/authors`);
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + '-' + file.originalname);
+    cb(null, `${Date.now()}-${file.originalname}`);
   }
 });
 

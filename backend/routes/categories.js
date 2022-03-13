@@ -1,16 +1,17 @@
+const router = require('express').Router();
+const multer = require('multer');
+const fs = require('fs');
+const { dirname } = require('path');
 const validate = require('../middleware/validate');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
 const { Category, validateModel } = require('../models/category.model');
-const router = require('express').Router();
-const multer = require('multer');
-const fs = require('fs');
-
 const validateId = require('../middleware/validateId');
+const appDir = dirname(require.main.filename);
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const dir = `/app/data/uploads/categories`;
+    const dir = `/${appDir}/data/uploads/categories`;
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir);
     }

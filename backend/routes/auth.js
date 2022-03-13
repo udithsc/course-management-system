@@ -1,12 +1,12 @@
 const router = require('express').Router();
-const validate = require('../middleware/validate');
-const auth = require('../middleware/auth');
 const bcrypt = require('bcryptjs');
 const nodemailerSendgrid = require('nodemailer-sendgrid');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const Joi = require('joi');
+const validate = require('../middleware/validate');
+const auth = require('../middleware/auth');
 const logger = require('../utils/logger');
 const { User, validateModel } = require('../models/user.model');
 const { Token } = require('../models/token.model');

@@ -1,24 +1,22 @@
 const router = require('express').Router();
-const fs = require('fs');
-const util = require('util');
-const unlinkFile = util.promisify(fs.unlink);
-const validate = require('../middleware/validate');
 const multer = require('multer');
-const bcrypt = require('bcryptjs');
+const { dirname } = require('path');
+const validate = require('../middleware/validate');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
 const { User, validateModel } = require('../models/user.model');
 const { Course } = require('../models/course.model');
 const { Category } = require('../models/category.model');
 const validateId = require('../middleware/validateId');
+const appDir = dirname(require.main.filename);
 // const logger = require('../utils/logger');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, '/app/data/uploads/users');
+    cb(null, `/${appDir}/data/uploads/users`);
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + '-' + file.originalname);
+    cb(null, `${Date.now()}-${file.originalname}`);
   }
 });
 

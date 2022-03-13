@@ -3,6 +3,7 @@ const moment = require('moment');
 const multer = require('multer');
 const randomstring = require('randomstring');
 const fs = require('fs');
+const { dirname } = require('path');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
 const validate = require('../middleware/validate');
@@ -10,11 +11,12 @@ const { Category, validateModel } = require('../models/category.model');
 const { Author } = require('../models/author.model');
 const { Course } = require('../models/course.model');
 const validateId = require('../middleware/validateId');
+const appDir = dirname(require.main.filename);
 // const logger = require('../utils/logger');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, '/app/data/uploads/courses');
+    cb(null, `/${appDir}/data/uploads/courses`);
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + '-' + file.originalname);
@@ -97,7 +99,7 @@ router.post(
 
     course = await course.save();
 
-    const dir = `/app/data/uploads/courses/${course._id}`;
+    const dir = `/${appDir}/data/uploads/courses/${course._id}`;
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir);
       fs.mkdirSync(`${dir}/addons`);
@@ -199,7 +201,7 @@ router.patch(
   '/video/:id',
   [auth, admin, validateId, upload.single('file')],
   async (req, res) => {
-    const basePath = `/app/data/uploads/`;
+    const basePath = `/${appDir}/data/uploads/`;
     const fileName = `courses/${req.params.id}/videos/${req.file.filename}`;
     fs.renameSync(req.file.path, basePath + fileName);
 
@@ -268,7 +270,7 @@ router.patch(
   '/addons/:id',
   [auth, admin, validateId, upload.single('file')],
   async (req, res) => {
-    const basePath = `/app/data/uploads/`;
+    const basePath = `/${appDir}/data/uploads/`;
     const fileName = `courses/${req.params.id}/addons/${req.file.filename}`;
     fs.renameSync(req.file.path, basePath + fileName);
 
