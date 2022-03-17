@@ -216,7 +216,7 @@ router.patch(
       {
         $push: {
           lessons: {
-            videoNo: req.body.videoNo,
+            id: Math.floor(Math.random() * 100) + Date.now(),
             title: req.body.title,
             description: req.body.description,
             url: `http://${req.headers.host}/files/courses/${req.params.id}/videos/${req.file.filename}`
@@ -230,7 +230,7 @@ router.patch(
 );
 
 router.delete(
-  '/video/:id/:videoNo',
+  '/video/:id/:videoId',
   [auth, admin, validateId],
   async (req, res) => {
     const result = await Course.updateOne(
@@ -238,7 +238,7 @@ router.delete(
       {
         $pull: {
           lessons: {
-            videoNo: req.params.videoNo
+            id: req.params.videoId
           }
         }
       },
@@ -295,7 +295,7 @@ router.patch(
             contents: [
               {
                 id: Math.floor(Math.random() * 100) + Date.now(),
-                image: `http://${req.headers.host}/files/courses/${req.params.id}/addons/${fileName}`
+                image: `http://${req.headers.host}/files/courses/${req.params.id}/addons/${req.file.filename}`
               }
             ]
           }

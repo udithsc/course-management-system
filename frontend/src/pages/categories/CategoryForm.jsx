@@ -73,20 +73,18 @@ export default function CategoryForm({ recordForEdit, addOrEdit }) {
             onClick={() => {}}
           />
         </label>
-        {(image.preview || values.icon) && (
-          <Card variant="outlined" sx={{ p: 2 }}>
-            <CardMedia
-              component="img"
-              width="100"
-              height="200"
-              alt="profile image"
-              src={image.preview || values.icon}
-              sx={{
-                objectFit: 'contain'
-              }}
-            />
-          </Card>
-        )}
+        <Card variant="outlined">
+          <CardMedia
+            component="img"
+            width="100"
+            height="200"
+            alt="profile image"
+            src={image.preview || values.icon || '/images/preview.png'}
+            sx={{
+              objectFit: 'contain'
+            }}
+          />
+        </Card>
 
         <Grid container justifyContent="flex-end">
           <Controls.Button text="Reset" onClick={resetForm} variant="text" textColor="primary" />

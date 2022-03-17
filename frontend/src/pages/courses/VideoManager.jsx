@@ -1,29 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  Box,
-  Card,
-  TextareaAutosize,
-  Grid,
-  Typography,
-  TextField,
-  Button,
-  CardContent,
-  IconButton
-} from '@mui/material';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { Box, Card, Grid, TextField, Button, CardContent, IconButton } from '@mui/material';
 import PropTypes from 'prop-types';
+import { grey } from '@mui/material/colors';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { Form } from '../../hooks/useForm';
 import { removeVideo, selectCourses, uploadVideo } from '../../store/courses';
+import Controls from '../../components/controls/Controls';
 
 export default function VideoManager({ recordForEdit }) {
   const dispatch = useDispatch();
   const courses = useSelector(selectCourses);
   const [video, setVideo] = useState({ preview: '', data: '' });
   const [course, setCourse] = useState({});
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [data, setData] = useState({ title: '', description: '' });
+
+  const resetForm = () => {
+    setData({ title: '', description: '' });
+    setVideo({ preview: '', data: '' });
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -31,10 +26,11 @@ export default function VideoManager({ recordForEdit }) {
     const formData = new FormData();
     formData.append('id', course._id);
     formData.append('file', video.data);
-    formData.append('title', title);
-    formData.append('description', description);
-    formData.append('videoNo', course.lessons.length + 1);
+    formData.append('title', data.title);
+    formData.append('description', data.description);
     dispatch(uploadVideo(formData));
+
+    resetForm();
   };
 
   const handleFileChange = async (e) => {
@@ -52,27 +48,32 @@ export default function VideoManager({ recordForEdit }) {
 
   return (
     <Form onSubmit={handleSubmit}>
-      <Grid container direction="column">
-        <Grid container>
-          <Grid container item direction="column" xs={6} sx={{ pr: 2 }}>
-            <TextField
-              name="title"
-              label="title"
-              value={title}
-              size="small"
-              sx={{ mb: 2 }}
-              onChange={({ target }) => setTitle(target.value)}
-            />
-            <TextareaAutosize
-              minRows={7}
-              aria-label="empty textarea"
-              placeholder="Empty"
-              onChange={({ target }) => setDescription(target.value)}
-            />
-            <Button type="submit" variant="contained" sx={{ mt: 2, mb: 2 }}>
-              Submit
-            </Button>
-          </Grid>
+      <Grid container>
+        <Grid container item direction="column" xs={6} sx={{ pr: 1, mb: 1 }}>
+          <TextField
+            name="title"
+            label="title"
+            value={data.title}
+            size="small"
+            sx={{ mb: 1 }}
+            onChange={({ target }) => setData({ ...data, title: target.value })}
+          />
+          <TextField
+            label="description"
+            multiline
+            maxRows={4}
+            size="small"
+            value={data.description}
+            sx={{ mb: 1 }}
+            rows={4}
+            onChange={({ target }) => setData({ ...data, description: target.value })}
+          />
+
+          <Button type="submit" variant="contained" size="small">
+            Submit
+          </Button>
+        </Grid>
+        <Grid container item direction="row" xs={6} spacing={1}>
           <Grid item xs={6}>
             <label htmlFor="contained-button-file">
               <input
@@ -84,118 +85,95 @@ export default function VideoManager({ recordForEdit }) {
                 name="file"
                 onChange={handleFileChange}
               />
-              <Button variant="contained" component="span" sx={{ mb: 2 }}>
-                Select Video
+              <Button variant="contained" component="span" fullWidth>
+                Upload Video
               </Button>
             </label>
-            {video.preview && (
-              <Card
-                variant="outlined"
-                sx={{
-                  display: 'flex',
-                  p: 1
-                }}
-              >
-                <video controls width="250">
-                  <source src={video.preview} type="video/mp4" />
-                </video>
-              </Card>
-            )}
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              name="order"
+              label="order"
+              value={data.order}
+              placeholder="video will be added to end if empty"
+              size="small"
+              onChange={({ target }) => setData({ ...data, order: target.value })}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Card
+              variant="outlined"
+              sx={{
+                display: 'flex'
+              }}
+            >
+              <video controls width="100%">
+                <source src={video.preview} type="video/mp4" />
+              </video>
+            </Card>
           </Grid>
         </Grid>
-        <Box
-          sx={{ height: 400, width: 600, border: 1, p: 2, mb: 2 }}
-          style={{
-            overflow: 'hidden',
-            overflowY: 'scroll' // added scroll
-          }}
-        >
-          <DragDropContext
-            onDragEnd={(param) => {
-              const srcI = param.source.index;
-              const desI = param.destination?.index;
-              if (desI) {
-                course.lessons.splice(desI, 0, course.lessons.splice(srcI, 1)[0]);
-              }
-            }}
-          >
-            <Grid container direction="column" spacing={2}>
-              <Droppable droppableId="droppable-1">
-                {(provided, _) => (
-                  <div ref={provided.innerRef} {...provided.droppableProps}>
-                    {course.lessons &&
-                      course.lessons.map((item, i) => (
-                        <Draggable
-                          key={item.videoNo}
-                          draggableId={`draggable-${item.videoNo}`}
-                          index={i}
-                        >
-                          {(provided, snapshot) => (
-                            <Grid
-                              item
-                              container
-                              key={item.videoNo}
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                              style={{
-                                ...provided.draggableProps.style,
-                                boxShadow: snapshot.isDragging ? '0 0 .4rem #666' : 'none'
-                              }}
-                            >
-                              <Card
-                                variant="outlined"
-                                sx={{
-                                  display: 'flex',
-                                  width: '100%',
-                                  justifyContent: 'start',
-                                  p: 1,
-                                  m: 1
-                                }}
-                              >
-                                <Box>
-                                  <video controls width="250">
-                                    <source src={item.url} type="video/mp4" />
-                                  </video>
-                                </Box>
-                                <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-                                  <CardContent>
-                                    <Typography component="div" variant="h5">
-                                      {item.title}
-                                    </Typography>
-                                    <Typography
-                                      variant="subtitle1"
-                                      color="text.secondary"
-                                      component="div"
-                                    >
-                                      {item.description}
-                                    </Typography>
-                                  </CardContent>
-                                </Box>
-                                <Box sx={{ display: 'flex', alignSelf: 'flex-start' }}>
-                                  <IconButton
-                                    aria-label="settings"
-                                    onClick={() => {
-                                      dispatch(removeVideo(course._id, item.videoNo));
-                                      console.log(course._id, item.videoNo);
-                                    }}
-                                  >
-                                    <CancelIcon />
-                                  </IconButton>
-                                </Box>
-                              </Card>
-                            </Grid>
-                          )}
-                        </Draggable>
-                      ))}
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
-            </Grid>
-          </DragDropContext>
-        </Box>
       </Grid>
+      <hr style={{ height: '5px', backgroundColor: 'gray' }} />
+      <Box
+        sx={{
+          overflow: 'hidden',
+          overflowY: 'scroll',
+          borderRadius: 2
+        }}
+      >
+        {course.lessons &&
+          course.lessons.map((item, i) => (
+            <Card
+              key={item.id}
+              variant="outlined"
+              sx={{
+                display: 'flex',
+                width: '100%',
+                justifyContent: 'start',
+                mt: 1
+              }}
+            >
+              <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+                <CardContent>
+                  <TextField
+                    name="title"
+                    label="title"
+                    value={item.title}
+                    size="small"
+                    sx={{ mb: 1 }}
+                    fullWidth
+                    readOnly
+                  />
+                  <TextField
+                    label="description"
+                    multiline
+                    maxRows={4}
+                    size="small"
+                    value={item.description}
+                    fullWidth
+                    readOnly
+                  />
+                </CardContent>
+              </Box>
+              <Box>
+                <video controls width="250" style={{ marginTop: '20px' }}>
+                  <source src={item.url} type="video/mp4" />
+                </video>
+              </Box>
+              <Box sx={{ display: 'flex', alignSelf: 'flex-start' }}>
+                <IconButton
+                  aria-label="settings"
+                  onClick={() => {
+                    dispatch(removeVideo(course._id, item.id));
+                  }}
+                >
+                  <CancelIcon />
+                </IconButton>
+              </Box>
+            </Card>
+          ))}
+      </Box>
     </Form>
   );
 }

@@ -104,20 +104,20 @@ export default function UserForm({ recordForEdit, addOrEdit }) {
             onClick={() => {}}
           />
         </label>
-        {(image.preview || values.image) && (
-          <Card variant="outlined" sx={{ p: 2 }}>
-            <CardMedia
-              component="img"
-              width="100"
-              height="200"
-              alt="Category Icon"
-              src={image.preview || values.image}
-              sx={{
-                objectFit: 'contain'
-              }}
-            />
-          </Card>
-        )}
+
+        <Card variant="outlined">
+          <CardMedia
+            component="img"
+            width="100"
+            height="200"
+            alt="Category Icon"
+            src={image.preview || values.image || '/images/preview.png'}
+            sx={{
+              objectFit: 'contain'
+            }}
+          />
+        </Card>
+
         <Grid container justifyContent="flex-end">
           <Controls.Button text="Reset" onClick={resetForm} variant="text" textColor="primary" />
           <Controls.Button type="submit" text="Submit" onClick={() => {}} />

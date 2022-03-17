@@ -43,67 +43,57 @@ export default function UserForm({ recordForEdit, addOrEdit }) {
 
   return (
     <Form onSubmit={handleSubmit}>
-      <Grid container spacing={2}>
-        <Grid container item direction="column" sx={{ flex: 1 }}>
-          <Controls.Input
-            name="username"
-            label="username"
-            value={values.username}
-            onChange={handleInputChange}
-            error={errors.username}
-            fullWidth
-          />
-          <Controls.Input
-            name="firstName"
-            label="firstName"
-            value={values.firstName}
-            onChange={handleInputChange}
-            error={errors.firstName}
-            fullWidth
-          />
-          <Controls.Input
-            name="lastName"
-            label="lastName"
-            value={values.lastName}
-            onChange={handleInputChange}
-            error={errors.lastName}
-            fullWidth
-          />
-          <Controls.Input
-            name="mobile"
-            label="mobile"
-            value={values.mobile}
-            onChange={handleInputChange}
-            error={errors.mobile}
-            fullWidth
-          />
-          <Controls.Input
-            name="email"
-            label="email"
-            value={values.email}
-            onChange={handleInputChange}
-            error={errors.email}
-            fullWidth
-          />
-        </Grid>
-        <Grid container item sx={{ flex: 1 }}>
-          <Card variant="outlined" sx={{ p: 2 }}>
-            <CardMedia
-              component="img"
-              width="200"
-              height="200"
-              alt="Profile Image"
-              src={values.image}
-              sx={{
-                objectFit: 'contain'
-              }}
-            />
-          </Card>
-        </Grid>
-        <Grid container justifyContent="flex-end">
-          <Controls.Button text="Reset" onClick={resetForm} variant="text" textColor="primary" />
-          <Controls.Button type="submit" text="Submit" onClick={() => {}} />
-        </Grid>
+      <Grid container item direction="column">
+        <Controls.Input
+          name="username"
+          label="username"
+          value={values.username}
+          onChange={handleInputChange}
+          error={errors.username}
+        />
+        <Controls.Input
+          name="firstName"
+          label="firstName"
+          value={values.firstName}
+          onChange={handleInputChange}
+          error={errors.firstName}
+        />
+        <Controls.Input
+          name="lastName"
+          label="lastName"
+          value={values.lastName}
+          onChange={handleInputChange}
+          error={errors.lastName}
+        />
+        <Controls.Input
+          name="mobile"
+          label="mobile"
+          value={values.mobile}
+          onChange={handleInputChange}
+          error={errors.mobile}
+        />
+        <Controls.Input
+          name="email"
+          label="email"
+          value={values.email}
+          onChange={handleInputChange}
+          error={errors.email}
+        />
+      </Grid>
+      <Card variant="outlined">
+        <CardMedia
+          component="img"
+          height="200"
+          alt="Profile Image"
+          src={values.image || '/images/preview.png'}
+          sx={{
+            objectFit: 'contain'
+          }}
+        />
+      </Card>
+      <Grid container justifyContent="flex-end">
+        <Controls.Button text="Reset" onClick={resetForm} variant="text" textColor="primary" />
+        <Controls.Button type="submit" text="Submit" onClick={() => {}} />
       </Grid>
     </Form>
   );

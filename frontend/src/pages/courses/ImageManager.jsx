@@ -4,7 +4,6 @@ import {
   Box,
   Card,
   CardMedia,
-  TextareaAutosize,
   Grid,
   Typography,
   TextField,
@@ -37,8 +36,7 @@ export default function ImageManager({ recordForEdit }) {
   const courses = useSelector(selectCourses);
   const [image, setImage] = useState({ preview: '', data: '' });
   const [course, setCourse] = useState({});
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [data, setData] = useState({});
   const [expanded, setExpanded] = React.useState(false);
 
   const handleExpandClick = () => {
@@ -51,8 +49,8 @@ export default function ImageManager({ recordForEdit }) {
     const formData = new FormData();
     formData.append('id', course._id);
     formData.append('file', image.data);
-    formData.append('title', title);
-    formData.append('description', description);
+    formData.append('title', data.title);
+    formData.append('description', data.description);
     dispatch(createAddon(formData));
   };
 
@@ -71,126 +69,120 @@ export default function ImageManager({ recordForEdit }) {
 
   return (
     <Form onSubmit={handleSubmit}>
-      <Grid container direction="column">
-        <Grid container>
-          <Grid container item direction="column" xs={6} sx={{ pr: 2 }}>
-            <TextField
-              name="title"
-              label="title"
-              value={title}
-              size="small"
-              sx={{ mb: 2 }}
-              onChange={({ target }) => setTitle(target.value)}
-            />
-            <TextareaAutosize
-              minRows={7}
-              aria-label="empty textarea"
-              placeholder="Empty"
-              onChange={({ target }) => setDescription(target.value)}
-            />
-
-            <Button type="submit" variant="contained" sx={{ mt: 2, mb: 2 }}>
-              Submit
-            </Button>
-          </Grid>
-          <Grid item xs={6}>
-            <label htmlFor="contained-button-file">
-              <input
-                style={{ display: 'none' }}
-                accept="image/*"
-                id="contained-button-file"
-                multiple
-                type="file"
-                name="file"
-                onChange={handleFileChange}
-              />
-              <Button variant="contained" component="span" sx={{ mb: 2 }}>
-                Select Image
-              </Button>
-            </label>
-            {image.preview && (
-              <Card
-                variant="outlined"
-                sx={{
-                  display: 'flex',
-                  p: 1
-                }}
-              >
-                <CardMedia
-                  component="img"
-                  width="100"
-                  height="150"
-                  alt="Category Icon"
-                  src={image.preview}
-                  sx={{
-                    objectFit: 'contain'
-                  }}
-                />
-              </Card>
-            )}
-          </Grid>
+      <Grid container>
+        <Grid container item direction="column" xs={6} sx={{ pr: 1, mb: 2 }}>
+          <TextField
+            name="title"
+            label="title"
+            value={data.title}
+            size="small"
+            sx={{ mb: 1 }}
+            onChange={({ target }) => setData({ ...data, title: target.value })}
+          />
+          <TextField
+            label="description"
+            multiline
+            maxRows={4}
+            rows={4}
+            size="small"
+            sx={{ mb: 1 }}
+            value={data.description}
+            onChange={({ target }) => setData({ ...data, description: target.value })}
+          />
+          <Button type="submit" variant="contained" size="small">
+            Submit
+          </Button>
         </Grid>
-
-        <Box
-          sx={{ height: 400, width: 600, border: 1, p: 2, mb: 2 }}
-          style={{
-            overflow: 'hidden',
-            overflowY: 'scroll' // added scroll
-          }}
-        >
-          {course.addons &&
-            course.addons.map((item) => (
-              <Card sx={{ width: '100%', mb: 2 }}>
-                <CardHeader
-                  action={
-                    <IconButton
-                      aria-label="settings"
-                      onClick={() => {
-                        dispatch(removeAddon(course._id, item.id));
-                      }}
-                    >
-                      <CancelIcon />
-                    </IconButton>
-                  }
-                  title={item.title}
-                  subheader={item.date}
-                />
-                <CardContent>
-                  <Typography variant="body2" color="text.secondary">
-                    {item.description}
-                  </Typography>
-                </CardContent>
-                <CardActions disableSpacing>
-                  <ExpandMore
-                    expand={expanded}
-                    onClick={handleExpandClick}
-                    aria-expanded={expanded}
-                    aria-label="show more"
-                  >
-                    <ExpandMoreIcon />
-                  </ExpandMore>
-                </CardActions>
-                <Collapse in={expanded} timeout="auto" unmountOnExit>
-                  <CardContent>
-                    {item.contents.length >= 1 &&
-                      item.contents.map((item) => (
-                        <CardMedia
-                          key={item.id}
-                          component="img"
-                          height="300"
-                          image={item.image}
-                          sx={{
-                            mb: 1,
-                            objectFit: 'contain'
-                          }}
-                        />
-                      ))}
-                  </CardContent>
-                </Collapse>
-              </Card>
-            ))}
-        </Box>
+        <Grid item xs={6}>
+          <label htmlFor="contained-button-file">
+            <input
+              style={{ display: 'none' }}
+              accept="image/*"
+              id="contained-button-file"
+              multiple
+              type="file"
+              name="file"
+              onChange={handleFileChange}
+            />
+            <Button variant="contained" component="span" fullWidth size="small" sx={{ mb: 1 }}>
+              Upload Image
+            </Button>
+          </label>
+          <Card variant="outlined">
+            <CardMedia
+              component="img"
+              width="100"
+              height="150"
+              alt="Addon Image"
+              src={image.preview || '/images/preview.png'}
+              sx={{
+                objectFit: 'contain'
+              }}
+            />
+          </Card>
+        </Grid>
       </Grid>
+      <hr style={{ height: '5px', backgroundColor: 'gray' }} />
+      <Box
+        sx={{ width: 600, mb: 2 }}
+        style={{
+          overflow: 'hidden',
+          overflowY: 'scroll'
+        }}
+      >
+        {course.addons &&
+          course.addons.map((item) => (
+            <Card variant="outlined" sx={{ width: '100%', mb: 1 }}>
+              <CardHeader
+                action={
+                  <IconButton
+                    aria-label="settings"
+                    onClick={() => {
+                      dispatch(removeAddon(course._id, item.id));
+                    }}
+                  >
+                    <CancelIcon />
+                  </IconButton>
+                }
+                title={item.title}
+                subheader={item.date}
+              />
+              <CardContent>
+                <Typography variant="body2" color="text.secondary">
+                  {item.description}
+                </Typography>
+              </CardContent>
+              <CardActions disableSpacing>
+                <ExpandMore
+                  expand={expanded}
+                  onClick={handleExpandClick}
+                  aria-expanded={expanded}
+                  aria-label="show more"
+                >
+                  <ExpandMoreIcon />
+                </ExpandMore>
+              </CardActions>
+              <Collapse in={expanded} timeout="auto" unmountOnExit>
+                <CardContent>
+                  {item.contents.length >= 1 &&
+                    item.contents.map((item) => (
+                      <CardMedia
+                        key={item.id}
+                        component="img"
+                        width="100"
+                        height="150"
+                        image={item.image || '/images/preview.png'}
+                        sx={{
+                          mb: 1,
+                          objectFit: 'contain'
+                        }}
+                      />
+                    ))}
+                </CardContent>
+              </Collapse>
+            </Card>
+          ))}
+      </Box>
     </Form>
   );
 }
