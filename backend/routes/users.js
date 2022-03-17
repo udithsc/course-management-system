@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const multer = require('multer');
 const { dirname } = require('path');
+const fs = require('fs');
 const validate = require('../middleware/validate');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
@@ -13,7 +14,9 @@ const appDir = dirname(require.main.filename);
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, `/${appDir}/data/uploads/users`);
+    const dir = `/${appDir}/data/uploads/users`;
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+    cb(null, dir);
   },
   filename: (req, file, cb) => {
     cb(null, `${Date.now()}-${file.originalname}`);

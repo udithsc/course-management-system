@@ -33,12 +33,13 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "jest --watch",
-    "test-coverage": "jest --coverage",
+    "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint": "eslint 'src/**/*.{js,jsx}'",
-    "lint:fix": "eslint 'src/**/*.{js,jsx}' --fix",
-    "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc"
+    "e2e-test": "cypress open",
+    "lint": "eslint 'src/**/*.{js,jsx}' && stylelint src/**/*.css",
+    "fix": "eslint 'src/**/*.{js,jsx}' --fix && stylelint src/**/*.css --fix",
+    "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config .prettierrc.json ",
+    "coverage": "react-scripts test --coverage"
   },
   "browserslist": {
     "production": [
@@ -53,21 +54,20 @@
     ]
   },
   "devDependencies": {
-    "@babel/plugin-transform-runtime": "^7.16.10",
     "axios-mock-adapter": "^1.20.0",
-    "cypress": "^9.3.1",
-    "eslint": "^8.6.0",
+    "cypress": "^9.5.1",
+    "eslint": "^8.11.0",
     "eslint-config-airbnb": "^19.0.4",
-    "eslint-config-prettier": "^8.3.0",
+    "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-jsx-a11y": "^6.5.1",
     "eslint-plugin-prettier": "^4.0.0",
-    "eslint-plugin-react": "^7.28.0",
+    "eslint-plugin-react": "^7.29.3",
     "eslint-plugin-react-hooks": "^4.3.0",
     "prettier": "^2.5.1",
-    "react-test-renderer": "^17.0.2"
-  },
-  "jest": {
-    "testEnvironment": "jsdom"
+    "react-test-renderer": "^17.0.2",
+    "stylelint": "^14.5.3",
+    "stylelint-config-prettier": "^9.0.3",
+    "stylelint-config-standard": "^25.0.0"
   }
 }

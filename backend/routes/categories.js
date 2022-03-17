@@ -12,13 +12,11 @@ const appDir = dirname(require.main.filename);
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const dir = `/${appDir}/data/uploads/categories`;
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir);
-    }
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir);
     cb(null, dir);
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + '-' + file.originalname);
+    cb(null, `${Date.now()}-${file.originalname}`);
   }
 });
 
@@ -55,7 +53,7 @@ router.get('/:id', [auth, validateId], async (req, res) => {
     return res
       .status(404)
       .send('The category with the given ID was not found.');
-  res.send(category);
+  return res.send(category);
 });
 
 router.post(
@@ -94,7 +92,7 @@ router.put(
       return res
         .status(404)
         .send('The category with the given ID was not found.');
-    res.send(category);
+    return res.send(category);
   }
 );
 

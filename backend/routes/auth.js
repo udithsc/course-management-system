@@ -14,13 +14,10 @@ const { Token } = require('../models/token.model');
 router.post('/login', validate(validateLogin), async (req, res) => {
   try {
     const user = await User.findOne({ email: req.body.email });
-    if (!user)
-      return res
-        .status(404)
-        .send('The user with the given email was not found.');
+    if (!user) return res.status(404).send('User not found.');
 
     const match = await bcrypt.compare(req.body.password, user.password);
-    if (!match) return res.status(400).send('login failed');
+    if (!match) return res.status(400).send('Login failed');
 
     const accessToken = user.generateAccessToken();
     const refreshToken = user.generateRefreshToken();
@@ -30,7 +27,7 @@ router.post('/login', validate(validateLogin), async (req, res) => {
 
     logger.info(`login|${user.username}`);
 
-    res.json({
+    return res.json({
       accessToken,
       refreshToken
     });
@@ -76,10 +73,11 @@ router.post('/forgotPassword', async (req, res) => {
   };
 
   const info = await transporter.sendMail(mailOptions);
+  logger.info(`forgot_password|${user.username}|${info}`);
 
-  return res.json({
-    data: `A verification code has been sent to ${user.email}. It will be expire after one day. If you not get verification Email click on resend token.`
-  });
+  return res.json(
+    `A verification code has been sent to ${user.email}. It will be expire after one day. If you not get verification Email click on resend token.`
+  );
 });
 
 router.post('/changePassword', [auth], async (req, res) => {
@@ -95,7 +93,7 @@ router.post('/changePassword', [auth], async (req, res) => {
 
   logger.info(`password_changed|${user.username}`);
 
-  res.send('password changes successfully');
+  return res.send('password changes successfully');
 });
 
 router.get('/tokens/:token', [auth], async (req, res) => {
@@ -164,7 +162,7 @@ router.post('/signup', validate(validateModel), async (req, res) => {
       default:
         break;
     }
-    res.send(message);
+    return res.send(message);
   }
 });
 

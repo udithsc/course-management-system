@@ -16,10 +16,12 @@ const appDir = dirname(require.main.filename);
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, `/${appDir}/data/uploads/courses`);
+    const dir = `/${appDir}/data/uploads/courses`;
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+    cb(null, dir);
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + '-' + file.originalname);
+    cb(null, `${Date.now()}-${file.originalname}`);
   }
 });
 
@@ -53,7 +55,7 @@ router.get('/:id', [auth, validateId], async (req, res) => {
   const course = await Course.findById(req.params.id).select(selections);
   if (!course)
     return res.status(404).send('The course with the given ID was not found.');
-  res.send(course);
+  return res.send(course);
 });
 
 router.delete('/:id', [auth, admin, validateId], async (req, res) => {
@@ -108,7 +110,7 @@ router.post(
       fs.renameSync(req.file.path, `${dir}/${req.file.filename}`);
     }
 
-    res.send(course);
+    return res.send(course);
   }
 );
 
@@ -128,12 +130,12 @@ router.put('/:id', [auth, admin, validate(validateModel)], async (req, res) => {
   if (!course)
     return res.status(404).send('The course with the given ID was not found.');
 
-  res.send(course);
+  return res.send(course);
 });
 
 // RATINGS RELATED
 
-//make upsert
+// make upsert
 router.patch('/rate/:id', [auth, validateId], async (req, res) => {
   const result = await Course.updateOne(
     { _id: req.params.id, 'reviews.id': req.user.id },
@@ -185,25 +187,29 @@ router.get('/rate/:id', [auth, validateId], async (req, res) => {
     totalRating += review.rating;
   });
   reviewData.avgRating = totalRating / course_reviews.length;
-  res.send(reviewData);
+  return res.send(reviewData);
 });
 
 // VIDEO RELATED
-
 router.get('/video/:id', [auth, validateId], async (req, res) => {
   const course = await Course.findById(req.params.id).select('lessons');
   if (!course)
     return res.status(404).send('The course with the given ID was not found.');
-  res.send(course);
+  return res.send(course);
 });
 
 router.patch(
   '/video/:id',
   [auth, admin, validateId, upload.single('file')],
   async (req, res) => {
-    const basePath = `/${appDir}/data/uploads/`;
-    const fileName = `courses/${req.params.id}/videos/${req.file.filename}`;
-    fs.renameSync(req.file.path, basePath + fileName);
+    const basePath = `${appDir}/data/uploads/courses/${req.params.id}/videos/`;
+    const courseDir = `${appDir}/data/uploads/courses/${req.params.id}`;
+    const videoDir = `${appDir}/data/uploads/courses/${req.params.id}/videos`;
+
+    if (!fs.existsSync(courseDir)) fs.mkdirSync(courseDir);
+    if (!fs.existsSync(videoDir)) fs.mkdirSync(videoDir);
+
+    fs.renameSync(req.file.path, basePath + req.file.filename);
 
     const result = await Course.updateOne(
       { _id: req.params.id },
@@ -213,7 +219,7 @@ router.patch(
             videoNo: req.body.videoNo,
             title: req.body.title,
             description: req.body.description,
-            url: `http://${req.headers.host}/files/${fileName}`
+            url: `http://${req.headers.host}/files/courses/${req.params.id}/videos/${req.file.filename}`
           }
         }
       }
@@ -243,7 +249,6 @@ router.delete(
 );
 
 // ADDONS RELATED
-
 router.patch('/activateCourse', [auth], async (req, res) => {
   const result = await Course.findByIdAndUpdate(
     { _id: req.body.course, 'tokens.token': req.body.token },
@@ -254,7 +259,7 @@ router.patch('/activateCourse', [auth], async (req, res) => {
     }
   );
   if (!result) return res.status(404).send('Course or token is invalid.');
-  res.send(result);
+  return res.send(result);
 });
 
 router.get('/addons/:id', [auth, validateId], async (req, res) => {
@@ -263,16 +268,20 @@ router.get('/addons/:id', [auth, validateId], async (req, res) => {
     return res
       .status(404)
       .send('The course addons with the given ID was not found.');
-  res.send(course);
+  return res.send(course);
 });
 
 router.patch(
   '/addons/:id',
   [auth, admin, validateId, upload.single('file')],
   async (req, res) => {
-    const basePath = `/${appDir}/data/uploads/`;
-    const fileName = `courses/${req.params.id}/addons/${req.file.filename}`;
-    fs.renameSync(req.file.path, basePath + fileName);
+    const basePath = `${appDir}/data/uploads/courses/${req.params.id}/addons/`;
+    const courseDir = `${appDir}/data/uploads/courses/${req.params.id}`;
+    const addonDir = `${appDir}/data/uploads/courses/${req.params.id}/addons`;
+
+    if (!fs.existsSync(courseDir)) fs.mkdirSync(courseDir);
+    if (!fs.existsSync(addonDir)) fs.mkdirSync(addonDir);
+    fs.renameSync(req.file.path, basePath + req.file.filename);
 
     const result = await Course.updateOne(
       { _id: req.params.id },
@@ -286,14 +295,14 @@ router.patch(
             contents: [
               {
                 id: Math.floor(Math.random() * 100) + Date.now(),
-                image: `http://${req.headers.host}/files/${fileName}`
+                image: `http://${req.headers.host}/files/courses/${req.params.id}/addons/${fileName}`
               }
             ]
           }
         }
       }
     );
-    res.send(result);
+    return res.send(result);
   }
 );
 
@@ -310,7 +319,7 @@ router.delete('/addons/:courseId/:addonId', [auth, admin], async (req, res) => {
     { safe: true, multi: true }
   );
 
-  res.send(result);
+  return res.send(result);
 });
 
 module.exports = router;

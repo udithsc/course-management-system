@@ -8,25 +8,19 @@ import {
   Grid,
   Typography,
   TextField,
-  Button
+  Button,
+  CardHeader,
+  CardContent,
+  CardActions,
+  Collapse,
+  IconButton
 } from '@mui/material';
-import Joi from 'joi';
 import PropTypes from 'prop-types';
 import { styled } from '@mui/material/styles';
-import CardHeader from '@mui/material/CardHeader';
-import CardContent from '@mui/material/CardContent';
-import CardActions from '@mui/material/CardActions';
-import Collapse from '@mui/material/Collapse';
 import CancelIcon from '@mui/icons-material/Cancel';
-import IconButton from '@mui/material/IconButton';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { useForm, Form } from '../../hooks/useForm';
+import { Form } from '../../hooks/useForm';
 import { createAddon, removeAddon, selectCourses } from '../../store/courses';
-
-const schema = {
-  title: Joi.string().required(),
-  description: Joi.string().required()
-};
 
 const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
@@ -38,7 +32,6 @@ const ExpandMore = styled((props) => {
     duration: theme.transitions.duration.shortest
   })
 }));
-
 export default function ImageManager({ recordForEdit }) {
   const dispatch = useDispatch();
   const courses = useSelector(selectCourses);
@@ -73,11 +66,7 @@ export default function ImageManager({ recordForEdit }) {
 
   useEffect(() => {
     const match = courses.find((e) => e._id === recordForEdit._id);
-    if (match) {
-      setCourse({
-        ...match
-      });
-    }
+    if (match) setCourse({ ...match });
   }, [courses]);
 
   return (

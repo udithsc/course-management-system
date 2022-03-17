@@ -3,42 +3,19 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   Box,
   Card,
-  CardMedia,
   TextareaAutosize,
   Grid,
   Typography,
   TextField,
-  Button
+  Button,
+  CardContent,
+  IconButton
 } from '@mui/material';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import Joi from 'joi';
 import PropTypes from 'prop-types';
-import { styled } from '@mui/material/styles';
-import CardHeader from '@mui/material/CardHeader';
-import CardContent from '@mui/material/CardContent';
-import CardActions from '@mui/material/CardActions';
-import Collapse from '@mui/material/Collapse';
 import CancelIcon from '@mui/icons-material/Cancel';
-import IconButton from '@mui/material/IconButton';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { useForm, Form } from '../../hooks/useForm';
+import { Form } from '../../hooks/useForm';
 import { removeVideo, selectCourses, uploadVideo } from '../../store/courses';
-
-const schema = {
-  title: Joi.string().required(),
-  description: Joi.string().required()
-};
-
-const ExpandMore = styled((props) => {
-  const { expand, ...other } = props;
-  return <IconButton {...other} />;
-})(({ theme, expand }) => ({
-  transform: !expand ? 'rotate(0deg)' : 'rotate(180deg)',
-  marginLeft: 'auto',
-  transition: theme.transitions.create('transform', {
-    duration: theme.transitions.duration.shortest
-  })
-}));
 
 export default function VideoManager({ recordForEdit }) {
   const dispatch = useDispatch();
@@ -47,7 +24,6 @@ export default function VideoManager({ recordForEdit }) {
   const [course, setCourse] = useState({});
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [expanded, setExpanded] = React.useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -71,11 +47,7 @@ export default function VideoManager({ recordForEdit }) {
 
   useEffect(() => {
     const match = courses.find((e) => e._id === recordForEdit._id);
-    if (match) {
-      setCourse({
-        ...match
-      });
-    }
+    if (match) setCourse({ ...match });
   }, [courses]);
 
   return (
@@ -97,7 +69,6 @@ export default function VideoManager({ recordForEdit }) {
               placeholder="Empty"
               onChange={({ target }) => setDescription(target.value)}
             />
-
             <Button type="submit" variant="contained" sx={{ mt: 2, mb: 2 }}>
               Submit
             </Button>
@@ -132,7 +103,6 @@ export default function VideoManager({ recordForEdit }) {
             )}
           </Grid>
         </Grid>
-
         <Box
           sx={{ height: 400, width: 600, border: 1, p: 2, mb: 2 }}
           style={{

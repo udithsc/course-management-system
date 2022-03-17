@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const multer = require('multer');
+const fs = require('fs');
 const { dirname } = require('path');
 const validate = require('../middleware/validate');
 const auth = require('../middleware/auth');
@@ -10,7 +11,9 @@ const appDir = dirname(require.main.filename);
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, `/${appDir}/data/uploads/authors`);
+    const dir = `/${appDir}/data/uploads/authors`;
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+    cb(null, dir);
   },
   filename: (req, file, cb) => {
     cb(null, `${Date.now()}-${file.originalname}`);
@@ -44,7 +47,7 @@ router.get('/:id', [auth, validateId], async (req, res) => {
   const author = await Author.findById(req.params.id).select('-__v');
   if (!author)
     return res.status(404).send('The author with the given ID was not found.');
-  res.send(author);
+  return res.send(author);
 });
 
 router.post(
@@ -83,7 +86,7 @@ router.put(
       return res
         .status(404)
         .send('The author with the given ID was not found.');
-    res.send(author);
+    return res.send(author);
   }
 );
 
