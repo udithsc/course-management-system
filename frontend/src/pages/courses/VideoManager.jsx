@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, Card, Grid, TextField, Button, CardContent, IconButton } from '@mui/material';
 import PropTypes from 'prop-types';
-import { grey } from '@mui/material/colors';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { Form } from '../../hooks/useForm';
 import { removeVideo, selectCourses, uploadVideo } from '../../store/courses';
@@ -65,10 +64,9 @@ export default function VideoManager({ recordForEdit }) {
             size="small"
             value={data.description}
             sx={{ mb: 1 }}
-            rows={4}
+            rows={5}
             onChange={({ target }) => setData({ ...data, description: target.value })}
           />
-
           <Button type="submit" variant="contained" size="small">
             Submit
           </Button>

@@ -94,6 +94,18 @@ export default function ImageManager({ recordForEdit }) {
           </Button>
         </Grid>
         <Grid item xs={6}>
+          <Card variant="outlined">
+            <CardMedia
+              component="img"
+              width="100"
+              height="155"
+              alt="Addon Image"
+              src={image.preview || '/images/preview.png'}
+              sx={{
+                objectFit: 'contain'
+              }}
+            />
+          </Card>
           <label htmlFor="contained-button-file">
             <input
               style={{ display: 'none' }}
@@ -104,22 +116,10 @@ export default function ImageManager({ recordForEdit }) {
               name="file"
               onChange={handleFileChange}
             />
-            <Button variant="contained" component="span" fullWidth size="small" sx={{ mb: 1 }}>
+            <Button variant="contained" component="span" fullWidth size="small" sx={{ mt: 1 }}>
               Upload Image
             </Button>
           </label>
-          <Card variant="outlined">
-            <CardMedia
-              component="img"
-              width="100"
-              height="150"
-              alt="Addon Image"
-              src={image.preview || '/images/preview.png'}
-              sx={{
-                objectFit: 'contain'
-              }}
-            />
-          </Card>
         </Grid>
       </Grid>
       <hr style={{ height: '5px', backgroundColor: 'gray' }} />
