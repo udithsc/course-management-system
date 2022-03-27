@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Paper, TableBody, TableRow, TableCell, Toolbar, InputAdornment } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate, Outlet } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
-import VideoCameraBackIcon from '@mui/icons-material/VideoCameraBack';
-import PhotoIcon from '@mui/icons-material/Photo';
-import Breadcrumbs from '../../components/controls/Breadcrumbs';
 import useTable from '../../hooks/useTable';
 import Controls from '../../components/controls/Controls';
 import Popup from '../../components/ui/Popup';
 import Notification from '../../components/ui/Notification';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
+import CourseForm from './CourseForm';
 import {
   loadCourses,
   selectCourses,
@@ -21,12 +20,8 @@ import {
   updateCourse,
   deleteCourse,
   closeNotification,
-  selectTotalElements,
-  selectRefreshStatus
+  selectTotalElements
 } from '../../store/courses';
-import CourseForm from './CourseForm';
-import VideoManager from './VideoManager';
-import ImageManager from './ImageManager';
 
 const headCells = [
   { id: 'name', label: 'Name', width: '20%' },
@@ -34,20 +29,18 @@ const headCells = [
   { id: 'fee', label: 'Fee', width: '10%' },
   { id: 'subscriptions', label: 'subscriptions', width: '10%' },
   { id: 'category', label: 'Category', width: '10%' },
-  { id: 'actions', label: 'Actions', disableSorting: true, width: '10%' }
+  { id: 'actions', label: 'Actions', disableSorting: true, align: 'center', width: '10%' }
 ];
 
 export default function Course() {
   const dispatch = useDispatch();
   const records = useSelector(selectCourses);
   const notify = useSelector(selectNotification);
+  const navigate = useNavigate();
   const totalRecords = useSelector(selectTotalElements);
-  const refresh = useSelector(selectRefreshStatus);
   const [searchText, setSearchText] = useState('');
   const [recordForEdit, setRecordForEdit] = useState(null);
   const [openPopup, setOpenPopup] = useState(false);
-  const [openVideoPopup, setOpenVideoPopup] = useState(false);
-  const [openImagePopup, setOpenImagePopup] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
     title: '',
@@ -70,32 +63,18 @@ export default function Course() {
     setOpenPopup(true);
   };
 
-  const openInVideoPopup = (item) => {
-    setRecordForEdit(item);
-    setOpenVideoPopup(true);
-  };
-
-  const openInImagePopup = (item) => {
-    setRecordForEdit(item);
-    setOpenImagePopup(true);
-  };
-
   const onDelete = (id) => {
-    setConfirmDialog({
-      ...confirmDialog,
-      isOpen: false
-    });
+    setConfirmDialog({ ...confirmDialog, isOpen: false });
     dispatch(deleteCourse(id));
   };
 
   useEffect(() => {
     dispatch(loadCourses(page, rowsPerPage, searchText));
-  }, [page, rowsPerPage, searchText, refresh]);
+  }, [page, rowsPerPage, searchText]);
 
   return (
     <>
-      <Breadcrumbs path="Courses" label="Courses" />
-      <Paper sx={{ m: 2, p: 2 }}>
+      <Paper sx={{ mt: 2, p: 2 }}>
         <Toolbar
           sx={{
             p: 1,
@@ -141,30 +120,14 @@ export default function Course() {
                   <TableCell>{item.fee}</TableCell>
                   <TableCell>{item.subscriptions}</TableCell>
                   <TableCell>{item.category.name}</TableCell>
-                  <TableCell>
+                  <TableCell align="center">
                     <Controls.ActionButton
                       color="primary.light"
                       onClick={() => {
-                        openInPopup(item);
+                        navigate(`/courses/${item._id}`, { state: item });
                       }}
                     >
                       <EditIcon fontSize="small" />
-                    </Controls.ActionButton>
-                    <Controls.ActionButton
-                      color="secondary.light"
-                      onClick={() => {
-                        openInVideoPopup(item);
-                      }}
-                    >
-                      <VideoCameraBackIcon fontSize="small" />
-                    </Controls.ActionButton>
-                    <Controls.ActionButton
-                      color="secondary.main"
-                      onClick={() => {
-                        openInImagePopup(item);
-                      }}
-                    >
-                      <PhotoIcon fontSize="small" />
                     </Controls.ActionButton>
                     <Controls.ActionButton
                       color="error.main"
@@ -189,24 +152,6 @@ export default function Course() {
       {openPopup && (
         <Popup title="Setup Courses" openPopup={openPopup} setOpenPopup={setOpenPopup}>
           <CourseForm recordForEdit={recordForEdit} addOrEdit={addOrEdit} />
-        </Popup>
-      )}
-      {openVideoPopup && (
-        <Popup
-          title="Setup Course Videos"
-          openPopup={openVideoPopup}
-          setOpenPopup={setOpenVideoPopup}
-        >
-          <VideoManager recordForEdit={recordForEdit} addOrEdit={addOrEdit} />
-        </Popup>
-      )}
-      {openImagePopup && (
-        <Popup
-          title="Setup Course Images"
-          openPopup={openImagePopup}
-          setOpenPopup={setOpenImagePopup}
-        >
-          <ImageManager recordForEdit={recordForEdit} addOrEdit={addOrEdit} />
         </Popup>
       )}
       {notify.isOpen && <Notification notify={notify} closeNotification={closeNotification} />}

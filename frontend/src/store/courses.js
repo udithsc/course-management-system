@@ -30,7 +30,6 @@ export const courseSlice = createSlice({
     courseReceived: (state, action) => {
       state.list = action.payload.data;
       state.loading = false;
-      state.refresh = false;
       state.lastFetch = Date.now();
       state.notification = initialState.notification;
       state.totalElements = action.payload.totalElements;
@@ -41,7 +40,6 @@ export const courseSlice = createSlice({
     },
 
     courseAdded: (state, action) => {
-      state.refresh = true;
       state.notification = {
         isOpen: true,
         message: 'Course Added',
@@ -50,7 +48,6 @@ export const courseSlice = createSlice({
     },
 
     courseUpdated: (state, action) => {
-      state.refresh = true;
       state.notification = {
         isOpen: true,
         message: 'Course Updated',
@@ -59,7 +56,6 @@ export const courseSlice = createSlice({
     },
 
     courseDeleted: (state, action) => {
-      state.refresh = true;
       state.notification = {
         isOpen: true,
         message: 'Deleted Successfully',
@@ -96,7 +92,6 @@ export default courseSlice.reducer;
 // Selectors
 export const selectCourses = (state) => state.courses.list;
 export const selectDataStatus = (state) => state.courses.loading;
-export const selectRefreshStatus = (state) => state.courses.refresh;
 export const selectNotification = (state) => state.courses.notification;
 export const selectTotalElements = (state) => state.courses.totalElements;
 

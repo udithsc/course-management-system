@@ -4,6 +4,7 @@ import { Container, Box, Toolbar } from '@mui/material';
 import Footer from './Footer';
 import SideBar from './SideBar';
 import Header from './Header';
+import Breadcrumbs from '../controls/Breadcrumbs';
 
 function DashboardContent() {
   const [open, setOpen] = useState(true);
@@ -25,7 +26,8 @@ function DashboardContent() {
         }}
       >
         <Toolbar />
-        <Container maxWidth="lg" sx={{ flex: 1, mt: 4 }}>
+        <Container maxWidth="xl" sx={{ flex: 1, mt: 4 }}>
+          <Breadcrumbs path="Courses" label="Courses" />
           <Outlet />
         </Container>
         <Footer />

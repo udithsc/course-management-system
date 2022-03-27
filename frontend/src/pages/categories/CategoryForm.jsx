@@ -36,6 +36,7 @@ export default function CategoryForm({ recordForEdit, addOrEdit }) {
     const formData = new FormData();
     formData.append('file', image.data || values.icon);
     formData.append('name', values.name);
+
     if (values._id !== 0) formData.append('id', values._id);
 
     if (!formErrors) addOrEdit(formData, resetForm);
@@ -47,12 +48,11 @@ export default function CategoryForm({ recordForEdit, addOrEdit }) {
 
   return (
     <Form onSubmit={handleSubmit}>
-      <Grid container spacing={2} direction="column" sx={{ width: 400 }}>
+      <Grid container direction="column" sx={{ width: 400 }}>
         <Controls.Input
           name="name"
           label="Category name"
           value={values.name}
-          fullWidth
           onChange={handleInputChange}
           error={errors.name}
         />
@@ -85,7 +85,6 @@ export default function CategoryForm({ recordForEdit, addOrEdit }) {
             }}
           />
         </Card>
-
         <Grid container justifyContent="flex-end">
           <Controls.Button text="Reset" onClick={resetForm} variant="text" textColor="primary" />
           <Controls.Button type="submit" text="Submit" onClick={() => {}} />

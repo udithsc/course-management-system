@@ -33,7 +33,6 @@ export default function UserForm({ recordForEdit, addOrEdit }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     const formErrors = validate();
-    console.log(formErrors);
     if (!formErrors) addOrEdit(values, resetForm);
   };
 
@@ -43,7 +42,7 @@ export default function UserForm({ recordForEdit, addOrEdit }) {
 
   return (
     <Form onSubmit={handleSubmit}>
-      <Grid container item direction="column">
+      <Grid container direction="column" sx={{ width: 400 }}>
         <Controls.Input
           name="username"
           label="username"

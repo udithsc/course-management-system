@@ -11,6 +11,7 @@ import Controls from '../../components/controls/Controls';
 import Popup from '../../components/ui/Popup';
 import Notification from '../../components/ui/Notification';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
+import AuthorForm from './AuthorForm';
 import {
   loadAuthors,
   deleteAuthor,
@@ -22,14 +23,13 @@ import {
   selectTotalElements,
   selectRefreshStatus
 } from '../../store/authors';
-import AuthorForm from './AuthorForm';
 
 const headCells = [
   { id: 'name', label: 'Name', width: '30%' },
   { id: 'profession', label: 'profession', width: '20%' },
   { id: 'email', label: 'email', width: '20%' },
   { id: 'mobile', label: 'mobile', width: '20%' },
-  { id: 'actions', label: 'Actions', disableSorting: true, width: '10%' }
+  { id: 'actions', label: 'Actions', disableSorting: true, align: 'center', width: '10%' }
 ];
 
 export default function Author() {
@@ -46,6 +46,7 @@ export default function Author() {
     title: '',
     subTitle: ''
   });
+
   const { TblContainer, TblHead, TblPagination, recordsAfterPagingAndSorting, page, rowsPerPage } =
     useTable(records, headCells, totalRecords);
 
@@ -59,10 +60,7 @@ export default function Author() {
   };
 
   const onDelete = (id) => {
-    setConfirmDialog({
-      ...confirmDialog,
-      isOpen: false
-    });
+    setConfirmDialog({ ...confirmDialog, isOpen: false });
     dispatch(deleteAuthor(id));
   };
 
@@ -77,12 +75,9 @@ export default function Author() {
 
   return (
     <>
-      <Breadcrumbs path="Authors" label="Authors" />
-      <Paper sx={{ m: 2, p: 2 }}>
+      <Paper sx={{ mt: 2, p: 2 }}>
         <Toolbar
           sx={{
-            p: 1,
-            display: 'flex',
             justifyContent: 'space-between'
           }}
         >
@@ -123,7 +118,7 @@ export default function Author() {
                   <TableCell>{item.profession}</TableCell>
                   <TableCell>{item.email}</TableCell>
                   <TableCell>{item.mobile}</TableCell>
-                  <TableCell>
+                  <TableCell align="center">
                     <Controls.ActionButton
                       color="primary.light"
                       onClick={() => {

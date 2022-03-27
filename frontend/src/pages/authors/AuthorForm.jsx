@@ -57,7 +57,7 @@ export default function UserForm({ recordForEdit, addOrEdit }) {
 
   return (
     <Form onSubmit={handleSubmit}>
-      <Grid container spacing={2} direction="column" sx={{ width: 400 }}>
+      <Grid container direction="column" sx={{ width: 400 }}>
         <Controls.Input
           name="name"
           label="name"
@@ -104,7 +104,6 @@ export default function UserForm({ recordForEdit, addOrEdit }) {
             onClick={() => {}}
           />
         </label>
-
         <Card variant="outlined">
           <CardMedia
             component="img"

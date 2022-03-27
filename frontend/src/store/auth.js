@@ -4,17 +4,16 @@ import { apiCallBegan } from './api';
 const initialState = {
   isLoading: false,
   accessToken: '',
-  refreshToken: '',
-  expires_in: 0,
   user: {},
-  isLoggedIn: false,
-  isSignUp: false,
+  permissions: {
+    admin: ['APPROVE', 'DELETE'],
+    user: ['CREATE', 'UPDATE', 'DELETE']
+  },
   notification: {
     isOpen: false,
     message: '',
     type: ''
-  },
-  refresh: false
+  }
 };
 
 const authSlice = createSlice({
@@ -27,15 +26,11 @@ const authSlice = createSlice({
 
     loginRequestFailed: (state, action) => {
       state.isLoading = false;
-      state.message = '';
     },
 
     loggedIn: (state, action) => {
       state.isLoading = false;
-      state.isLoggedIn = true;
-      state.refresh = false;
       state.accessToken = action.payload.accessToken;
-      // state.refreshToken = action.payload.refreshToken;
       state.notification = initialState.notification;
     },
 
@@ -51,8 +46,7 @@ const authSlice = createSlice({
 
     tokenRefreshed: (state, action) => {
       state.isLoading = false;
-      state.accessToken = action.payload.accessToken;
-      state.refreshToken = action.payload.refreshToken;
+      state.accessToken = action.payload.data.accessToken;
     },
 
     showNotification: (state, action) => {
@@ -109,4 +103,4 @@ export const selectAccessToken = (state) => state.auth.accessToken;
 export const selectDataStatus = (state) => state.auth.loading;
 export const selectSignUpStatus = (state) => state.auth.isSignUp;
 export const selectNotification = (state) => state.auth.notification;
-export const selectLoginStatus = (state) => state.auth.isLoggedIn;
+export const selectPermissions = (state) => state.auth.permissions;

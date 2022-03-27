@@ -11,6 +11,7 @@ import Controls from '../../components/controls/Controls';
 import Popup from '../../components/ui/Popup';
 import Notification from '../../components/ui/Notification';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
+import CategoryForm from './CategoryForm';
 import {
   loadCategories,
   deleteCategory,
@@ -22,12 +23,11 @@ import {
   selectTotalElements,
   selectRefreshStatus
 } from '../../store/categories';
-import CategoryForm from './CategoryForm';
 
 const headCells = [
   { id: 'name', label: 'Name', width: '30%' },
   { id: 'createdAt', label: 'Date Created', width: '50%' },
-  { id: 'actions', label: 'Actions', disableSorting: true, width: '10%' }
+  { id: 'actions', label: 'Actions', disableSorting: true, align: 'center', width: '10%' }
 ];
 
 export default function Category() {
@@ -49,19 +49,16 @@ export default function Category() {
     useTable(records, headCells, totalRecords);
 
   const addOrEdit = (record, resetForm) => {
-    console.log(record);
     if (record.has('id')) dispatch(updateCategory(record));
     else dispatch(addCategory(record));
+
     resetForm();
     setRecordForEdit(null);
     setOpenPopup(false);
   };
 
   const onDelete = (id) => {
-    setConfirmDialog({
-      ...confirmDialog,
-      isOpen: false
-    });
+    setConfirmDialog({ ...confirmDialog, isOpen: false });
     dispatch(deleteCategory(id));
   };
 
@@ -76,8 +73,7 @@ export default function Category() {
 
   return (
     <>
-      <Breadcrumbs path="Users" label="Users" />
-      <Paper sx={{ m: 2, p: 2 }}>
+      <Paper sx={{ mt: 2, p: 2 }}>
         <Toolbar
           sx={{
             p: 1,
@@ -120,7 +116,7 @@ export default function Category() {
                 <TableRow key={item._id}>
                   <TableCell>{item.name}</TableCell>
                   <TableCell>{item.createdAt}</TableCell>
-                  <TableCell>
+                  <TableCell align="center">
                     <Controls.ActionButton
                       color="primary.light"
                       onClick={() => {

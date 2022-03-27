@@ -6,7 +6,8 @@ import {
   TableRow,
   TableCell,
   TablePagination,
-  TableSortLabel
+  TableSortLabel,
+  Paper
 } from '@mui/material';
 
 export default function useTable(records, headCells, totalRecords) {
@@ -49,17 +50,29 @@ export default function useTable(records, headCells, totalRecords) {
 
   function TblContainer({ children }) {
     return (
-      <Table
+      <Paper
+        elevation={0}
         sx={{
-          marginTop: 3,
-          '& tbody tr:hover': {
-            backgroundColor: grey[100],
-            cursor: 'pointer'
-          }
+          overflowX: 'auto',
+          marginRight: 'auto',
+          marginLeft: 'auto',
+          marginTop: 2
         }}
       >
-        {children}
-      </Table>
+        <Table
+          sx={{
+            '& tbody tr:hover': {
+              backgroundColor: grey[50],
+              cursor: 'pointer'
+            },
+            '& .MuiTableCell-root': {
+              p: 1.5
+            }
+          }}
+        >
+          {children}
+        </Table>
+      </Paper>
     );
   }
 
@@ -74,7 +87,7 @@ export default function useTable(records, headCells, totalRecords) {
       <TableHead
         sx={{
           '&.MuiTableHead-root': {
-            backgroundColor: grey[100]
+            backgroundColor: grey[200]
           }
         }}
       >
@@ -84,6 +97,7 @@ export default function useTable(records, headCells, totalRecords) {
               width={headCell.width}
               key={headCell.id}
               sortDirection={orderBy === headCell.id ? order : false}
+              align={headCell.align || 'left'}
             >
               {headCell.disableSorting ? (
                 headCell.label

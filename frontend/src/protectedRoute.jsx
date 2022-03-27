@@ -1,37 +1,27 @@
 import React from 'react';
 import axios from 'axios';
-import jwt from 'jwt-decode';
+import decode from 'jwt-decode';
 import { useDispatch, useSelector } from 'react-redux';
 import { Navigate, Outlet } from 'react-router-dom';
-import { selectLoginStatus, loggedIn } from './store/auth';
+import { selectAccessToken, loggedIn } from './store/auth';
 
 function ProtectedRoute() {
-  const auth = useSelector(selectLoginStatus);
   const dispatch = useDispatch();
+  const token = useSelector(selectAccessToken);
 
-  if (!auth) {
+  // handling browser refresh
+  if (!token) {
     const accessToken = sessionStorage.getItem('access-token');
-    console.log(accessToken);
+    if (!accessToken) return <Navigate to="/login" />;
 
-    if (!accessToken) {
-      return <Navigate to="/login" />;
-    }
+    const decodedToken = decode(accessToken);
+    // const role = decodedToken?.userRole;
+    const role = 'user';
 
-    try {
-      const decoded = jwt(accessToken);
-      // if (decoded.aud !== process.env.REACT_APP_CLIENT_ID) {
-      //   throw new Error('decode failed');
-      // }
-    } catch (error) {
-      return <Navigate to="/login" />;
-    }
+    // if (decodedToken.aud !== process.env.REACT_APP_CLIENT_ID) return <Navigate to="/login" />;
 
-    dispatch({
-      type: loggedIn.type,
-      payload: { accessToken }
-    });
+    dispatch({ type: loggedIn.type, payload: { accessToken, role } });
     axios.defaults.headers.common['x-auth-token'] = accessToken;
-    return <Outlet />;
   }
 
   // If authorized, return an outlet that will render child elements

@@ -40,8 +40,7 @@ function Header({ open, toggleDrawer }) {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleClose = () => {
-    console.log('handleClose');
+  const handleLogout = () => {
     setAnchorEl(null);
     sessionStorage.clear();
     navigate('/login');
@@ -95,9 +94,8 @@ function Header({ open, toggleDrawer }) {
               horizontal: 'right'
             }}
             open={Boolean(anchorEl)}
-            onClose={handleClose}
           >
-            <MenuItem onClick={handleClose}>Logout</MenuItem>
+            <MenuItem onClick={handleLogout}>Logout</MenuItem>
           </Menu>
         </div>
       </Toolbar>

@@ -30,7 +30,7 @@ const headCells = [
   { id: 'lastName', label: 'Last Name', width: '20%' },
   { id: 'mobile', label: 'Mobile ', width: '15%' },
   { id: 'email', label: 'Email', width: '20%' },
-  { id: 'actions', label: 'Actions', disableSorting: true, width: '10%' }
+  { id: 'actions', label: 'Actions', disableSorting: true, align: 'center', width: '10%' }
 ];
 
 export default function User() {
@@ -61,10 +61,7 @@ export default function User() {
   };
 
   const onDelete = (id) => {
-    setConfirmDialog({
-      ...confirmDialog,
-      isOpen: false
-    });
+    setConfirmDialog({ ...confirmDialog, isOpen: false });
     dispatch(deleteUser(id));
   };
 
@@ -79,8 +76,7 @@ export default function User() {
 
   return (
     <>
-      <Breadcrumbs path="Users" label="Users" />
-      <Paper sx={{ m: 2, p: 2 }}>
+      <Paper sx={{ mt: 2, p: 2 }}>
         <Toolbar
           sx={{
             p: 1,
@@ -126,7 +122,7 @@ export default function User() {
                   <TableCell>{item.lastName}</TableCell>
                   <TableCell>{item.mobile}</TableCell>
                   <TableCell>{item.email}</TableCell>
-                  <TableCell>
+                  <TableCell align="center">
                     <Controls.ActionButton
                       color="primary.light"
                       onClick={() => {
