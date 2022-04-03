@@ -7,9 +7,9 @@ const { dirname } = require('path');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
 const validate = require('../middleware/validate');
-const { Category, validateModel } = require('../models/category.model');
+const { Category } = require('../models/category.model');
 const { Author } = require('../models/author.model');
-const { Course } = require('../models/course.model');
+const { Course, validateModel } = require('../models/course.model');
 const validateId = require('../middleware/validateId');
 const appDir = dirname(require.main.filename);
 // const logger = require('../utils/logger');
@@ -114,9 +114,10 @@ router.post(
   }
 );
 
-router.put('/:id', [auth, admin, validate(validateModel)], async (req, res) => {
+// router.put('/:id', [auth, admin, validate(validateModel)], async (req, res) => {
+router.put('/:id', [auth, admin, upload.single('file')], async (req, res) => {
   const course = await Course.findByIdAndUpdate(
-    req.params._id,
+    req.params.id,
     {
       ...req.body,
       image: req.file.filename
@@ -315,8 +316,7 @@ router.delete('/addons/:courseId/:addonId', [auth, admin], async (req, res) => {
           id: req.params.addonId
         }
       }
-    },
-    { safe: true, multi: true }
+    }
   );
 
   return res.send(result);

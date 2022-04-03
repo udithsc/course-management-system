@@ -20,7 +20,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { red } from '@mui/material/colors';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { Form } from '../../hooks/useForm';
-import { removeVideo, selectCourses, uploadVideo } from '../../store/courses';
+import { loadCourses, removeVideo, selectCourses, uploadVideo } from '../../store/courses';
 import Controls from '../../components/controls/Controls';
 import Popup from '../../components/ui/Popup';
 
@@ -52,6 +52,7 @@ export default function Videos({ recordForEdit }) {
     formData.append('description', data.description);
     dispatch(uploadVideo(formData));
     resetForm();
+    dispatch(loadCourses());
   };
 
   const handleFileChange = async (e) => {
@@ -125,6 +126,7 @@ export default function Videos({ recordForEdit }) {
                       onClick={() => {
                         handleCardClose();
                         dispatch(removeVideo(course._id, item.id));
+                        dispatch(loadCourses());
                       }}
                     >
                       Delete

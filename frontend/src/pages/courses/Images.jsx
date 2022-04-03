@@ -48,7 +48,7 @@ export default function Images({ recordForEdit }) {
     title: '',
     description: ''
   });
-  const [expanded, setExpanded] = React.useState(false);
+  const [expanded, setExpanded] = useState(false);
   const [openPopup, setOpenPopup] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -72,6 +72,7 @@ export default function Images({ recordForEdit }) {
     formData.append('description', data.description);
     dispatch(createAddon(formData));
     resetForm();
+    dispatch(loadCourses());
   };
 
   const handleFileChange = async (e) => {
@@ -85,10 +86,6 @@ export default function Images({ recordForEdit }) {
     const match = courses.find((e) => e._id === recordForEdit._id);
     if (match) setCourse({ ...match });
   }, [courses]);
-
-  useEffect(() => {
-    loadCourses();
-  }, []);
 
   return (
     <>
@@ -144,6 +141,7 @@ export default function Images({ recordForEdit }) {
                       onClick={() => {
                         handleCardClose();
                         dispatch(removeAddon(course._id, item.id));
+                        dispatch(loadCourses());
                       }}
                     >
                       Delete

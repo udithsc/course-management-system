@@ -94,6 +94,8 @@ export default categorySlice.reducer;
 
 // Selectors
 export const selectCategories = (state) => state.categories.list;
+export const selectCategoryNames = (state) =>
+  state.categories.list.map((a) => ({ id: a._id, title: a.name }));
 export const selectDataStatus = (state) => state.categories.loading;
 export const selectRefreshStatus = (state) => state.categories.refresh;
 export const selectNotification = (state) => state.categories.notification;

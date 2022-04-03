@@ -12,8 +12,7 @@ const initialState = {
     message: '',
     type: ''
   },
-  totalElements: 0,
-  refresh: false
+  totalElements: 0
 };
 
 const url = '/courses';

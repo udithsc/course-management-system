@@ -4,31 +4,33 @@ import { Grid, Card, CardMedia } from '@mui/material';
 import Joi from 'joi';
 import PropTypes from 'prop-types';
 import { useForm, Form } from '../../hooks/useForm';
-import { loadCategories, selectCategories } from '../../store/categories';
-import { loadAuthors, selectAuthors } from '../../store/authors';
+import { loadCategories, selectCategoryNames } from '../../store/categories';
+import { loadAuthors, selectAuthorsNames } from '../../store/authors';
 import Controls from '../../components/controls/Controls';
 
 const initialFormValues = {
   _id: 0,
   name: '',
   description: '',
-  author: '',
-  category: '',
+  author: {
+    _id: ''
+  },
+  category: {
+    _id: ''
+  },
   fee: ''
 };
 
 const schema = {
   name: Joi.string().required(),
   description: Joi.string().required(),
-  fee: Joi.number().required(),
-  author: Joi.string().required(),
-  category: Joi.string().required()
+  fee: Joi.number().required()
 };
 
 export default function CourseForm({ recordForEdit, addOrEdit }) {
   const dispatch = useDispatch();
-  const categories = useSelector(selectCategories);
-  const authors = useSelector(selectAuthors);
+  const categories = useSelector(selectCategoryNames);
+  const authors = useSelector(selectAuthorsNames);
   const [image, setImage] = useState({ preview: '', data: '' });
 
   const { values, setValues, errors, setErrors, handleInputChange, resetForm, validate } = useForm(
@@ -45,8 +47,8 @@ export default function CourseForm({ recordForEdit, addOrEdit }) {
     formData.append('file', image.data);
     formData.append('name', values.name);
     formData.append('description', values.description);
-    formData.append('author', values.author);
-    formData.append('category', values.category);
+    formData.append('author', values.author._id);
+    formData.append('category', values.category._id);
     formData.append('fee', values.fee);
     if (values._id !== 0) formData.append('id', values._id);
     if (!errors) addOrEdit(formData, resetForm);
@@ -95,17 +97,21 @@ export default function CourseForm({ recordForEdit, addOrEdit }) {
           <Controls.Select
             name="author"
             label="author"
-            options={authors.map((a) => ({ id: a._id, title: a.name }))}
-            value={values.author._id || values.author}
-            onChange={handleInputChange}
+            options={authors}
+            value={values.author._id}
+            onChange={(e) => {
+              setValues({ ...values, author: { _id: e.target.value } });
+            }}
             error={errors.author}
           />
           <Controls.Select
             name="category"
             label="category"
-            options={categories.map((c) => ({ id: c._id, title: c.name }))}
-            value={values.category._id || values.category}
-            onChange={handleInputChange}
+            options={categories}
+            value={values.category._id}
+            onChange={(e) => {
+              setValues({ ...values, category: { _id: e.target.value } });
+            }}
             error={errors.category}
           />
         </Grid>

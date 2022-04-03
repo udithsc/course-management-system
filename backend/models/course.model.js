@@ -56,7 +56,7 @@ const Course = mongoose.model(
 function validateCourse(course) {
   const schema = {
     name: Joi.string().min(3).max(50).required(),
-    description: Joi.objectId().min(3).max(255).required(),
+    description: Joi.string().min(3).max(255).required(),
     fee: Joi.number().min(0).max(100000).required(),
     author: Joi.objectId().required(),
     category: Joi.objectId().required(),
