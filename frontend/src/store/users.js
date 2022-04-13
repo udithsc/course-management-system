@@ -122,7 +122,8 @@ export const addUser = (data) =>
     url,
     method: 'post',
     data,
-    onSuccess: userAdded.type
+    onSuccess: userAdded.type,
+    onSuccessOther: loadUsers
   });
 
 export const updateUser = (data) =>
@@ -130,7 +131,8 @@ export const updateUser = (data) =>
     url: `${url}/${data._id}`,
     method: 'put',
     data,
-    onSuccess: userUpdated.type
+    onSuccess: userUpdated.type,
+    onSuccessOther: loadUsers
   });
 
 export const deleteUser = (id) =>
@@ -138,5 +140,6 @@ export const deleteUser = (id) =>
     url: `${url}/${id}`,
     method: 'delete',
     data: id,
-    onSuccess: userDeleted.type
+    onSuccess: userDeleted.type,
+    onSuccessOther: loadUsers
   });

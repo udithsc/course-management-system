@@ -27,7 +27,6 @@ function DashboardContent() {
       >
         <Toolbar />
         <Container maxWidth="xl" sx={{ flex: 1, mt: 4 }}>
-          <Breadcrumbs path="Courses" label="Courses" />
           <Outlet />
         </Container>
         <Footer />

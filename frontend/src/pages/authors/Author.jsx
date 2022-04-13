@@ -5,7 +5,6 @@ import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
-import Breadcrumbs from '../../components/controls/Breadcrumbs';
 import useTable from '../../hooks/useTable';
 import Controls from '../../components/controls/Controls';
 import Popup from '../../components/ui/Popup';
@@ -23,6 +22,7 @@ import {
   selectTotalElements,
   selectRefreshStatus
 } from '../../store/authors';
+import Breadcrumbs from '../../components/controls/Breadcrumbs';
 
 const headCells = [
   { id: 'name', label: 'Name', width: '30%' },
@@ -75,6 +75,7 @@ export default function Author() {
 
   return (
     <>
+      <Breadcrumbs />
       <Paper sx={{ mt: 2, p: 2 }}>
         <Toolbar
           sx={{

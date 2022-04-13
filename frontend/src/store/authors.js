@@ -124,7 +124,8 @@ export const addAuthor = (data) =>
     url,
     method: 'post',
     data,
-    onSuccess: authorAdded.type
+    onSuccess: authorAdded.type,
+    onSuccessOther: loadAuthors
   });
 
 export const updateAuthor = (data) =>
@@ -132,7 +133,8 @@ export const updateAuthor = (data) =>
     url: `${url}/${data.get('id')}`,
     method: 'put',
     data,
-    onSuccess: authorUpdated.type
+    onSuccess: authorUpdated.type,
+    onSuccessOther: loadAuthors
   });
 
 export const deleteAuthor = (id) =>
@@ -140,5 +142,6 @@ export const deleteAuthor = (id) =>
     url: `${url}/${id}`,
     method: 'delete',
     data: id,
-    onSuccess: authorDeleted.type
+    onSuccess: authorDeleted.type,
+    onSuccessOther: loadAuthors
   });

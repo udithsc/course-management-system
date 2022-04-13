@@ -8,19 +8,22 @@ import { selectAccessToken, loggedIn } from './store/auth';
 function ProtectedRoute() {
   const dispatch = useDispatch();
   const token = useSelector(selectAccessToken);
+  // const token = true;
 
   // handling browser refresh
   if (!token) {
     const accessToken = sessionStorage.getItem('access-token');
+    console.log(accessToken);
     if (!accessToken) return <Navigate to="/login" />;
 
     const decodedToken = decode(accessToken);
-    // const role = decodedToken?.userRole;
-    const role = 'user';
+    console.log(decodedToken);
+    const role = decodedToken.isAdmin ? 'Administrator' : 'User';
+    const { name } = decodedToken;
 
-    // if (decodedToken.aud !== process.env.REACT_APP_CLIENT_ID) return <Navigate to="/login" />;
+    // if (decodedToken.aud !== process.env._CLIENT_ID) return <Navigate to="/login" />;
 
-    dispatch({ type: loggedIn.type, payload: { accessToken, role } });
+    dispatch({ type: loggedIn.type, payload: { accessToken, role, name } });
     axios.defaults.headers.common['x-auth-token'] = accessToken;
   }
 

@@ -27,6 +27,9 @@
     "react/prop-types": "warn",
     "consistent-return": "warn",
     "no-underscore-dangle": "off",
-    "jsx-a11y/media-has-caption": "off"
+    "jsx-a11y/media-has-caption": "off",
+    "react/forbid-prop-types": "off",
+    "react/function-component-definition": "off",
+    "react/no-unstable-nested-components": "off"
   }
 }

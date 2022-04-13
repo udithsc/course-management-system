@@ -5,7 +5,6 @@ import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
-import Breadcrumbs from '../../components/controls/Breadcrumbs';
 import useTable from '../../hooks/useTable';
 import Controls from '../../components/controls/Controls';
 import Popup from '../../components/ui/Popup';
@@ -19,10 +18,10 @@ import {
   selectUsers,
   closeNotification,
   selectNotification,
-  selectTotalElements,
-  selectRefreshStatus
+  selectTotalElements
 } from '../../store/users';
 import UserForm from './UserForm';
+import Breadcrumbs from '../../components/controls/Breadcrumbs';
 
 const headCells = [
   { id: 'username', label: 'Username', width: '15%' },
@@ -38,7 +37,6 @@ export default function User() {
   const records = useSelector(selectUsers);
   const totalRecords = useSelector(selectTotalElements);
   const notify = useSelector(selectNotification);
-  const refresh = useSelector(selectRefreshStatus);
   const [recordForEdit, setRecordForEdit] = useState(null);
   const [searchText, setSearchText] = useState('');
   const [openPopup, setOpenPopup] = useState(false);
@@ -72,10 +70,11 @@ export default function User() {
 
   useEffect(() => {
     dispatch(loadUsers(page, rowsPerPage, searchText));
-  }, [page, rowsPerPage, searchText, refresh]);
+  }, [page, rowsPerPage, searchText]);
 
   return (
     <>
+      <Breadcrumbs />
       <Paper sx={{ mt: 2, p: 2 }}>
         <Toolbar
           sx={{

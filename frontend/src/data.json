@@ -3,5 +3,26 @@
   "APP_NAME": "Course Management System",
   "BRAND_NAME": "udith.cc",
   "BRAND_WEBSITE": "https://udith.cc",
-  "DRAWER_WIDTH": 240
+  "DRAWER_WIDTH": 240,
+  "ROUTES": [
+    { "path": "/", "icon": "Dashboard", "title": "Dashboard", "subMenu": [], "breadcrumbs": ["/"] },
+    {
+      "path": "/users",
+      "icon": "Group",
+      "title": "Users",
+      "subMenu": [],
+      "breadcrumbs": ["/users"]
+    },
+    {
+      "path": "/courses/courses",
+      "icon": "Group",
+      "title": "Courses",
+      "subMenu": [
+        { "path": "/courses/courses", "icon": "School", "title": "Courses" },
+        { "path": "/courses/authors", "icon": "Person", "title": "Authors" },
+        { "path": "/courses/categories", "icon": "Category", "title": "Categories" }
+      ],
+      "breadcrumbs": ["/courses/courses", "/courses/authors", "/courses/categories"]
+    }
+  ]
 }

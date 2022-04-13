@@ -1,42 +1,44 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Breadcrumbs as MuiBreadcrumbs } from '@mui/material';
-import HomeIcon from '@mui/icons-material/Home';
 import Link from '@mui/material/Link';
-import WhatshotIcon from '@mui/icons-material/Whatshot';
-import PropTypes from 'prop-types';
+import * as Muicon from '@mui/icons-material';
+import configData from '../../data.json';
 
-function handleClick(event) {
-  event.preventDefault();
-}
+export default function Breadcrumbs() {
+  const location = useLocation();
+  const routes = [];
 
-export default function Breadcrumbs({ path, label }) {
+  routes.push(configData.ROUTES[0]);
+
+  // const GenerateIcon = (variation, props = {}) => {
+  //   const IconName = Muicon[variation];
+  //   const icon = <IconName {...props} sx={{ mr: 0.5 }} fontSize="inherit" />;
+  //   return icon;
+  // };
+
+  const currentRoute = configData.ROUTES.find((e) => e.breadcrumbs.includes(location.pathname));
+  if (currentRoute) routes.push(currentRoute);
+
+  if (currentRoute.subMenu.length > 0) {
+    const subRoute = currentRoute.subMenu.find((e) => e.path === location.pathname);
+    if (subRoute) routes.push(subRoute);
+  }
+
   return (
-    <div role="presentation" onClick={handleClick}>
-      <MuiBreadcrumbs aria-label="breadcrumb">
+    <MuiBreadcrumbs aria-label="breadcrumb">
+      {routes.map((route) => (
         <Link
+          key={route.path}
           underline="hover"
           sx={{ display: 'flex', alignItems: 'center' }}
           color="inherit"
-          href="/"
+          href={route.path}
         >
-          <HomeIcon sx={{ mr: 0.5 }} fontSize="inherit" />
-          Dashboard
+          {/* {GenerateIcon(route.icon)} */}
+          {route.title}
         </Link>
-        <Link
-          underline="hover"
-          sx={{ display: 'flex', alignItems: 'center' }}
-          color="inherit"
-          href={path}
-        >
-          <WhatshotIcon sx={{ mr: 0.5 }} fontSize="inherit" />
-          {label}
-        </Link>
-      </MuiBreadcrumbs>
-    </div>
+      ))}
+    </MuiBreadcrumbs>
   );
 }
-
-Breadcrumbs.propTypes = {
-  path: PropTypes.string.isRequired,
-  label: PropTypes.string.isRequired
-};

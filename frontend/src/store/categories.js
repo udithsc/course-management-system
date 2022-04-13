@@ -123,7 +123,8 @@ export const addCategory = (data) =>
     url,
     method: 'post',
     data,
-    onSuccess: categoryAdded.type
+    onSuccess: categoryAdded.type,
+    onSuccessOther: loadCategories
   });
 
 export const updateCategory = (data) =>
@@ -131,7 +132,8 @@ export const updateCategory = (data) =>
     url: `${url}/${data.get('id')}`,
     method: 'put',
     data,
-    onSuccess: categoryUpdated.type
+    onSuccess: categoryUpdated.type,
+    onSuccessOther: loadCategories
   });
 
 export const deleteCategory = (id) =>
@@ -139,5 +141,6 @@ export const deleteCategory = (id) =>
     url: `${url}/${id}`,
     method: 'delete',
     data: id,
-    onSuccess: categoryDeleted.type
+    onSuccess: categoryDeleted.type,
+    onSuccessOther: loadCategories
   });

@@ -116,7 +116,8 @@ export const addCourse = (data) =>
     url,
     method: 'post',
     data,
-    onSuccess: courseAdded.type
+    onSuccess: courseAdded.type,
+    onSuccessOther: loadCourses
   });
 
 export const updateCourse = (data) =>
@@ -124,7 +125,8 @@ export const updateCourse = (data) =>
     url: `${url}/${data.get('id')}`,
     method: 'put',
     data,
-    onSuccess: courseUpdated.type
+    onSuccess: courseUpdated.type,
+    onSuccessOther: loadCourses
   });
 
 export const deleteCourse = (id) =>
@@ -132,7 +134,8 @@ export const deleteCourse = (id) =>
     url: `${url}/${id}`,
     method: 'delete',
     data: id,
-    onSuccess: courseDeleted.type
+    onSuccess: courseDeleted.type,
+    onSuccessOther: loadCourses
   });
 
 export const createAddon = (data) =>
@@ -140,14 +143,16 @@ export const createAddon = (data) =>
     url: `${url}/addons/${data.get('id')}`,
     method: 'patch',
     data,
-    onSuccess: courseUpdated.type
+    onSuccess: courseUpdated.type,
+    onSuccessOther: loadCourses
   });
 
 export const removeAddon = (courseId, addonId) =>
   apiCallBegan({
     url: `${url}/addons/${courseId}/${addonId}`,
     method: 'delete',
-    onSuccess: courseUpdated.type
+    onSuccess: courseUpdated.type,
+    onSuccessOther: loadCourses
   });
 
 export const uploadVideo = (data) =>
@@ -155,12 +160,14 @@ export const uploadVideo = (data) =>
     url: `${url}/video/${data.get('id')}`,
     method: 'patch',
     data,
-    onSuccess: courseUpdated.type
+    onSuccess: courseUpdated.type,
+    onSuccessOther: loadCourses
   });
 
 export const removeVideo = (courseId, videoNo) =>
   apiCallBegan({
     url: `${url}/video/${courseId}/${videoNo}`,
     method: 'delete',
-    onSuccess: courseUpdated.type
+    onSuccess: courseUpdated.type,
+    onSuccessOther: loadCourses
   });

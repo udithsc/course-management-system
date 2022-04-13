@@ -22,6 +22,7 @@ import {
   closeNotification,
   selectTotalElements
 } from '../../store/courses';
+import Breadcrumbs from '../../components/controls/Breadcrumbs';
 
 const headCells = [
   { id: 'name', label: 'Name', width: '20%' },
@@ -74,6 +75,7 @@ export default function Course() {
 
   return (
     <>
+      <Breadcrumbs />
       <Paper sx={{ mt: 2, p: 2 }}>
         <Toolbar
           sx={{
@@ -124,7 +126,7 @@ export default function Course() {
                     <Controls.ActionButton
                       color="primary.light"
                       onClick={() => {
-                        navigate(`/courses/${item._id}`, { state: item });
+                        navigate(`/courses/courses/${item._id}`, { state: item });
                       }}
                     >
                       <EditIcon fontSize="small" />

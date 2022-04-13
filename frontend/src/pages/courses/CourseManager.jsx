@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Paper, Breadcrumbs } from '@mui/material';
 import PropTypes from 'prop-types';
@@ -12,7 +12,7 @@ import Videos from './Videos';
 import Images from './Images';
 import Reviews from './Reviews';
 import Subscribers from './Subscribers';
-import { updateCourse } from '../../store/courses';
+import { updateCourse, loadCourses } from '../../store/courses';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -58,6 +58,10 @@ function CourseManager() {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+
+  useEffect(() => {
+    dispatch(loadCourses());
+  }, []);
 
   return (
     <Paper sx={{ mt: 2, p: 2 }}>

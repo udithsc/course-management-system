@@ -3,6 +3,7 @@ import { Box, Typography, Rating, Grid } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 
 function Reviews({ recordForEdit }) {
+  console.log(recordForEdit);
   return (
     <Box>
       <Typography>
@@ -21,7 +22,7 @@ function Reviews({ recordForEdit }) {
       <Typography sx={{ mt: 2 }}>User Ratings:</Typography>
       <Grid container sx={{ height: 370, mt: 2 }}>
         <DataGrid
-          rows={recordForEdit.review}
+          rows={recordForEdit.reviews}
           columns={[
             { field: 'id', headerName: 'ID', width: 100 },
             { field: 'user', headerName: 'user', width: 300 },

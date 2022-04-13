@@ -1,106 +1,78 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { List, ListItemText, ListItemIcon, ListItem, Collapse, Box } from '@mui/material';
+import PropTypes from 'prop-types';
+import { styled } from '@mui/material/styles';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import CategoryIcon from '@mui/icons-material/Category';
-import GroupIcon from '@mui/icons-material/Group';
-import PersonIcon from '@mui/icons-material/Person';
-import LocalLibraryIcon from '@mui/icons-material/LocalLibrary';
-import PropTypes from 'prop-types';
-import SchoolIcon from '@mui/icons-material/School';
-import { styled } from '@mui/material/styles';
-import { lightBlue } from '@mui/material/colors';
-
-const routes = ['/', '/users', '/courses', '/authors', '/categories'];
+import * as Muicon from '@mui/icons-material';
+import configData from '../../data.json';
 
 function ListItems({ open }) {
-  const params = useLocation();
+  const location = useLocation();
   const navigate = useNavigate();
-  const routeIndex = routes.findIndex((route) => route === params.pathname);
-  const [selectedIndex, setSelectedIndex] = useState(routeIndex);
   const [nestedMenuOpen, setNestedMenuOpen] = useState(true);
+  const [selectedRoute, setSelectedRoute] = useState('/');
 
-  const handleListItemClick = (index) => {
-    setSelectedIndex(index);
-    navigate(routes[index]);
-  };
+  useEffect(() => {
+    setSelectedRoute(location.pathname);
+  }, [location]);
 
-  const handleNestedMenuClick = () => {
-    setNestedMenuOpen(!nestedMenuOpen);
-    handleListItemClick(2);
-  };
+  // const GenerateIcon = (variation, props = {}) => {
+  //   const IconName = Muicon[variation];
+  //   const icon = <IconName {...props} />;
+  //   return icon;
+  // };
 
   const MainListItem = styled(ListItem)(({ theme }) => ({
     '&.MuiListItem-root.Mui-selected': {
-      backgroundColor: lightBlue[50],
+      backgroundColor: '#e8f5e9',
       borderRight: theme.palette.primary.main,
       borderRightWidth: 4,
       borderRightStyle: 'solid'
     },
     '&.MuiListItem-root:hover': {
-      backgroundColor: theme.palette.primary.light
+      backgroundColor: '#e8f5e9'
     }
   }));
 
-  const nestedPadding = open ? 4 : null;
-
   return (
     <Box sx={{ mt: 2 }}>
-      <MainListItem selected={selectedIndex === 0} onClick={() => handleListItemClick(0)}>
-        <ListItemIcon>
-          <DashboardIcon />
-        </ListItemIcon>
-        <ListItemText primary="Dashboard" />
-      </MainListItem>
-      <MainListItem selected={selectedIndex === 1} onClick={() => handleListItemClick(1)}>
-        <ListItemIcon>
-          <GroupIcon />
-        </ListItemIcon>
-        <ListItemText primary="Users" />
-      </MainListItem>
-      <MainListItem onClick={handleNestedMenuClick}>
-        <ListItemIcon>
-          <LocalLibraryIcon />
-        </ListItemIcon>
-        <ListItemText primary="Courses" />
-        {nestedMenuOpen ? <ExpandLess /> : <ExpandMore />}
-      </MainListItem>
-      <Collapse in={nestedMenuOpen} timeout="auto" unmountOnExit>
-        <List component="div" disablePadding>
+      {configData.ROUTES.map((route) => (
+        <Box key={route.path}>
           <MainListItem
-            sx={{ pl: nestedPadding }}
-            selected={selectedIndex === 2}
-            onClick={() => handleListItemClick(2)}
+            selected={route.subMenu.length === 0 && selectedRoute === route.path}
+            onClick={() => {
+              if (route.subMenu.length > 0) setNestedMenuOpen(!nestedMenuOpen);
+              navigate(route.path);
+            }}
           >
-            <ListItemIcon>
-              <SchoolIcon />
-            </ListItemIcon>
-            <ListItemText primary="Courses" />
+            {/* <ListItemIcon>{GenerateIcon(route.icon)}</ListItemIcon> */}
+            <ListItemText primary={route.title} />
+            {route.subMenu.length > 0 && nestedMenuOpen && <ExpandLess />}
+            {route.subMenu.length > 0 && !nestedMenuOpen && <ExpandMore />}
           </MainListItem>
-          <MainListItem
-            sx={{ pl: nestedPadding }}
-            selected={selectedIndex === 3}
-            onClick={() => handleListItemClick(3)}
-          >
-            <ListItemIcon>
-              <PersonIcon />
-            </ListItemIcon>
-            <ListItemText primary="Authors" />
-          </MainListItem>
-          <MainListItem
-            sx={{ pl: nestedPadding }}
-            selected={selectedIndex === 4}
-            onClick={() => handleListItemClick(4)}
-          >
-            <ListItemIcon>
-              <CategoryIcon />
-            </ListItemIcon>
-            <ListItemText primary="Categories" />
-          </MainListItem>
-        </List>
-      </Collapse>
+          {route.subMenu.length > 0 && (
+            <Collapse in={nestedMenuOpen} timeout="auto" unmountOnExit>
+              <List component="div" disablePadding>
+                {route.subMenu.map((subRoute) => (
+                  <MainListItem
+                    key={subRoute.path}
+                    sx={{ pl: open ? 4 : null }}
+                    selected={selectedRoute === subRoute.path}
+                    onClick={() => {
+                      navigate(subRoute.path);
+                    }}
+                  >
+                    {/* <ListItemIcon>{GenerateIcon(subRoute.icon)}</ListItemIcon> */}
+                    <ListItemText primary={subRoute.title} />
+                  </MainListItem>
+                ))}
+              </List>
+            </Collapse>
+          )}
+        </Box>
+      ))}
     </Box>
   );
 }

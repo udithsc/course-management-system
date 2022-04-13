@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import CssBaseline from '@mui/material/CssBaseline';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
@@ -11,9 +12,11 @@ import configureStore from './store/configureStore';
 import './index.css';
 import 'react-toastify/dist/ReactToastify.css';
 
+const container = document.getElementById('root');
+const root = createRoot(container);
 const store = configureStore();
 
-ReactDOM.render(
+root.render(
   <React.StrictMode>
     <Provider store={store}>
       <BrowserRouter>
@@ -24,6 +27,5 @@ ReactDOM.render(
         </ThemeProvider>
       </BrowserRouter>
     </Provider>
-  </React.StrictMode>,
-  document.getElementById('root')
+  </React.StrictMode>
 );

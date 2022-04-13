@@ -6,6 +6,15 @@ import api from './middleware/api';
 export default function () {
   return configureStore({
     reducer,
-    middleware: (getDefaultMiddleware) => [...getDefaultMiddleware(), toast, api]
+    middleware: (getDefaultMiddleware) => [
+      ...getDefaultMiddleware({
+        serializableCheck: {
+          // Ignore these action types
+          ignoredActions: ['api/callBegan']
+        }
+      }),
+      toast,
+      api
+    ]
   });
 }
