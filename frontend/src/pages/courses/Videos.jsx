@@ -47,6 +47,7 @@ export default function Videos({ recordForEdit }) {
     e.preventDefault();
     const formData = new FormData();
     formData.append('id', course._id);
+    formData.append('videoId', data.id);
     formData.append('file', video.data);
     formData.append('title', data.title);
     formData.append('description', data.description);

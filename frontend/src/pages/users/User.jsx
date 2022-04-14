@@ -21,7 +21,7 @@ import {
   selectTotalElements
 } from '../../store/users';
 import UserForm from './UserForm';
-import Breadcrumbs from '../../components/controls/Breadcrumbs';
+import Breadcrumbs from '../../components/layout/Breadcrumbs';
 
 const headCells = [
   { id: 'username', label: 'Username', width: '15%' },

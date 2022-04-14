@@ -11,11 +11,11 @@ export default function Breadcrumbs() {
 
   routes.push(configData.ROUTES[0]);
 
-  // const GenerateIcon = (variation, props = {}) => {
-  //   const IconName = Muicon[variation];
-  //   const icon = <IconName {...props} sx={{ mr: 0.5 }} fontSize="inherit" />;
-  //   return icon;
-  // };
+  const GenerateIcon = (variation, props = {}) => {
+    const IconName = Muicon[variation];
+    const icon = <IconName {...props} sx={{ mr: 0.5 }} fontSize="inherit" />;
+    return icon;
+  };
 
   const currentRoute = configData.ROUTES.find((e) => e.breadcrumbs.includes(location.pathname));
   if (currentRoute) routes.push(currentRoute);
@@ -35,7 +35,7 @@ export default function Breadcrumbs() {
           color="inherit"
           href={route.path}
         >
-          {/* {GenerateIcon(route.icon)} */}
+          {GenerateIcon(route.icon)}
           {route.title}
         </Link>
       ))}

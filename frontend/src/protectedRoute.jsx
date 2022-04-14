@@ -13,11 +13,9 @@ function ProtectedRoute() {
   // handling browser refresh
   if (!token) {
     const accessToken = sessionStorage.getItem('access-token');
-    console.log(accessToken);
     if (!accessToken) return <Navigate to="/login" />;
 
     const decodedToken = decode(accessToken);
-    console.log(decodedToken);
     const role = decodedToken.isAdmin ? 'Administrator' : 'User';
     const { name } = decodedToken;
 

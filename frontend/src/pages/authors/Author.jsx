@@ -22,7 +22,7 @@ import {
   selectTotalElements,
   selectRefreshStatus
 } from '../../store/authors';
-import Breadcrumbs from '../../components/controls/Breadcrumbs';
+import Breadcrumbs from '../../components/layout/Breadcrumbs';
 
 const headCells = [
   { id: 'name', label: 'Name', width: '30%' },

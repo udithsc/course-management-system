@@ -12,12 +12,8 @@ const initialFormValues = {
   _id: 0,
   name: '',
   description: '',
-  author: {
-    _id: ''
-  },
-  category: {
-    _id: ''
-  },
+  author: {},
+  category: {},
   fee: ''
 };
 

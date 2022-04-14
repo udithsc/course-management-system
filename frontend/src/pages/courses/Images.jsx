@@ -112,8 +112,8 @@ export default function Images({ recordForEdit }) {
                       </Avatar>
                     }
                     action={
-                      <IconButton aria-label="settings">
-                        <MoreVertIcon onClick={handleCardClick} />
+                      <IconButton aria-label="settings" onClick={handleCardClick}>
+                        <MoreVertIcon />
                       </IconButton>
                     }
                     title={item.title}

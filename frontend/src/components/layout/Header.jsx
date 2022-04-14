@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { styled } from '@mui/material/styles';
 import MuiAppBar from '@mui/material/AppBar';
-import { Typography, IconButton, Menu, MenuItem, Toolbar } from '@mui/material';
+import { Typography, IconButton, Menu, MenuItem, Toolbar, Button, Box } from '@mui/material';
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
-import AccountCircle from '@mui/icons-material/AccountCircle';
+import Avatar from '@mui/material/Avatar';
+import Tooltip from '@mui/material/Tooltip';
 import MenuIcon from '@mui/icons-material/Menu';
 import PropTypes from 'prop-types';
 import configData from '../../data.json';
+import { selectUser } from '../../store/auth';
 
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open'
@@ -28,20 +31,19 @@ const AppBar = styled(MuiAppBar, {
 }));
 
 function Header({ open, toggleDrawer }) {
-  const [auth, setAuth] = useState(true);
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorElUser, setAnchorElUser] = React.useState(null);
   const navigate = useNavigate();
+  const user = useSelector(selectUser);
 
-  const handleChange = (event) => {
-    setAuth(event.target.checked);
+  const handleOpenUserMenu = (event) => {
+    setAnchorElUser(event.currentTarget);
   };
 
-  const handleMenu = (event) => {
-    setAnchorEl(event.currentTarget);
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
   };
 
   const handleLogout = () => {
-    setAnchorEl(null);
     sessionStorage.clear();
     navigate('/login');
   };
@@ -70,20 +72,18 @@ function Header({ open, toggleDrawer }) {
         <Typography component="h1" variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
           {configData.APP_NAME}
         </Typography>
-        <div>
-          <IconButton
-            size="large"
-            aria-label="account of current user"
-            aria-controls="menu-appbar"
-            aria-haspopup="true"
-            onClick={handleMenu}
-            color="inherit"
-          >
-            <AccountCircle />
-          </IconButton>
+        <Box sx={{ flexGrow: 0 }}>
+          <Tooltip title="Open settings">
+            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0, mr: 1 }}>
+              <Avatar sx={{ bgcolor: 'white', color: 'green' }} aria-label="recipe">
+                {/* {user.name.charAt(0).toUpperCase()} */}U
+              </Avatar>
+            </IconButton>
+          </Tooltip>
           <Menu
+            sx={{ mt: '45px' }}
             id="menu-appbar"
-            anchorEl={anchorEl}
+            anchorEl={anchorElUser}
             anchorOrigin={{
               vertical: 'top',
               horizontal: 'right'
@@ -93,11 +93,25 @@ function Header({ open, toggleDrawer }) {
               vertical: 'top',
               horizontal: 'right'
             }}
-            open={Boolean(anchorEl)}
+            open={Boolean(anchorElUser)}
+            onClose={handleCloseUserMenu}
           >
-            <MenuItem onClick={handleLogout}>Logout</MenuItem>
+            <MenuItem>
+              <Typography textAlign="center">Account</Typography>
+            </MenuItem>
+            <MenuItem onClick={handleLogout}>
+              <Typography textAlign="center">Logout</Typography>
+            </MenuItem>
           </Menu>
-        </div>
+        </Box>
+        <Box>
+          <Typography variant="subtitle2" gutterBottom component="div" sx={{ mb: -0.5 }}>
+            {user.name}
+          </Typography>
+          <Typography variant="body2" gutterBottom>
+            {user.role}
+          </Typography>
+        </Box>
       </Toolbar>
     </AppBar>
   );

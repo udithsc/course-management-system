@@ -3,6 +3,7 @@ const moment = require('moment');
 const multer = require('multer');
 const randomstring = require('randomstring');
 const fs = require('fs');
+const { v4: uuid } = require('uuid');
 const { dirname } = require('path');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
@@ -73,6 +74,9 @@ router.post(
     const author = await Author.findById(req.body.author);
     if (!author) return res.status(400).send('Invalid author.');
 
+    if (req.file?.filename)
+      return res.status(400).send('Course image is required.');
+
     const tokens = new Array(25).fill().map((v, i) => ({
       id: i + 1,
       token: randomstring.generate(5),
@@ -80,21 +84,11 @@ router.post(
     }));
 
     let course = new Course({
-      name: req.body.name,
-      category: {
-        _id: category._id,
-        name: category.name,
-        icon: category.icon
-      },
-      author: {
-        _id: author._id,
-        name: author.name,
-        profession: author.profession
-      },
-      description: req.body.description,
-      fee: req.body.fee,
+      ...req.body,
+      category,
+      author,
       tokens,
-      image: req.file.filename
+      image: req.file?.filename
         ? `http://${req.headers.host}/files/courses/${req.file.filename}`
         : ''
     });
@@ -116,11 +110,19 @@ router.post(
 
 // router.put('/:id', [auth, admin, validate(validateModel)], async (req, res) => {
 router.put('/:id', [auth, admin, upload.single('file')], async (req, res) => {
+  const category = await Category.findById(req.body.category);
+  if (!category) return res.status(400).send('Invalid category.');
+
+  const author = await Author.findById(req.body.author);
+  if (!author) return res.status(400).send('Invalid author.');
+
   const course = await Course.findByIdAndUpdate(
     req.params.id,
     {
       ...req.body,
-      image: req.file.filename
+      category,
+      author,
+      image: req.file?.filename
         ? `http://${req.headers.host}/files/courses/${req.file.filename}`
         : req.body.image
     },
@@ -134,7 +136,7 @@ router.put('/:id', [auth, admin, upload.single('file')], async (req, res) => {
   return res.send(course);
 });
 
-// RATINGS RELATED
+// -----------------------RATINGS RELATED-----------------------------
 
 // make upsert
 router.patch('/rate/:id', [auth, validateId], async (req, res) => {
@@ -191,7 +193,8 @@ router.get('/rate/:id', [auth, validateId], async (req, res) => {
   return res.send(reviewData);
 });
 
-// VIDEO RELATED
+// ------------------------VIDEO RELATED--------------------------
+
 router.get('/video/:id', [auth, validateId], async (req, res) => {
   const course = await Course.findById(req.params.id).select('lessons');
   if (!course)
@@ -217,7 +220,7 @@ router.patch(
       {
         $push: {
           lessons: {
-            id: Math.floor(Math.random() * 100) + Date.now(),
+            id: uuid(),
             title: req.body.title,
             description: req.body.description,
             url: `http://${req.headers.host}/files/courses/${req.params.id}/videos/${req.file.filename}`
@@ -249,7 +252,8 @@ router.delete(
   }
 );
 
-// ADDONS RELATED
+// -------------- ADDONS RELATED -----------------------
+
 router.patch('/activateCourse', [auth], async (req, res) => {
   const result = await Course.findByIdAndUpdate(
     { _id: req.body.course, 'tokens.token': req.body.token },
@@ -289,13 +293,13 @@ router.patch(
       {
         $push: {
           addons: {
-            id: Math.floor(Math.random() * 100) + Date.now(),
+            id: uuid(),
             title: req.body.title,
             description: req.body.description,
             date: moment().format('ll'),
             contents: [
               {
-                id: Math.floor(Math.random() * 100) + Date.now(),
+                id: uuid(),
                 image: `http://${req.headers.host}/files/courses/${req.params.id}/addons/${req.file.filename}`
               }
             ]

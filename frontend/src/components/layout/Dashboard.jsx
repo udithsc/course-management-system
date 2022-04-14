@@ -4,7 +4,6 @@ import { Container, Box, Toolbar } from '@mui/material';
 import Footer from './Footer';
 import SideBar from './SideBar';
 import Header from './Header';
-import Breadcrumbs from '../controls/Breadcrumbs';
 
 function DashboardContent() {
   const [open, setOpen] = useState(true);

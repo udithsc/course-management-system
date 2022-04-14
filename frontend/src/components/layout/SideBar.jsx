@@ -1,5 +1,6 @@
 import React from 'react';
 import MuiDrawer from '@mui/material/Drawer';
+import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
 import PropTypes from 'prop-types';
@@ -46,6 +47,9 @@ function SideBar({ open }) {
         }}
       >
         <img src={logo} alt="Logo" width={50} />
+        <Typography variant="h6" sx={{ color: 'primary.main' }}>
+          Skilgloo
+        </Typography>
       </Toolbar>
       <ListItems open={open} />
     </Drawer>

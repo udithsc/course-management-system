@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { blue } from '@mui/material/colors';
 import { List, ListItemText, ListItemIcon, ListItem, Collapse, Box } from '@mui/material';
 import PropTypes from 'prop-types';
 import { styled } from '@mui/material/styles';
@@ -18,21 +19,22 @@ function ListItems({ open }) {
     setSelectedRoute(location.pathname);
   }, [location]);
 
-  // const GenerateIcon = (variation, props = {}) => {
-  //   const IconName = Muicon[variation];
-  //   const icon = <IconName {...props} />;
-  //   return icon;
-  // };
+  const GenerateIcon = (variation, props = {}) => {
+    const IconName = Muicon[variation];
+    const icon = <IconName {...props} sx={{ color: 'primary.main' }} />;
+    return icon;
+  };
 
   const MainListItem = styled(ListItem)(({ theme }) => ({
     '&.MuiListItem-root.Mui-selected': {
-      backgroundColor: '#e8f5e9',
-      borderRight: theme.palette.primary.main,
-      borderRightWidth: 4,
-      borderRightStyle: 'solid'
+      color: theme.palette.primary.main,
+      backgroundColor: blue[50],
+      borderLeft: theme.palette.primary.main,
+      borderLeftWidth: 4,
+      borderLeftStyle: 'solid'
     },
     '&.MuiListItem-root:hover': {
-      backgroundColor: '#e8f5e9'
+      backgroundColor: blue[50]
     }
   }));
 
@@ -47,10 +49,14 @@ function ListItems({ open }) {
               navigate(route.path);
             }}
           >
-            {/* <ListItemIcon>{GenerateIcon(route.icon)}</ListItemIcon> */}
+            <ListItemIcon>{GenerateIcon(route.icon)}</ListItemIcon>
             <ListItemText primary={route.title} />
-            {route.subMenu.length > 0 && nestedMenuOpen && <ExpandLess />}
-            {route.subMenu.length > 0 && !nestedMenuOpen && <ExpandMore />}
+            {route.subMenu.length > 0 && nestedMenuOpen && (
+              <ExpandLess sx={{ color: 'primary.main' }} />
+            )}
+            {route.subMenu.length > 0 && !nestedMenuOpen && (
+              <ExpandMore sx={{ color: 'primary.main' }} />
+            )}
           </MainListItem>
           {route.subMenu.length > 0 && (
             <Collapse in={nestedMenuOpen} timeout="auto" unmountOnExit>
@@ -64,7 +70,7 @@ function ListItems({ open }) {
                       navigate(subRoute.path);
                     }}
                   >
-                    {/* <ListItemIcon>{GenerateIcon(subRoute.icon)}</ListItemIcon> */}
+                    <ListItemIcon>{GenerateIcon(subRoute.icon)}</ListItemIcon>
                     <ListItemText primary={subRoute.title} />
                   </MainListItem>
                 ))}

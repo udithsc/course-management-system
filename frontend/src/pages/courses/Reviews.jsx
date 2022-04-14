@@ -3,7 +3,6 @@ import { Box, Typography, Rating, Grid } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 
 function Reviews({ recordForEdit }) {
-  console.log(recordForEdit);
   return (
     <Box>
       <Typography>
