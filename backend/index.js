@@ -9,6 +9,7 @@ const logger = require('./utils/logger');
 require('./startup/http')(app);
 require('./startup/cors')(app);
 require('./startup/routes')(app);
+require('./startup/swagger')(app);
 require('./startup/db')();
 require('./startup/validation')();
 

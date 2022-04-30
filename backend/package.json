@@ -44,6 +44,8 @@
     "nodemailer-sendgrid": "^1.0.3",
     "randomstring": "^1.2.2",
     "rotating-file-stream": "^3.0.2",
+    "swagger-jsdoc": "^6.2.1",
+    "swagger-ui-express": "^4.3.0",
     "uuid": "^8.3.2",
     "winston": "^3.3.3"
   },
