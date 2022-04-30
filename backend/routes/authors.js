@@ -54,8 +54,12 @@ router.post(
   '/',
   [auth, admin, upload.single('file'), validate(validateModel)],
   async (req, res) => {
+    const { name, profession, email, mobile } = req.body;
     let author = new Author({
-      ...req.body,
+      name,
+      profession,
+      email,
+      mobile,
       image: req.file.filename
         ? `http://${req.headers.host}/files/authors/${req.file.filename}`
         : null
@@ -69,10 +73,14 @@ router.put(
   '/:id',
   [auth, admin, validateId, upload.single('file'), validate(validateModel)],
   async (req, res) => {
+    const { name, profession, email, mobile } = req.body;
     const author = await Author.findByIdAndUpdate(
       req.params.id,
       {
-        ...req.body,
+        name,
+        profession,
+        email,
+        mobile,
         image: req.file?.filename
           ? `http://${req.headers.host}/files/authors/${req.file.filename}`
           : req.body.file

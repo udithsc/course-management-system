@@ -83,8 +83,11 @@ router.post(
       user: null
     }));
 
+    const { name, description, fee } = req.body;
     let course = new Course({
-      ...req.body,
+      name,
+      description,
+      fee,
       category,
       author,
       tokens,
@@ -116,10 +119,13 @@ router.put('/:id', [auth, admin, upload.single('file')], async (req, res) => {
   const author = await Author.findById(req.body.author);
   if (!author) return res.status(400).send('Invalid author.');
 
+  const { name, description, fee } = req.body;
   const course = await Course.findByIdAndUpdate(
     req.params.id,
     {
-      ...req.body,
+      name,
+      description,
+      fee,
       category,
       author,
       image: req.file?.filename

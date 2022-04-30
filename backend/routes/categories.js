@@ -60,8 +60,9 @@ router.post(
   '/',
   [auth, admin, upload.single('file'), validate(validateModel)],
   async (req, res) => {
+    const { name } = req.body;
     let category = new Category({
-      ...req.body,
+      name,
       icon: req.file.filename
         ? `http://${req.headers.host}/files/categories/${req.file.filename}`
         : null
@@ -75,10 +76,11 @@ router.put(
   '/:id',
   [auth, admin, upload.single('file'), validate(validateModel)],
   async (req, res) => {
+    const { name } = req.body;
     const category = await Category.findByIdAndUpdate(
       req.params.id,
       {
-        ...req.body,
+        name,
         icon: req.file?.filename
           ? `http://${req.headers.host}/files/categories/${req.file.filename}`
           : req.body.file

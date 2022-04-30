@@ -49,8 +49,13 @@ router.get('/', [auth], async (req, res) => {
 });
 
 router.post('/', [auth, admin, validate(validateModel)], async (req, res) => {
+  const { username, email, firstName, lastName, mobile } = req.body;
   let user = new User({
-    ...req.body
+    username,
+    email,
+    firstName,
+    lastName,
+    mobile
   });
   user = await user.save();
   res.send(user);

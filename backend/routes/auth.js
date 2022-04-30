@@ -120,10 +120,17 @@ router.get('/tokens/:token', [auth], async (req, res) => {
 router.post('/signup', validate(validateModel), async (req, res) => {
   try {
     const password = await bcrypt.hash(req.body.password, 10);
+    const { username, email, firstName, lastName, mobile } = req.body;
+
     let user = new User({
-      ...req.body,
+      username,
+      email,
+      firstName,
+      lastName,
+      mobile,
       password
     });
+
     user = await user.save();
 
     let token = new Token({
