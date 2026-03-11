@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import _ from 'lodash';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { apiCallBegan } from './api';
 
 const initialState = {
@@ -105,7 +105,7 @@ export const loadCategories =
   (page, rowsPerPage, searchText = '') =>
   (dispatch, getState) => {
     const { lastFetch } = getState().categories;
-    const diffInSeconds = moment().diff(moment(lastFetch), 'seconds');
+    const diffInSeconds = dayjs().diff(dayjs(lastFetch), 'seconds');
     // if (diffInSeconds < 120) return; // move values to config file
 
     return dispatch(
