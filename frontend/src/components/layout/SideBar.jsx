@@ -46,10 +46,12 @@ function SideBar({ open }) {
           px: [1]
         }}
       >
-        <img src={logo} alt="Logo" width={50} />
-        <Typography variant="h6" sx={{ color: 'primary.main' }}>
-          Skilgloo
-        </Typography>
+        <img src={logo} alt="Logo" width={40} />
+        {open && (
+          <Typography variant="h6" sx={{ color: 'primary.main', ml: 1, fontWeight: 'bold' }}>
+            Skilgloo
+          </Typography>
+        )}
       </Toolbar>
       <ListItems open={open} />
     </Drawer>

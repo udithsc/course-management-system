@@ -49,13 +49,14 @@ function Header({ open, toggleDrawer }) {
   };
 
   return (
-    <AppBar position="absolute" open={open}>
+    <AppBar position="absolute" open={open} elevation={0}>
       <Toolbar
         sx={{
           pr: '24px', // keep right padding when drawer closed
-          '&.MuiToolbar-root': {
-            color: 'white'
-          }
+          bgcolor: 'background.paper',
+          color: 'text.primary',
+          borderBottom: '1px solid',
+          borderColor: 'divider',
         }}
       >
         <IconButton
@@ -75,8 +76,8 @@ function Header({ open, toggleDrawer }) {
         <Box sx={{ flexGrow: 0 }}>
           <Tooltip title="Open settings">
             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0, mr: 1 }}>
-              <Avatar sx={{ bgcolor: 'white', color: 'green' }} aria-label="recipe">
-                {/* {user.name.charAt(0).toUpperCase()} */}U
+              <Avatar sx={{ bgcolor: 'primary.main', color: 'white' }}>
+                {user?.name?.charAt(0).toUpperCase() || 'U'}
               </Avatar>
             </IconButton>
           </Tooltip>

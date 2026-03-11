@@ -11,6 +11,8 @@ import theme from './styles/theme';
 import configureStore from './store/configureStore';
 import './index.css';
 import 'react-toastify/dist/ReactToastify.css';
+import '@fontsource/inter';
+import '@fontsource/outfit';
 
 const container = document.getElementById('root');
 const root = createRoot(container);

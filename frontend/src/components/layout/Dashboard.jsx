@@ -16,7 +16,7 @@ function DashboardContent() {
       <Box
         component="main"
         sx={{
-          backgroundColor: (theme) => theme.palette.grey[100],
+          backgroundColor: 'background.default',
           display: 'flex',
           flexGrow: 1,
           flexDirection: 'column',
