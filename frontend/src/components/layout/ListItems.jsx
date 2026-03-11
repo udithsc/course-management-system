@@ -19,24 +19,32 @@ function ListItems({ open }) {
     setSelectedRoute(location.pathname);
   }, [location]);
 
-  const GenerateIcon = (variation, props = {}) => {
-    const IconName = Muicon[variation];
-    const icon = <IconName {...props} sx={{ color: 'primary.main' }} />;
-    return icon;
-  };
+
 
   const MainListItem = styled(ListItem)(({ theme }) => ({
     '&.MuiListItem-root.Mui-selected': {
       color: theme.palette.primary.main,
-      backgroundColor: blue[50],
-      borderLeft: theme.palette.primary.main,
-      borderLeftWidth: 4,
-      borderLeftStyle: 'solid'
+      backgroundColor: `${theme.palette.primary.main}1A`, // 10% opacity
+      fontWeight: 'bold',
     },
     '&.MuiListItem-root:hover': {
-      backgroundColor: blue[50]
-    }
+      backgroundColor: `${theme.palette.primary.main}0D`, // 5% opacity
+      color: theme.palette.primary.main,
+      '& .MuiListItemIcon-root': {
+        color: theme.palette.primary.main,
+      }
+    },
+    borderRadius: '12px',
+    margin: '4px 12px',
+    padding: '10px 16px',
+    transition: 'all 0.2s ease-in-out',
+    width: 'auto'
   }));
+
+  const GenerateIcon = (variation, selected) => {
+    const IconName = Muicon[variation];
+    return <IconName sx={{ color: selected ? 'primary.main' : 'text.secondary', minWidth: 40, transition: 'color 0.2s' }} />;
+  };
 
   return (
     <Box sx={{ mt: 2 }}>
@@ -49,13 +57,13 @@ function ListItems({ open }) {
               navigate(route.path);
             }}
           >
-            <ListItemIcon>{GenerateIcon(route.icon)}</ListItemIcon>
-            <ListItemText primary={route.title} />
+            <ListItemIcon sx={{ minWidth: 40 }}>{GenerateIcon(route.icon, route.subMenu.length === 0 && selectedRoute === route.path)}</ListItemIcon>
+            <ListItemText primary={route.title} primaryTypographyProps={{ fontSize: '0.95rem', fontWeight: (route.subMenu.length === 0 && selectedRoute === route.path) ? 600 : 500 }} />
             {route.subMenu.length > 0 && nestedMenuOpen && (
-              <ExpandLess sx={{ color: 'primary.main' }} />
+              <ExpandLess sx={{ color: 'text.secondary' }} />
             )}
             {route.subMenu.length > 0 && !nestedMenuOpen && (
-              <ExpandMore sx={{ color: 'primary.main' }} />
+              <ExpandMore sx={{ color: 'text.secondary' }} />
             )}
           </MainListItem>
           {route.subMenu.length > 0 && (
@@ -70,8 +78,8 @@ function ListItems({ open }) {
                       navigate(subRoute.path);
                     }}
                   >
-                    <ListItemIcon>{GenerateIcon(subRoute.icon)}</ListItemIcon>
-                    <ListItemText primary={subRoute.title} />
+                    <ListItemIcon sx={{ minWidth: 40 }}>{GenerateIcon(subRoute.icon, selectedRoute === subRoute.path)}</ListItemIcon>
+                    <ListItemText primary={subRoute.title} primaryTypographyProps={{ fontSize: '0.9rem', fontWeight: selectedRoute === subRoute.path ? 600 : 500 }} />
                   </MainListItem>
                 ))}
               </List>

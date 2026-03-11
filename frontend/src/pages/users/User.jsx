@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Paper, TableBody, TableRow, TableCell, Toolbar, InputAdornment } from '@mui/material';
+import { Paper, TableBody, TableRow, TableCell, Toolbar, InputAdornment, Box, Typography, Chip } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
@@ -22,6 +22,7 @@ import {
 } from '../../store/users';
 import UserForm from './UserForm';
 import Breadcrumbs from '../../components/layout/Breadcrumbs';
+import { motion } from 'framer-motion';
 
 const headCells = [
   { id: 'username', label: 'Username', width: '15%' },
@@ -74,8 +75,22 @@ export default function User() {
 
   return (
     <>
-      <Breadcrumbs />
-      <Paper sx={{ mt: 2, p: 2 }}>
+      <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+        <Box>
+          <Typography variant="h4" fontWeight={800} gutterBottom sx={{ color: 'text.primary' }}>
+            User Management
+          </Typography>
+          <Breadcrumbs />
+        </Box>
+      </Box>
+      <Paper 
+        component={motion.div}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        elevation={0}
+        sx={{ p: 3, borderRadius: 4, border: '1px solid', borderColor: 'divider' }}
+      >
         <Toolbar
           sx={{
             p: 1,
@@ -116,11 +131,13 @@ export default function User() {
             {records.length <= rowsPerPage &&
               recordsAfterPagingAndSorting().map((item) => (
                 <TableRow key={item.id}>
-                  <TableCell>{item.username}</TableCell>
+                  <TableCell sx={{ fontWeight: 600 }}>{item.username}</TableCell>
                   <TableCell>{item.firstName}</TableCell>
                   <TableCell>{item.lastName}</TableCell>
                   <TableCell>{item.mobile}</TableCell>
-                  <TableCell>{item.email}</TableCell>
+                  <TableCell>
+                    <Chip label={item.email} size="small" variant="outlined" sx={{ borderRadius: 2 }} />
+                  </TableCell>
                   <TableCell align="center">
                     <Controls.ActionButton
                       color="primary.light"

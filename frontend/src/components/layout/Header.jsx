@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '@mui/material/styles';
 import MuiAppBar from '@mui/material/AppBar';
 import { Typography, IconButton, Menu, MenuItem, Toolbar, Button, Box } from '@mui/material';
@@ -10,12 +10,15 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuIcon from '@mui/icons-material/Menu';
 import PropTypes from 'prop-types';
 import configData from '../../data.json';
-import { selectUser } from '../../store/auth';
+import axios from 'axios';
+import { selectUser, loggedOut } from '../../store/auth';
 
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open'
 })(({ theme, open }) => ({
   zIndex: theme.zIndex.drawer + 1,
+  background: 'transparent',
+  boxShadow: 'none',
   transition: theme.transitions.create(['width', 'margin'], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen
@@ -33,6 +36,7 @@ const AppBar = styled(MuiAppBar, {
 function Header({ open, toggleDrawer }) {
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const user = useSelector(selectUser);
 
   const handleOpenUserMenu = (event) => {
@@ -45,7 +49,14 @@ function Header({ open, toggleDrawer }) {
 
   const handleLogout = () => {
     sessionStorage.clear();
+    delete axios.defaults.headers.common['x-auth-token'];
+    dispatch(loggedOut());
     navigate('/login');
+  };
+
+  const handleAccountClick = () => {
+    handleCloseUserMenu();
+    navigate('/account');
   };
 
   return (
@@ -53,7 +64,8 @@ function Header({ open, toggleDrawer }) {
       <Toolbar
         sx={{
           pr: '24px', // keep right padding when drawer closed
-          bgcolor: 'background.paper',
+          bgcolor: 'rgba(255, 255, 255, 0.8)',
+          backdropFilter: 'blur(10px)',
           color: 'text.primary',
           borderBottom: '1px solid',
           borderColor: 'divider',
@@ -97,7 +109,7 @@ function Header({ open, toggleDrawer }) {
             open={Boolean(anchorElUser)}
             onClose={handleCloseUserMenu}
           >
-            <MenuItem>
+            <MenuItem onClick={handleAccountClick}>
               <Typography textAlign="center">Account</Typography>
             </MenuItem>
             <MenuItem onClick={handleLogout}>

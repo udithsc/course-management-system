@@ -12,6 +12,7 @@ import NotFound from './components/layout/NotFound';
 import ProtectedRoute from './protectedRoute';
 import CourseManager from './pages/courses/CourseManager';
 import CourseIndex from './pages/courses/CourseIndex';
+import Account from './pages/account/Account';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
             <Route index element={<Home />} />
             <Route path="dashboard" element={<Home />} />
             <Route path="users" element={<User />} />
+            <Route path="account" element={<Account />} />
             <Route path="courses" element={<CourseIndex />}>
               <Route path="courses" element={<Course />} />
               <Route path="courses/:courseId" element={<CourseManager />} />

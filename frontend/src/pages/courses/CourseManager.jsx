@@ -7,6 +7,7 @@ import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { useDispatch } from 'react-redux';
+import { motion } from 'framer-motion';
 import CourseForm from './CourseForm';
 import Videos from './Videos';
 import Images from './Images';
@@ -64,7 +65,22 @@ function CourseManager() {
   }, []);
 
   return (
-    <Paper sx={{ mt: 2, p: 2 }}>
+    <>
+      <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+        <Box>
+          <Typography variant="h4" fontWeight={800} gutterBottom sx={{ color: 'text.primary' }}>
+            Course Manager
+          </Typography>
+        </Box>
+      </Box>
+      <Paper 
+        component={motion.div}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        elevation={0}
+        sx={{ borderRadius: 4, border: '1px solid', borderColor: 'divider', overflow: 'hidden' }}
+      >
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
           <Tab label="Course Details" {...a11yProps(0)} />
@@ -89,7 +105,8 @@ function CourseManager() {
       <TabPanel value={value} index={4}>
         <Subscribers recordForEdit={recordForEdit} />
       </TabPanel>
-    </Paper>
+      </Paper>
+    </>
   );
 }
 

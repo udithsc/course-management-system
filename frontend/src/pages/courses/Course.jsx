@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Paper, TableBody, TableRow, TableCell, Toolbar, InputAdornment } from '@mui/material';
+import { Paper, TableBody, TableRow, TableCell, Toolbar, InputAdornment, Box, Typography, Chip } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Outlet } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
@@ -23,6 +23,7 @@ import {
   selectTotalElements
 } from '../../store/courses';
 import Breadcrumbs from '../../components/layout/Breadcrumbs';
+import { motion } from 'framer-motion';
 
 const headCells = [
   { id: 'name', label: 'Name', width: '20%' },
@@ -75,8 +76,22 @@ export default function Course() {
 
   return (
     <>
-      <Breadcrumbs />
-      <Paper sx={{ mt: 2, p: 2 }}>
+      <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+        <Box>
+          <Typography variant="h4" fontWeight={800} gutterBottom sx={{ color: 'text.primary' }}>
+            Course Catalog
+          </Typography>
+          <Breadcrumbs />
+        </Box>
+      </Box>
+      <Paper 
+        component={motion.div}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        elevation={0}
+        sx={{ p: 3, borderRadius: 4, border: '1px solid', borderColor: 'divider' }}
+      >
         <Toolbar
           sx={{
             p: 1,
@@ -117,11 +132,13 @@ export default function Course() {
             {records.length <= rowsPerPage &&
               recordsAfterPagingAndSorting().map((item) => (
                 <TableRow key={item.id}>
-                  <TableCell>{item.name}</TableCell>
+                  <TableCell sx={{ fontWeight: 600 }}>{item.name}</TableCell>
                   <TableCell>{item.description}</TableCell>
-                  <TableCell>{item.fee}</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', color: 'primary.main' }}>$ {item.fee}</TableCell>
                   <TableCell>{item.subscriptions}</TableCell>
-                  <TableCell>{item.category.name}</TableCell>
+                  <TableCell>
+                    <Chip label={item.category.name} size="small" variant="filled" color="primary" sx={{ borderRadius: 2 }} />
+                  </TableCell>
                   <TableCell align="center">
                     <Controls.ActionButton
                       color="primary.light"

@@ -1,14 +1,14 @@
-import { React, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { Button, TextField, Grid, Box, Typography, Paper, Divider } from '@mui/material';
+import { Button, TextField, Box, Typography, Paper, InputAdornment, IconButton, Grid, Divider, Container } from '@mui/material';
+import { Visibility, VisibilityOff, Email, Lock, Person, Phone } from '@mui/icons-material';
 import axios from 'axios';
+import { motion } from 'framer-motion';
 import logo from '../../resources/images/logo.png';
 import Notification from '../../components/ui/Notification';
-import Copyright from '../../components/layout/Copyright';
 import {
   selectNotification,
-  showNotification,
   closeNotification,
   signup,
   login,
@@ -18,12 +18,22 @@ import {
 
 export default function Auth() {
   const [isSignUp, setIsSignUp] = useState(false);
-  const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const notify = useSelector(selectNotification);
   const token = useSelector(selectAccessToken);
   const isSignupSuccess = useSelector(selectSignUpStatus);
+
+  useEffect(() => {
+    if (token) {
+      sessionStorage.setItem('access-token', token);
+      axios.defaults.headers.common['x-auth-token'] = token;
+      navigate('/');
+    }
+    if (isSignupSuccess) setIsSignUp(false); // smoothly go back to login instead of navigating via router forcefully
+  }, [token, isSignupSuccess, navigate]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -50,209 +60,277 @@ export default function Auth() {
     );
   };
 
-  const getMainBtnText = () => {
-    if (isSignUp) return 'Sign Up';
-    if (isForgotPassword) return 'Reset Password';
-    return 'Sign In';
-  };
-
-  const getSubBtnText = () => {
-    if (isSignUp) return 'Already have an account? Sign in';
-    if (isForgotPassword) return 'Back to Sign in';
-    return `Don't have an account? Sign Up`;
-  };
-
-  useEffect(() => {
-    if (token) {
-      sessionStorage.setItem('access-token', token);
-      axios.defaults.headers.common['x-auth-token'] = token;
-      navigate('/');
-    }
-
-    if (isSignupSuccess) navigate('/login');
-  }, [token, isSignupSuccess]);
-
-  const switchSignInMode = () => {
-    setIsSignUp((state) => !state);
-    setIsForgotPassword(false);
-  };
-
-  const switchForgotPasswordMode = () => {
-    setIsForgotPassword((state) => !state);
-  };
+  const toggleAuthMode = () => setIsSignUp(!isSignUp);
 
   return (
-    <Grid container component="main" sx={{ height: '100vh', width: '100vw' }}>
-      <Grid
-        item
-        xs={false}
-        sm={4}
-        md={7}
-        sx={{
-          backgroundImage: 'url(https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2000&auto=format&fit=crop)',
-          backgroundRepeat: 'no-repeat',
-          backgroundColor: (t) =>
-            t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          position: 'relative'
+    <Box
+      sx={{
+        minHeight: '100vh',
+        display: 'flex',
+        position: 'relative',
+        background: '#f3f4f6',
+        overflow: 'hidden'
+      }}
+    >
+      {/* Decorative Background Elements */}
+      <Box
+        component={motion.div}
+        animate={{
+          scale: [1, 1.2, 1],
+          rotate: [0, 90, 0],
         }}
-      >
-        <Box
+        transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+        sx={{
+          position: 'absolute',
+          top: '-20%',
+          left: '-10%',
+          width: '70vw',
+          height: '70vw',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(79, 70, 229, 0.1) 0%, rgba(79, 70, 229, 0) 70%)',
+          zIndex: 0
+        }}
+      />
+      <Box
+        component={motion.div}
+        animate={{
+          scale: [1, 1.5, 1],
+          rotate: [0, -90, 0],
+        }}
+        transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
+        sx={{
+          position: 'absolute',
+          bottom: '-20%',
+          right: '-10%',
+          width: '60vw',
+          height: '60vw',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0) 70%)',
+          zIndex: 0
+        }}
+      />
+
+      {/* Main Container */}
+      <Container maxWidth="lg" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1 }}>
+        <Paper
+          component={motion.div}
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          elevation={24}
           sx={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            background: 'linear-gradient(to right, rgba(79, 70, 229, 0.8), rgba(16, 185, 129, 0.6))',
             display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            color: 'white',
-            textAlign: 'center',
-            p: 4
+            width: '100%',
+            maxWidth: 1000,
+            minHeight: 600,
+            borderRadius: 4,
+            overflow: 'hidden',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+            bgcolor: 'background.paper'
           }}
         >
-          <Typography variant="h2" fontWeight="bold" gutterBottom>
-            Welcome to Skilgloo
-          </Typography>
-          <Typography variant="h5" sx={{ maxWidth: '600px', mb: 4, fontWeight: 300 }}>
-            The ultimate modern platform to manage courses, students, and curriculum seamlessly.
-          </Typography>
-        </Box>
-      </Grid>
-      
-      <Grid item xs={12} sm={8} md={5} component={Paper} elevation={0} square sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', p: 4, bgcolor: 'background.default' }}>
-        <Box
-          sx={{
-            my: 8,
-            mx: 4,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            width: '100%',
-            maxWidth: '450px'
-          }}
-        >
-          <Box sx={{ mb: 4, textAlign: 'center' }}>
-            <img src={logo} alt="Logo" width={80} style={{ marginBottom: '16px' }} />
-            <Typography component="h1" variant="h4" fontWeight="bold" color="text.primary">
-              {isSignUp ? 'Create an Account' : 'Welcome Back'}
-            </Typography>
-            <Typography variant="body1" color="text.secondary" sx={{ mt: 1 }}>
-              {isSignUp ? 'Join us today to get started' : 'Sign in to access your dashboard'}
-            </Typography>
-          </Box>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ width: '100%' }}>
-            <Grid container spacing={2}>
-              {isSignUp && (
-                <>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      autoComplete="given-name"
-                      name="username"
-                      required
-                      fullWidth
-                      id="username"
-                      label="Username"
-                      autoFocus
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      required
-                      fullWidth
-                      id="mobile"
-                      label="Mobile"
-                      name="mobile"
-                      type="tel"
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      autoComplete="given-name"
-                      name="firstName"
-                      required
-                      fullWidth
-                      id="firstName"
-                      label="First Name"
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      required
-                      fullWidth
-                      id="lastName"
-                      label="Last Name"
-                      name="lastName"
-                    />
-                  </Grid>
-                </>
-              )}
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  autoComplete="email"
-                  type="email"
-                />
-              </Grid>
-              {!isForgotPassword && (
-                <Grid item xs={12}>
-                  <TextField
-                    required
-                    fullWidth
-                    name="password"
-                    label="Password"
-                    type="password"
-                    id="password"
-                    autoComplete="current-password"
-                  />
-                </Grid>
-              )}
-            </Grid>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              size="large"
-              sx={{ mt: 4, mb: 2, py: 1.5, fontSize: '1.1rem' }}
-            >
-              {getMainBtnText()}
-            </Button>
-            
-            <Divider sx={{ my: 3 }}>
-              <Typography variant="body2" color="text.secondary">
-                OR
+          {/* Left Side - Graphic (Hidden on mobile) */}
+          <Box
+            sx={{
+              flex: 1,
+              display: { xs: 'none', md: 'flex' },
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              p: 6,
+              background: 'linear-gradient(135deg, #4F46E5 0%, #10B981 100%)',
+              color: 'white',
+              position: 'relative'
+            }}
+          >
+            <Box sx={{ zIndex: 1, textAlign: 'left', width: '100%' }}>
+              <Typography variant="h2" fontWeight={800} gutterBottom sx={{ lineHeight: 1.1 }}>
+                Skilgloo <br /> Platform.
               </Typography>
+              <Typography variant="h6" sx={{ fontWeight: 300, opacity: 0.9, mt: 2 }}>
+                Empowering education through seamless administration and immersive learning experiences.
+              </Typography>
+            </Box>
+            
+            {/* Abstract visual art */}
+            <Box
+              sx={{
+                position: 'absolute',
+                right: -50,
+                bottom: -50,
+                width: 300,
+                height: 300,
+                bgcolor: 'rgba(255,255,255,0.1)',
+                borderRadius: '50%',
+                backdropFilter: 'blur(10px)'
+              }}
+            />
+            <Box
+              sx={{
+                position: 'absolute',
+                left: -20,
+                top: -20,
+                width: 150,
+                height: 150,
+                bgcolor: 'rgba(255,255,255,0.15)',
+                borderRadius: '50%',
+                backdropFilter: 'blur(5px)'
+              }}
+            />
+          </Box>
+
+          {/* Right Side - Form */}
+          <Box
+            sx={{
+              flex: 1,
+              p: { xs: 4, md: 6 },
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center'
+            }}
+          >
+            <Box sx={{ mb: 4, display: 'flex', alignItems: 'center' }}>
+              <img src={logo} alt="Logo" width={40} style={{ marginRight: '16px' }} />
+              <Typography variant="h5" fontWeight={800} color="text.primary">
+                {isSignUp ? 'Create Account' : 'Welcome Back'}
+              </Typography>
+            </Box>
+            
+            <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
+              {isSignUp ? 'Enter your details to join us today.' : 'Please enter your credentials to login.'}
+            </Typography>
+
+            <Box component="form" onSubmit={handleSubmit}>
+              {isSignUp && (
+                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
+                  <Grid container spacing={2} sx={{ mb: 2 }}>
+                    <Grid item xs={6}>
+                      <TextField
+                        name="firstName"
+                        required
+                        fullWidth
+                        label="First Name"
+                        InputProps={{
+                          startAdornment: <InputAdornment position="start"><Person fontSize="small" /></InputAdornment>,
+                        }}
+                      />
+                    </Grid>
+                    <Grid item xs={6}>
+                      <TextField
+                        name="lastName"
+                        required
+                        fullWidth
+                        label="Last Name"
+                      />
+                    </Grid>
+                    <Grid item xs={6}>
+                      <TextField
+                        name="username"
+                        required
+                        fullWidth
+                        label="Username"
+                        InputProps={{
+                          startAdornment: <InputAdornment position="start"><Person fontSize="small" /></InputAdornment>,
+                        }}
+                      />
+                    </Grid>
+                    <Grid item xs={6}>
+                      <TextField
+                        name="mobile"
+                        required
+                        fullWidth
+                        label="Phone Number"
+                        InputProps={{
+                          startAdornment: <InputAdornment position="start"><Phone fontSize="small" /></InputAdornment>,
+                        }}
+                      />
+                    </Grid>
+                  </Grid>
+                </motion.div>
+              )}
+
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="email"
+                label="Email Address"
+                name="email"
+                autoComplete="email"
+                autoFocus={!isSignUp}
+                InputProps={{
+                  startAdornment: <InputAdornment position="start"><Email fontSize="small" /></InputAdornment>,
+                }}
+                sx={{ mb: 2 }}
+              />
+
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type={showPassword ? 'text' : 'password'}
+                id="password"
+                autoComplete={isSignUp ? 'new-password' : 'current-password'}
+                InputProps={{
+                  startAdornment: <InputAdornment position="start"><Lock fontSize="small" /></InputAdornment>,
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={() => setShowPassword(!showPassword)} edge="end" size="small">
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{ mb: 3 }}
+              />
+
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                size="large"
+                sx={{ 
+                  py: 1.5, 
+                  fontSize: '1rem',
+                  textTransform: 'none',
+                  borderRadius: 2,
+                  boxShadow: '0 4px 14px 0 rgba(79, 70, 229, 0.39)',
+                  '&:hover': {
+                    boxShadow: '0 6px 20px rgba(79, 70, 229, 0.23)'
+                  }
+                }}
+              >
+                {isSignUp ? 'Sign Up' : 'Sign In'}
+              </Button>
+            </Box>
+
+            <Divider sx={{ my: 4 }}>
+              <Typography variant="body2" color="text.secondary">Or</Typography>
             </Divider>
 
-            <Grid container justifyContent="space-between" sx={{ mt: 2 }}>
-              {!isSignUp && !isForgotPassword && (
-                <Grid item>
-                  <Button size="small" onClick={switchForgotPasswordMode} sx={{ textTransform: 'none', fontWeight: 600 }}>
-                    Forgot password?
-                  </Button>
-                </Grid>
-              )}
-              <Grid item>
-                <Button size="small" onClick={switchSignInMode} sx={{ textTransform: 'none', fontWeight: 600 }}>
-                  {getSubBtnText()}
+            <Box sx={{ textAlign: 'center' }}>
+              <Typography variant="body2" color="text.secondary">
+                {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
+                <Button 
+                  onClick={toggleAuthMode} 
+                  variant="text" 
+                  disableRipple
+                  sx={{ 
+                    fontWeight: 700, p: 0, minWidth: 'auto', 
+                    '&:hover': { bgcolor: 'transparent', textDecoration: 'underline' } 
+                  }}
+                >
+                  {isSignUp ? 'Sign in' : 'Sign up'}
                 </Button>
-              </Grid>
-            </Grid>
+              </Typography>
+            </Box>
           </Box>
-        </Box>
-        <Box sx={{ mt: 'auto', pb: 2 }}>
-          <Copyright />
-        </Box>
-      </Grid>
+        </Paper>
+      </Container>
+      
       {notify.isOpen && <Notification notify={notify} closeNotification={closeNotification} />}
-    </Grid>
+    </Box>
   );
 }

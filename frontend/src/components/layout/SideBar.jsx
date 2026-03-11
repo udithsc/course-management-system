@@ -19,6 +19,9 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
         duration: theme.transitions.duration.enteringScreen
       }),
       boxSizing: 'border-box',
+      borderRight: '1px solid',
+      borderRightColor: theme.palette.divider,
+      backgroundColor: theme.palette.background.paper,
       ...(!open && {
         overflowX: 'hidden',
         transition: theme.transitions.create('width', {
