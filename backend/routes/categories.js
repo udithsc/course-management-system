@@ -5,14 +5,14 @@ const { dirname } = require('path');
 const validate = require('../middleware/validate');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
-const { Category, validateModel } = require('../models/category.model');
-const validateId = require('../middleware/validateId');
+const { validateModel } = require('../models/category.model');
 const appDir = dirname(require.main.filename);
+const prisma = require('../db');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const dir = `/${appDir}/data/uploads/categories`;
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
     cb(null, dir);
   },
   filename: (req, file, cb) => {
@@ -23,36 +23,34 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 router.get('/', [auth], async (req, res) => {
-  const selections = req.user?.isAdmin ? '-__v' : '-__v -tokens -addons';
-
   const pageNo = parseInt(req.query.pageNo, 10) || 0;
   const pageSize = parseInt(req.query.pageSize, 10) || 100;
-  let totalElements = await Category.estimatedDocumentCount();
-  const totalPages = Math.ceil(totalElements / pageSize);
   const name = req.query.name || '';
 
-  const data = await Category.find({
+  const where = {
     name: {
-      $regex: name,
-      $options: 'i'
+      contains: name,
+      mode: 'insensitive'
     }
-  })
-    .skip(pageNo * pageSize)
-    .limit(pageSize)
-    .select(selections)
-    .sort('name');
+  };
 
-  if (name) totalElements = data.length;
+  const totalElements = await prisma.category.count({ where });
+  const totalPages = Math.ceil(totalElements / pageSize);
+
+  const data = await prisma.category.findMany({
+    where,
+    skip: pageNo * pageSize,
+    take: pageSize,
+    orderBy: { name: 'asc' }
+  });
 
   res.send({ totalElements, pageNo, totalPages, data });
 });
 
-router.get('/:id', [auth, validateId], async (req, res) => {
-  const category = await Category.findById(req.params.id).select('-__v');
+router.get('/:id', [auth], async (req, res) => {
+  const category = await prisma.category.findUnique({ where: { id: req.params.id } });
   if (!category)
-    return res
-      .status(404)
-      .send('The category with the given ID was not found.');
+    return res.status(404).send('The category with the given ID was not found.');
   return res.send(category);
 });
 
@@ -61,13 +59,14 @@ router.post(
   [auth, admin, upload.single('file'), validate(validateModel)],
   async (req, res) => {
     const { name } = req.body;
-    let category = new Category({
-      name,
-      icon: req.file.filename
-        ? `http://${req.headers.host}/files/categories/${req.file.filename}`
-        : null
+    let category = await prisma.category.create({
+      data: {
+        name,
+        icon: req.file?.filename
+          ? `http://${req.headers.host}/files/categories/${req.file.filename}`
+          : req.body.file || ''
+      }
     });
-    category = await category.save();
     res.send(category);
   }
 );
@@ -77,30 +76,30 @@ router.put(
   [auth, admin, upload.single('file'), validate(validateModel)],
   async (req, res) => {
     const { name } = req.body;
-    const category = await Category.findByIdAndUpdate(
-      req.params.id,
-      {
-        name,
-        icon: req.file?.filename
-          ? `http://${req.headers.host}/files/categories/${req.file.filename}`
-          : req.body.file
-      },
-      {
-        new: true
-      }
-    );
-
-    if (!category)
-      return res
-        .status(404)
-        .send('The category with the given ID was not found.');
-    return res.send(category);
+    try {
+      const category = await prisma.category.update({
+        where: { id: req.params.id },
+        data: {
+          name,
+          icon: req.file?.filename
+            ? `http://${req.headers.host}/files/categories/${req.file.filename}`
+            : req.body.file
+        }
+      });
+      return res.send(category);
+    } catch (e) {
+      return res.status(404).send('The category with the given ID was not found.');
+    }
   }
 );
 
-router.delete('/:id', [auth, admin, validateId], async (req, res) => {
-  const result = await Category.deleteOne({ _id: req.params.id });
-  res.send(result);
+router.delete('/:id', [auth, admin], async (req, res) => {
+  try {
+    const result = await prisma.category.delete({ where: { id: req.params.id } });
+    res.send(result);
+  } catch (e) {
+    res.status(404).send('Category not found');
+  }
 });
 
 module.exports = router;

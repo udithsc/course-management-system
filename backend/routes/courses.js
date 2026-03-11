@@ -8,17 +8,14 @@ const { dirname } = require('path');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
 const validate = require('../middleware/validate');
-const { Category } = require('../models/category.model');
-const { Author } = require('../models/author.model');
-const { Course, validateModel } = require('../models/course.model');
-const validateId = require('../middleware/validateId');
+const { validateModel } = require('../models/course.model');
 const appDir = dirname(require.main.filename);
-// const logger = require('../utils/logger');
+const prisma = require('../db');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const dir = `/${appDir}/data/uploads/courses`;
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
     cb(null, dir);
   },
   filename: (req, file, cb) => {
@@ -29,81 +26,98 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 router.get('/', auth, async (req, res) => {
-  const selections = req.user?.isAdmin ? '-__v' : '-__v -tokens -addons';
   const pageNo = parseInt(req.query.pageNo, 10) || 0;
   const pageSize = parseInt(req.query.pageSize, 10) || 100;
-  let totalElements = await Course.estimatedDocumentCount();
-  const totalPages = Math.ceil(totalElements / pageSize);
   const name = req.query.name || '';
 
-  const data = await Course.find({
+  const where = {
     name: {
-      $regex: name,
-      $options: 'i'
+      contains: name,
+      mode: 'insensitive'
     }
-  })
-    .skip(pageNo * pageSize)
-    .limit(pageSize)
-    .select(selections)
-    .sort('name');
+  };
 
-  if (name) totalElements = data.length;
+  const totalElements = await prisma.course.count({ where });
+  const totalPages = Math.ceil(totalElements / pageSize);
+
+  const data = await prisma.course.findMany({
+    where,
+    skip: pageNo * pageSize,
+    take: pageSize,
+    include: {
+      author: true,
+      category: true,
+      reviews: true,
+      lessons: true
+    },
+    orderBy: { name: 'asc' }
+  });
+
   res.send({ totalElements, pageNo, totalPages, data });
 });
 
-router.get('/:id', [auth, validateId], async (req, res) => {
-  const selections = req.user?.isAdmin ? '-__v' : '-__v -addons';
-  const course = await Course.findById(req.params.id).select(selections);
+router.get('/:id', [auth], async (req, res) => {
+  const course = await prisma.course.findUnique({
+    where: { id: req.params.id },
+    include: {
+      author: true,
+      category: true,
+      reviews: true,
+      lessons: true,
+      addons: true
+    }
+  });
   if (!course)
     return res.status(404).send('The course with the given ID was not found.');
   return res.send(course);
 });
 
-router.delete('/:id', [auth, admin, validateId], async (req, res) => {
-  const result = await Course.deleteOne({ _id: req.params.id });
-  res.send(result);
+router.delete('/:id', [auth, admin], async (req, res) => {
+  try {
+    const result = await prisma.course.delete({ where: { id: req.params.id } });
+    res.send(result);
+  } catch (e) {
+    res.status(400).send('Error deleting course');
+  }
 });
 
 router.post(
   '/',
   [auth, admin, upload.single('file'), validate(validateModel)],
   async (req, res) => {
-    const category = await Category.findById(req.body.category);
+    const category = await prisma.category.findUnique({ where: { id: req.body.category } });
     if (!category) return res.status(400).send('Invalid category.');
 
-    const author = await Author.findById(req.body.author);
+    const author = await prisma.author.findUnique({ where: { id: req.body.author } });
     if (!author) return res.status(400).send('Invalid author.');
 
-    if (req.file?.filename)
+    if (!req.file?.filename)
       return res.status(400).send('Course image is required.');
 
-    const tokens = new Array(25).fill().map((v, i) => ({
-      id: i + 1,
+    const tokens = new Array(25).fill(0).map((v, i) => ({
+      tokenId: i + 1,
       token: randomstring.generate(5),
-      user: null
+      userId: null
     }));
 
     const { name, description, fee } = req.body;
-    let course = new Course({
-      name,
-      description,
-      fee,
-      category,
-      author,
-      tokens,
-      image: req.file?.filename
-        ? `http://${req.headers.host}/files/courses/${req.file.filename}`
-        : ''
+    let course = await prisma.course.create({
+      data: {
+        name,
+        description,
+        fee: parseFloat(fee),
+        categoryId: category.id,
+        authorId: author.id,
+        image: `http://${req.headers.host}/files/courses/${req.file.filename}`,
+        courseTokens: { create: tokens }
+      }
     });
 
-    course = await course.save();
-
-    const dir = `/${appDir}/data/uploads/courses/${course._id}`;
+    const dir = `/${appDir}/data/uploads/courses/${course.id}`;
     if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir);
-      fs.mkdirSync(`${dir}/addons`);
-      fs.mkdirSync(`${dir}/videos`);
-
+      fs.mkdirSync(dir, { recursive: true });
+      fs.mkdirSync(`${dir}/addons`, { recursive: true });
+      fs.mkdirSync(`${dir}/videos`, { recursive: true });
       fs.renameSync(req.file.path, `${dir}/${req.file.filename}`);
     }
 
@@ -111,82 +125,77 @@ router.post(
   }
 );
 
-// router.put('/:id', [auth, admin, validate(validateModel)], async (req, res) => {
-router.put('/:id', [auth, admin, upload.single('file')], async (req, res) => {
-  const category = await Category.findById(req.body.category);
+router.put('/:id', [auth, admin, upload.single('file'), validate(validateModel)], async (req, res) => {
+  const category = await prisma.category.findUnique({ where: { id: req.body.category } });
   if (!category) return res.status(400).send('Invalid category.');
 
-  const author = await Author.findById(req.body.author);
+  const author = await prisma.author.findUnique({ where: { id: req.body.author } });
   if (!author) return res.status(400).send('Invalid author.');
 
   const { name, description, fee } = req.body;
-  const course = await Course.findByIdAndUpdate(
-    req.params.id,
-    {
-      name,
-      description,
-      fee,
-      category,
-      author,
-      image: req.file?.filename
-        ? `http://${req.headers.host}/files/courses/${req.file.filename}`
-        : req.body.image
-    },
-    {
-      new: true
-    }
-  );
-  if (!course)
+  
+  try {
+    const course = await prisma.course.update({
+      where: { id: req.params.id },
+      data: {
+        name,
+        description,
+        fee: parseFloat(fee),
+        categoryId: category.id,
+        authorId: author.id,
+        image: req.file?.filename
+          ? `http://${req.headers.host}/files/courses/${req.file.filename}`
+          : req.body.image
+      }
+    });
+    return res.send(course);
+  } catch (e) {
     return res.status(404).send('The course with the given ID was not found.');
-
-  return res.send(course);
+  }
 });
 
-// -----------------------RATINGS RELATED-----------------------------
+router.patch('/rate/:id', [auth], async (req, res) => {
+  const userId = req.user.id || req.user._id;
+  const user = await prisma.user.findUnique({ where: { id: userId } });
 
-// make upsert
-router.patch('/rate/:id', [auth, validateId], async (req, res) => {
-  const result = await Course.updateOne(
-    { _id: req.params.id, 'reviews.id': req.user.id },
-    {
-      $push: {
-        reviews: {
-          id: req.user.id,
-          name: req.user.firstName + req.user.lastName,
-          rating: req.body.rating,
-          comment: req.body.comment,
-          time: moment().format('ll')
-        }
-      }
+  const result = await prisma.review.create({
+    data: {
+      courseId: req.params.id,
+      userId: userId,
+      rating: parseInt(req.body.rating),
+      comment: req.body.comment,
+      time: moment().format('ll')
     }
-  );
+  });
+
   res.send(result);
 });
 
-router.delete('/rate/:id', [auth, admin, validateId], async (req, res) => {
-  const result = await Course.updateOne(
-    { _id: req.params.id },
-    {
-      $pull: {
-        reviews: { user: req.user.id }
-      }
-    },
-    { safe: true, multi: true }
-  );
-  res.send(result);
+router.delete('/rate/:id', [auth, admin], async (req, res) => {
+  const userId = req.user.id || req.user._id;
+  await prisma.review.deleteMany({
+    where: {
+      courseId: req.params.id,
+      userId: userId
+    }
+  });
+  res.send({ success: true });
 });
 
-router.get('/rate/:id', [auth, validateId], async (req, res) => {
-  const course = await Course.findById(req.params.id);
+router.get('/rate/:id', [auth], async (req, res) => {
+  const course = await prisma.course.findUnique({
+    where: { id: req.params.id },
+    include: { reviews: true }
+  });
+  
   if (!course)
     return res.status(404).send('The course with the given ID was not found.');
 
-  const { reviews } = course;
-  const course_reviews = reviews.filter((review) => review.rating !== 'null');
+  const userId = req.user.id || req.user._id;
+  const course_reviews = course.reviews;
+  
+  const userReview = course_reviews.find((review) => review.userId === userId);
   const reviewData = {};
-  const userReview = course_reviews.find(
-    (review) => review.user === req.user.id
-  );
   reviewData.userReview = !userReview ? null : userReview;
   reviewData.reviews = course_reviews;
   reviewData.reviewsCount = course_reviews.length;
@@ -195,14 +204,16 @@ router.get('/rate/:id', [auth, validateId], async (req, res) => {
   course_reviews.forEach((review) => {
     totalRating += review.rating;
   });
-  reviewData.avgRating = totalRating / course_reviews.length;
+  
+  reviewData.avgRating = course_reviews.length ? totalRating / course_reviews.length : 0;
   return res.send(reviewData);
 });
 
-// ------------------------VIDEO RELATED--------------------------
-
-router.get('/video/:id', [auth, validateId], async (req, res) => {
-  const course = await Course.findById(req.params.id).select('lessons');
+router.get('/video/:id', [auth], async (req, res) => {
+  const course = await prisma.course.findUnique({
+    where: { id: req.params.id },
+    select: { lessons: true }
+  });
   if (!course)
     return res.status(404).send('The course with the given ID was not found.');
   return res.send(course);
@@ -210,30 +221,25 @@ router.get('/video/:id', [auth, validateId], async (req, res) => {
 
 router.patch(
   '/video/:id',
-  [auth, admin, validateId, upload.single('file')],
+  [auth, admin, upload.single('file')],
   async (req, res) => {
     const basePath = `${appDir}/data/uploads/courses/${req.params.id}/videos/`;
     const courseDir = `${appDir}/data/uploads/courses/${req.params.id}`;
     const videoDir = `${appDir}/data/uploads/courses/${req.params.id}/videos`;
 
-    if (!fs.existsSync(courseDir)) fs.mkdirSync(courseDir);
-    if (!fs.existsSync(videoDir)) fs.mkdirSync(videoDir);
+    if (!fs.existsSync(courseDir)) fs.mkdirSync(courseDir, { recursive: true });
+    if (!fs.existsSync(videoDir)) fs.mkdirSync(videoDir, { recursive: true });
 
     fs.renameSync(req.file.path, basePath + req.file.filename);
 
-    const result = await Course.updateOne(
-      { _id: req.params.id },
-      {
-        $push: {
-          lessons: {
-            id: uuid(),
-            title: req.body.title,
-            description: req.body.description,
-            url: `http://${req.headers.host}/files/courses/${req.params.id}/videos/${req.file.filename}`
-          }
-        }
+    const result = await prisma.lesson.create({
+      data: {
+        courseId: req.params.id,
+        title: req.body.title,
+        description: req.body.description,
+        url: `http://${req.headers.host}/files/courses/${req.params.id}/videos/${req.file.filename}`
       }
-    );
+    });
 
     res.send(result);
   }
@@ -241,93 +247,85 @@ router.patch(
 
 router.delete(
   '/video/:id/:videoId',
-  [auth, admin, validateId],
+  [auth, admin],
   async (req, res) => {
-    const result = await Course.updateOne(
-      { _id: req.params.id },
-      {
-        $pull: {
-          lessons: {
-            id: req.params.videoId
-          }
-        }
-      },
-      { safe: true, multi: true }
-    );
+    const result = await prisma.lesson.deleteMany({
+      where: {
+        id: req.params.videoId,
+        courseId: req.params.id
+      }
+    });
     res.send(result);
   }
 );
 
-// -------------- ADDONS RELATED -----------------------
-
 router.patch('/activateCourse', [auth], async (req, res) => {
-  const result = await Course.findByIdAndUpdate(
-    { _id: req.body.course, 'tokens.token': req.body.token },
-    {
-      $set: {
-        'tokens.$.user': req.user.id
-      }
+  const userId = req.user.id || req.user._id;
+  const tokenRecord = await prisma.courseToken.findFirst({
+    where: {
+      courseId: req.body.course,
+      token: req.body.token
     }
-  );
-  if (!result) return res.status(404).send('Course or token is invalid.');
+  });
+
+  if (!tokenRecord) return res.status(404).send('Course or token is invalid.');
+
+  const result = await prisma.courseToken.update({
+    where: { id: tokenRecord.id },
+    data: { userId }
+  });
+
   return res.send(result);
 });
 
-router.get('/addons/:id', [auth, validateId], async (req, res) => {
-  const course = await Course.findById(req.params.id).select('addons');
+router.get('/addons/:id', [auth], async (req, res) => {
+  const course = await prisma.course.findUnique({
+    where: { id: req.params.id },
+    include: { addons: true }
+  });
   if (!course)
-    return res
-      .status(404)
-      .send('The course addons with the given ID was not found.');
-  return res.send(course);
+    return res.status(404).send('The course addons with the given ID was not found.');
+  return res.send(course.addons);
 });
 
 router.patch(
   '/addons/:id',
-  [auth, admin, validateId, upload.single('file')],
+  [auth, admin, upload.single('file')],
   async (req, res) => {
     const basePath = `${appDir}/data/uploads/courses/${req.params.id}/addons/`;
     const courseDir = `${appDir}/data/uploads/courses/${req.params.id}`;
     const addonDir = `${appDir}/data/uploads/courses/${req.params.id}/addons`;
 
-    if (!fs.existsSync(courseDir)) fs.mkdirSync(courseDir);
-    if (!fs.existsSync(addonDir)) fs.mkdirSync(addonDir);
+    if (!fs.existsSync(courseDir)) fs.mkdirSync(courseDir, { recursive: true });
+    if (!fs.existsSync(addonDir)) fs.mkdirSync(addonDir, { recursive: true });
     fs.renameSync(req.file.path, basePath + req.file.filename);
 
-    const result = await Course.updateOne(
-      { _id: req.params.id },
-      {
-        $push: {
-          addons: {
+    const result = await prisma.addon.create({
+      data: {
+        courseId: req.params.id,
+        title: req.body.title,
+        description: req.body.description,
+        date: moment().format('ll'),
+        contents: [
+          {
             id: uuid(),
-            title: req.body.title,
-            description: req.body.description,
-            date: moment().format('ll'),
-            contents: [
-              {
-                id: uuid(),
-                image: `http://${req.headers.host}/files/courses/${req.params.id}/addons/${req.file.filename}`
-              }
-            ]
+            image: `http://${req.headers.host}/files/courses/${req.params.id}/addons/${req.file.filename}`
           }
-        }
+        ]
       }
-    );
+    });
+    
     return res.send(result);
   }
 );
 
 router.delete('/addons/:courseId/:addonId', [auth, admin], async (req, res) => {
-  const result = await Course.updateOne(
-    { _id: req.params.courseId },
-    {
-      $pull: {
-        addons: {
-          id: req.params.addonId
-        }
-      }
+  const result = await prisma.addon.deleteMany({
+    where: {
+      id: req.params.addonId,
+      courseId: req.params.courseId
     }
-  );
+  });
 
   return res.send(result);
 });

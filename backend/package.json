@@ -19,6 +19,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@prisma/client": "^5.22.0",
     "aws-sdk": "^2.973.0",
     "axios": "^0.25.0",
     "bcryptjs": "^2.4.3",
@@ -33,11 +34,9 @@
     "install": "^0.13.0",
     "jest": "^27.5.0",
     "joi": "^17.6.0",
-    "joi-objectid": "^4.0.2",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
-    "mongoose": "^6.1.4",
     "morgan": "^1.10.0",
     "multer": "^1.4.3",
     "nodemailer": "^6.6.3",
@@ -58,9 +57,9 @@
     "eslint-plugin-prettier": "^4.0.0",
     "husky": "^7.0.4",
     "lint-staged": "^12.1.4",
-    "migrate-mongo": "^8.2.3",
     "nodemon": "^2.0.12",
     "prettier": "^2.5.1",
+    "prisma": "^5.22.0",
     "supertest": "^6.1.3"
   }
 }

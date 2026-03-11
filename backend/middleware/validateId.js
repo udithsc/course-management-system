@@ -1,10 +1,10 @@
-const mongoose = require('mongoose');
+const { validate: isUuid } = require('uuid');
 
 module.exports = (req, res, next) => {
-  if (!mongoose.Types.ObjectId.isValid(req.params.id))
+  if (req.params.id && !isUuid(req.params.id))
     return res.status(400).send('Invalid ID.');
 
-  if (req.body.id && !mongoose.Types.ObjectId.isValid(req.body.id))
+  if (req.body.id && !isUuid(req.body.id))
     return res.status(400).send('Invalid ID.');
 
   next();

@@ -1,0 +1,128 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id             String         @id @default(uuid())
+  username       String         @unique
+  email          String         @unique
+  firstName      String
+  lastName       String
+  mobile         String
+  password       String?
+  dob            DateTime?
+  image          String?
+  token          String?
+  bookmarks      String[]       @default([]) // list of course IDs
+  isVerified     Boolean?       @default(false)
+  isAdmin        Boolean?       @default(false)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  tokens         Token[]
+  subscriptions  Subscription[]
+  reviews        Review[]
+}
+
+model Token {
+  id             String   @id @default(uuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token          String
+  expireAt       DateTime @default(now())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Subscription {
+  id             String   @id @default(uuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId       String
+  watchedVideoId String[] @default([]) 
+}
+
+model Course {
+  id             String        @id @default(uuid())
+  name           String        @unique
+  description    String
+  fee            Float
+  authorId       String
+  author         Author        @relation(fields: [authorId], references: [id])
+  categoryId     String
+  category       Category      @relation(fields: [categoryId], references: [id])
+  image          String?
+  language       String?
+  subscriptions  Int           @default(0)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  
+  courseTokens   CourseToken[]
+  addons         Addon[]
+  lessons        Lesson[]
+  reviews        Review[]
+}
+
+model CourseToken {
+  id             String   @id @default(uuid())
+  courseId       String
+  course         Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  tokenId        Int
+  token          String
+  userId         String?
+}
+
+model Lesson {
+  id             String   @id @default(uuid())
+  courseId       String
+  course         Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  title          String
+  description    String?
+  url            String
+}
+
+model Addon {
+  id             String   @id @default(uuid())
+  courseId       String
+  course         Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  title          String
+  description    String?
+  date           String?
+  contents       Json[]
+}
+
+model Review {
+  id             String   @id @default(uuid())
+  courseId       String
+  course         Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rating         Int
+  comment        String?
+  time           String?
+}
+
+model Author {
+  id             String   @id @default(uuid())
+  name           String
+  profession     String
+  email          String?
+  mobile         String?
+  image          String?
+  courses        Course[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Category {
+  id             String   @id @default(uuid())
+  name           String   @unique
+  icon           String
+  courses        Course[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}

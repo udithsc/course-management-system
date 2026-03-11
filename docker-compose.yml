@@ -11,26 +11,14 @@ services:
     volumes:
       - ./frontend/src:/app/src
   backend:
-    depends_on:
-      - db
     build: ./backend
     ports:
       - 3001:3001
     env_file: ./backend/.env
     environment:
-      DB_URL: mongodb://db/cms
+      DATABASE_URL: postgresql://postgres:eC*vtL*DJ7pLw-p@db.ppcubyilaktvllezdzkw.supabase.co:5432/postgres
     command: ./docker-entrypoint.sh
     volumes:
       - ./backend:/app
       - ./backend/data/uploads:/app/data/uploads
       - ./backend/data/logs:/app/data/logs
-
-  db:
-    image: mongo:5.0.5-focal
-    ports:
-      - 27017:27017
-    volumes:
-      - cms_db:/data/db
-
-volumes:
-  cms_db:
