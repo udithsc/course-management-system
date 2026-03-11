@@ -155,7 +155,7 @@ router.put('/:id', [auth, admin, upload.single('file'), validate(validateModel)]
 });
 
 router.patch('/rate/:id', [auth], async (req, res) => {
-  const userId = req.user.id || req.user._id;
+  const userId = req.user.id;
   const user = await prisma.user.findUnique({ where: { id: userId } });
 
   const result = await prisma.review.create({
@@ -172,7 +172,7 @@ router.patch('/rate/:id', [auth], async (req, res) => {
 });
 
 router.delete('/rate/:id', [auth, admin], async (req, res) => {
-  const userId = req.user.id || req.user._id;
+  const userId = req.user.id;
   await prisma.review.deleteMany({
     where: {
       courseId: req.params.id,
@@ -191,7 +191,7 @@ router.get('/rate/:id', [auth], async (req, res) => {
   if (!course)
     return res.status(404).send('The course with the given ID was not found.');
 
-  const userId = req.user.id || req.user._id;
+  const userId = req.user.id;
   const course_reviews = course.reviews;
   
   const userReview = course_reviews.find((review) => review.userId === userId);
@@ -260,7 +260,7 @@ router.delete(
 );
 
 router.patch('/activateCourse', [auth], async (req, res) => {
-  const userId = req.user.id || req.user._id;
+  const userId = req.user.id;
   const tokenRecord = await prisma.courseToken.findFirst({
     where: {
       courseId: req.body.course,

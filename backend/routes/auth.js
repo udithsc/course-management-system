@@ -84,7 +84,7 @@ router.post('/forgotPassword', async (req, res) => {
 });
 
 router.post('/changePassword', [auth], async (req, res) => {
-  let user = await prisma.user.findUnique({ where: { id: req.user._id || req.user.id } });
+  let user = await prisma.user.findUnique({ where: { id: req.user.id } });
 
   const match = await bcrypt.compare(req.body.password, user.password);
   if (!match) return res.send(`password doesn't match`);

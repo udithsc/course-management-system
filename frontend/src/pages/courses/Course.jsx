@@ -116,7 +116,7 @@ export default function Course() {
           <TableBody>
             {records.length <= rowsPerPage &&
               recordsAfterPagingAndSorting().map((item) => (
-                <TableRow key={item._id}>
+                <TableRow key={item.id}>
                   <TableCell>{item.name}</TableCell>
                   <TableCell>{item.description}</TableCell>
                   <TableCell>{item.fee}</TableCell>
@@ -126,7 +126,7 @@ export default function Course() {
                     <Controls.ActionButton
                       color="primary.light"
                       onClick={() => {
-                        navigate(`/courses/courses/${item._id}`, { state: item });
+                        navigate(`/courses/courses/${item.id}`, { state: item });
                       }}
                     >
                       <EditIcon fontSize="small" />
@@ -138,7 +138,7 @@ export default function Course() {
                           isOpen: true,
                           title: 'Are you sure to delete this record?',
                           subTitle: "You can't undo this operation",
-                          onConfirm: () => onDelete(item._id)
+                          onConfirm: () => onDelete(item.id)
                         });
                       }}
                     >

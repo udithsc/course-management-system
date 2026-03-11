@@ -6,7 +6,7 @@ import Controls from '../../components/controls/Controls';
 import { useForm, Form } from '../../hooks/useForm';
 
 const initialFormValues = {
-  _id: 0,
+  id: 0,
   name: '',
   profession: '',
   mobile: '',
@@ -46,7 +46,7 @@ export default function UserForm({ recordForEdit, addOrEdit }) {
     formData.append('profession', values.profession);
     formData.append('mobile', values.mobile);
     formData.append('email', values.email);
-    if (values._id !== 0) formData.append('id', values._id);
+    if (values.id !== 0) formData.append('id', values.id);
 
     if (!formErrors) addOrEdit(formData, resetForm);
   };
@@ -129,7 +129,7 @@ export default function UserForm({ recordForEdit, addOrEdit }) {
 UserForm.propTypes = {
   addOrEdit: PropTypes.func.isRequired,
   recordForEdit: PropTypes.shape({
-    _id: PropTypes.string.isRequired,
+    id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     profession: PropTypes.string.isRequired,
     mobile: PropTypes.number.isRequired,

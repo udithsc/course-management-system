@@ -115,7 +115,7 @@ export default function User() {
           <TableBody>
             {records.length <= rowsPerPage &&
               recordsAfterPagingAndSorting().map((item) => (
-                <TableRow key={item._id}>
+                <TableRow key={item.id}>
                   <TableCell>{item.username}</TableCell>
                   <TableCell>{item.firstName}</TableCell>
                   <TableCell>{item.lastName}</TableCell>
@@ -138,7 +138,7 @@ export default function User() {
                           title: 'Are you sure to delete this record?',
                           subTitle: "You can't undo this operation",
                           onConfirm: () => {
-                            onDelete(item._id);
+                            onDelete(item.id);
                           }
                         });
                       }}

@@ -79,7 +79,7 @@ router.post('/', [auth, admin, validate(validateModel)], async (req, res) => {
 router.put('/:id', [auth, admin, validate(validateModel)], async (req, res) => {
   try {
     const user = await prisma.user.update({
-      where: { id: req.params.id || req.params._id },
+      where: { id: req.params.id || req.params.id },
       data: req.body
     });
     res.send(user);
@@ -99,7 +99,7 @@ router.delete('/:id', [auth, admin], async (req, res) => {
 
 router.get('/me', [auth], async (req, res) => {
   const user = await prisma.user.findUnique({
-    where: { id: req.user._id || req.user.id },
+    where: { id: req.user.id },
     select: {
       id: true,
       username: true,
@@ -120,7 +120,7 @@ router.get('/me', [auth], async (req, res) => {
 
 router.delete('/closeAccount', [auth], async (req, res) => {
   try {
-    const result = await prisma.user.delete({ where: { id: req.user.id || req.user._id } });
+    const result = await prisma.user.delete({ where: { id: req.user.id } });
     res.send(result);
   } catch (e) {
     res.status(400).send('Error');
@@ -129,7 +129,7 @@ router.delete('/closeAccount', [auth], async (req, res) => {
 
 router.get('/dashboard', [auth], async (req, res) => {
   const user = await prisma.user.findUnique({
-    where: { id: req.user.id || req.user._id },
+    where: { id: req.user.id },
     include: { subscriptions: true }
   });
   
@@ -149,7 +149,7 @@ router.get('/dashboard', [auth], async (req, res) => {
       : 0;
 
     return {
-      _id: sub.courseId,
+      id: sub.courseId,
       name: subCourse.name,
       precentage: Math.round(precentage),
       category: subCategory?.name
@@ -167,13 +167,13 @@ router.get('/dashboard', [auth], async (req, res) => {
 
 router.post('/subscribe', [auth], async (req, res) => {
   const existingSub = await prisma.subscription.findFirst({
-    where: { userId: req.user.id || req.user._id, courseId: req.body.course || req.body.id }
+    where: { userId: req.user.id, courseId: req.body.course || req.body.id }
   });
 
   if (!existingSub) {
     await prisma.subscription.create({
       data: {
-        userId: req.user.id || req.user._id,
+        userId: req.user.id,
         courseId: req.body.course || req.body.id
       }
     });
@@ -189,7 +189,7 @@ router.post('/subscribe', [auth], async (req, res) => {
 
 router.post('/unsubscribe', [auth], async (req, res) => {
   const existingSub = await prisma.subscription.findFirst({
-    where: { userId: req.user.id || req.user._id, courseId: req.body.id }
+    where: { userId: req.user.id, courseId: req.body.id }
   });
 
   if (existingSub) {
@@ -204,7 +204,7 @@ router.post('/unsubscribe', [auth], async (req, res) => {
 });
 
 router.post('/bookmark', [auth], async (req, res) => {
-  const userId = req.user.id || req.user._id;
+  const userId = req.user.id;
   const user = await prisma.user.findUnique({ where: { id: userId } });
   
   if (user && !user.bookmarks.includes(req.body.id)) {
@@ -217,7 +217,7 @@ router.post('/bookmark', [auth], async (req, res) => {
 });
 
 router.delete('/bookmark/:id', [auth], async (req, res) => {
-  const userId = req.user.id || req.user._id;
+  const userId = req.user.id;
   const user = await prisma.user.findUnique({ where: { id: userId } });
   
   if (user) {
@@ -230,7 +230,7 @@ router.delete('/bookmark/:id', [auth], async (req, res) => {
 });
 
 router.post('/watch', [auth], async (req, res) => {
-  const userId = req.user.id || req.user._id;
+  const userId = req.user.id;
   const sub = await prisma.subscription.findFirst({
     where: { userId, courseId: req.body.id }
   });
@@ -246,7 +246,7 @@ router.post('/watch', [auth], async (req, res) => {
 
 router.post('/image', [auth, upload.single('file')], async (req, res) => {
   const result = await prisma.user.update({
-    where: { id: req.user.id || req.user._id },
+    where: { id: req.user.id },
     data: {
       image: req.file?.filename
         ? `http://${req.headers.host}/files/categories/${req.file.filename}`
@@ -258,7 +258,7 @@ router.post('/image', [auth, upload.single('file')], async (req, res) => {
 
 router.delete('/image', [auth], async (req, res) => {
   const result = await prisma.user.update({
-    where: { id: req.user.id || req.user._id },
+    where: { id: req.user.id },
     data: { image: '' }
   });
   res.send(result);

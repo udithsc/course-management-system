@@ -6,7 +6,7 @@ import Controls from '../../components/controls/Controls';
 import { useForm, Form } from '../../hooks/useForm';
 
 const initialFormValues = {
-  _id: 0,
+  id: 0,
   name: ''
 };
 
@@ -37,7 +37,7 @@ export default function CategoryForm({ recordForEdit, addOrEdit }) {
     formData.append('file', image.data || values.icon);
     formData.append('name', values.name);
 
-    if (values._id !== 0) formData.append('id', values._id);
+    if (values.id !== 0) formData.append('id', values.id);
 
     if (!formErrors) addOrEdit(formData, resetForm);
   };
@@ -97,7 +97,7 @@ export default function CategoryForm({ recordForEdit, addOrEdit }) {
 CategoryForm.propTypes = {
   addOrEdit: PropTypes.func.isRequired,
   recordForEdit: PropTypes.shape({
-    _id: PropTypes.string.isRequired,
+    id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     icon: PropTypes.string
   })

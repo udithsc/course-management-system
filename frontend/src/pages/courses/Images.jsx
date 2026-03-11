@@ -66,7 +66,7 @@ export default function Images({ recordForEdit }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append('id', course._id);
+    formData.append('id', course.id);
     formData.append('file', image.data);
     formData.append('title', data.title);
     formData.append('description', data.description);
@@ -83,7 +83,7 @@ export default function Images({ recordForEdit }) {
   };
 
   useEffect(() => {
-    const match = courses.find((e) => e._id === recordForEdit._id);
+    const match = courses.find((e) => e.id === recordForEdit.id);
     if (match) setCourse({ ...match });
   }, [courses]);
 
@@ -140,7 +140,7 @@ export default function Images({ recordForEdit }) {
                     <MenuItem
                       onClick={() => {
                         handleCardClose();
-                        dispatch(removeAddon(course._id, item.id));
+                        dispatch(removeAddon(course.id, item.id));
                         dispatch(loadCourses());
                       }}
                     >
@@ -260,6 +260,6 @@ export default function Images({ recordForEdit }) {
 
 Images.propTypes = {
   recordForEdit: PropTypes.shape({
-    _id: PropTypes.string.isRequired
+    id: PropTypes.string.isRequired
   }).isRequired
 };

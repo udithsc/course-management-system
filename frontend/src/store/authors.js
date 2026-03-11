@@ -96,7 +96,7 @@ export default authorSlice.reducer;
 // Selectors
 export const selectAuthors = (state) => state.authors.list;
 export const selectAuthorsNames = (state) =>
-  state.authors.list.map((a) => ({ id: a._id, title: a.name }));
+  state.authors.list.map((a) => ({ id: a.id, title: a.name }));
 export const selectDataStatus = (state) => state.authors.loading;
 export const selectRefreshStatus = (state) => state.authors.refresh;
 export const selectNotification = (state) => state.authors.notification;

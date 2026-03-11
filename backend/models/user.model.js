@@ -4,7 +4,7 @@ const Joi = require('joi');
 function generateAccessToken(user) {
   return jwt.sign(
     {
-      _id: user.id,
+      id: user.id,
       name: user.username,
       email: user.email,
       isAdmin: user.isAdmin
@@ -16,7 +16,7 @@ function generateAccessToken(user) {
 function generateRefreshToken(user) {
   return jwt.sign(
     {
-      _id: user.id,
+      id: user.id,
       name: user.username,
       email: user.email,
       isAdmin: user.isAdmin

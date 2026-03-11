@@ -9,7 +9,7 @@ import { loadAuthors, selectAuthorsNames } from '../../store/authors';
 import Controls from '../../components/controls/Controls';
 
 const initialFormValues = {
-  _id: 0,
+  id: 0,
   name: '',
   description: '',
   author: {},
@@ -43,10 +43,10 @@ export default function CourseForm({ recordForEdit, addOrEdit }) {
     formData.append('file', image.data);
     formData.append('name', values.name);
     formData.append('description', values.description);
-    formData.append('author', values.author._id);
-    formData.append('category', values.category._id);
+    formData.append('author', values.author.id);
+    formData.append('category', values.category.id);
     formData.append('fee', values.fee);
-    if (values._id !== 0) formData.append('id', values._id);
+    if (values.id !== 0) formData.append('id', values.id);
     if (!errors) addOrEdit(formData, resetForm);
   };
 
@@ -94,9 +94,9 @@ export default function CourseForm({ recordForEdit, addOrEdit }) {
             name="author"
             label="author"
             options={authors}
-            value={values.author._id}
+            value={values.author.id}
             onChange={(e) => {
-              setValues({ ...values, author: { _id: e.target.value } });
+              setValues({ ...values, author: { id: e.target.value } });
             }}
             error={errors.author}
           />
@@ -104,9 +104,9 @@ export default function CourseForm({ recordForEdit, addOrEdit }) {
             name="category"
             label="category"
             options={categories}
-            value={values.category._id}
+            value={values.category.id}
             onChange={(e) => {
-              setValues({ ...values, category: { _id: e.target.value } });
+              setValues({ ...values, category: { id: e.target.value } });
             }}
             error={errors.category}
           />
@@ -154,7 +154,7 @@ export default function CourseForm({ recordForEdit, addOrEdit }) {
 CourseForm.propTypes = {
   addOrEdit: PropTypes.func.isRequired,
   recordForEdit: PropTypes.shape({
-    _id: PropTypes.string.isRequired,
+    id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     fee: PropTypes.number.isRequired
   })

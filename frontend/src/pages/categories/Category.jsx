@@ -114,7 +114,7 @@ export default function Category() {
           <TableBody>
             {records.length <= rowsPerPage &&
               recordsAfterPagingAndSorting().map((item) => (
-                <TableRow key={item._id}>
+                <TableRow key={item.id}>
                   <TableCell>{item.name}</TableCell>
                   <TableCell>{item.createdAt}</TableCell>
                   <TableCell align="center">
@@ -134,7 +134,7 @@ export default function Category() {
                           title: 'Are you sure to delete this record?',
                           subTitle: "You can't undo this operation",
                           onConfirm: () => {
-                            onDelete(item._id);
+                            onDelete(item.id);
                           }
                         });
                       }}

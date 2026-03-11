@@ -128,7 +128,7 @@ export const addUser = (data) =>
 
 export const updateUser = (data) =>
   apiCallBegan({
-    url: `${url}/${data._id}`,
+    url: `${url}/${data.id}`,
     method: 'put',
     data,
     onSuccess: userUpdated.type,

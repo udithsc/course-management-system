@@ -101,7 +101,7 @@ export default function UserForm({ recordForEdit, addOrEdit }) {
 UserForm.propTypes = {
   addOrEdit: PropTypes.func.isRequired,
   recordForEdit: PropTypes.shape({
-    _id: PropTypes.string.isRequired,
+    id: PropTypes.string.isRequired,
     firstName: PropTypes.string.isRequired,
     lastName: PropTypes.string.isRequired,
     email: PropTypes.string.isRequired
