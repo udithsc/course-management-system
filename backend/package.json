@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "engines": {
-    "node": "16.13.0"
+    "node": ">=24.0.0"
   },
   "scripts": {
     "start": "nodemon --ignore './tests' index.js",

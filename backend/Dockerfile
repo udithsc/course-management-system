@@ -1,8 +1,7 @@
-FROM node:16.13-alpine3.14
+FROM node:24-alpine
 
 WORKDIR /app
 COPY package*.json ./
-RUN apk add --update --no-cache openssl1.1-compat
 RUN npm install
 COPY . . 
 RUN npx prisma generate
