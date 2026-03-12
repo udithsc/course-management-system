@@ -56,7 +56,10 @@ export default function useTable(records, headCells, totalRecords) {
           overflowX: 'auto',
           marginRight: 'auto',
           marginLeft: 'auto',
-          marginTop: 2
+          marginTop: 2,
+          borderRadius: 1,
+          border: '1px solid',
+          borderColor: 'divider',
         }}
       >
         <Table

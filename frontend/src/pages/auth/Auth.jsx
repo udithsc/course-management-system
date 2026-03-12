@@ -5,7 +5,6 @@ import { Button, TextField, Box, Typography, Paper, InputAdornment, IconButton, 
 import { Visibility, VisibilityOff, Email, Lock, Person, Phone } from '@mui/icons-material';
 import axios from 'axios';
 import { motion } from 'framer-motion';
-import logo from '../../resources/images/logo.png';
 import Notification from '../../components/ui/Notification';
 import {
   selectNotification,
@@ -30,7 +29,7 @@ export default function Auth() {
     if (token) {
       sessionStorage.setItem('access-token', token);
       axios.defaults.headers.common['x-auth-token'] = token;
-      navigate('/');
+      navigate('/dashboard');
     }
     if (isSignupSuccess) setIsSignUp(false); // smoothly go back to login instead of navigating via router forcefully
   }, [token, isSignupSuccess, navigate]);
@@ -145,7 +144,7 @@ export default function Auth() {
           >
             <Box sx={{ zIndex: 1, textAlign: 'left', width: '100%' }}>
               <Typography variant="h2" fontWeight={800} gutterBottom sx={{ lineHeight: 1.1 }}>
-                Skilgloo <br /> Platform.
+                UDT <br /> Course Manager.
               </Typography>
               <Typography variant="h6" sx={{ fontWeight: 300, opacity: 0.9, mt: 2 }}>
                 Empowering education through seamless administration and immersive learning experiences.
@@ -190,7 +189,6 @@ export default function Auth() {
             }}
           >
             <Box sx={{ mb: 4, display: 'flex', alignItems: 'center' }}>
-              <img src={logo} alt="Logo" width={40} style={{ marginRight: '16px' }} />
               <Typography variant="h5" fontWeight={800} color="text.primary">
                 {isSignUp ? 'Create Account' : 'Welcome Back'}
               </Typography>

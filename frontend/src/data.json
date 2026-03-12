@@ -1,28 +1,28 @@
 {
   "SERVER_URL": "https://example.com/api/",
-  "APP_NAME": "Course Management System",
+  "APP_NAME": "UDT Course Manager",
   "BRAND_NAME": "udith.cc",
   "BRAND_WEBSITE": "https://udith.cc",
   "DRAWER_WIDTH": 240,
   "ROUTES": [
-    { "path": "/", "icon": "Dashboard", "title": "Dashboard", "subMenu": [], "breadcrumbs": ["/"] },
+    { "path": "/dashboard", "icon": "Dashboard", "title": "Dashboard", "subMenu": [], "breadcrumbs": ["/dashboard"] },
     {
-      "path": "/users",
+      "path": "/dashboard/users",
       "icon": "Group",
       "title": "Users",
       "subMenu": [],
-      "breadcrumbs": ["/users"]
+      "breadcrumbs": ["/dashboard/users"]
     },
     {
-      "path": "/courses/courses",
+      "path": "/dashboard/courses/courses",
       "icon": "Group",
       "title": "Courses",
       "subMenu": [
-        { "path": "/courses/courses", "icon": "School", "title": "Courses" },
-        { "path": "/courses/authors", "icon": "Person", "title": "Authors" },
-        { "path": "/courses/categories", "icon": "Category", "title": "Categories" }
+        { "path": "/dashboard/courses/courses", "icon": "School", "title": "Courses" },
+        { "path": "/dashboard/courses/authors", "icon": "Person", "title": "Authors" },
+        { "path": "/dashboard/courses/categories", "icon": "Category", "title": "Categories" }
       ],
-      "breadcrumbs": ["/courses/courses", "/courses/authors", "/courses/categories"]
+      "breadcrumbs": ["/dashboard/courses/courses", "/dashboard/courses/authors", "/dashboard/courses/categories"]
     }
   ]
 }

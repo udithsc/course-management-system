@@ -133,7 +133,7 @@ function Home() {
             Welcome back, {currentUser?.name?.split(' ')[0] || 'Admin'}! 👋
           </Typography>
           <Typography variant="h6" fontWeight={400} sx={{ opacity: 0.9, maxWidth: 600, mb: { xs: 3, md: 0 } }}>
-            Here is what's happening in your Skilgloo academy today. You have pending course approvals and new user registrations to review.
+            Here is what's happening in your UDT Course Manager academy today. You have pending course approvals and new user registrations to review.
           </Typography>
         </Box>
         <Box sx={{ zIndex: 1 }}>
@@ -141,7 +141,7 @@ function Home() {
             variant="contained" 
             size="large"
             endIcon={<ArrowForwardIcon />}
-            onClick={() => navigate('/courses')}
+            onClick={() => navigate('/dashboard/courses')}
             sx={{ 
               bgcolor: 'white', 
               color: 'primary.main',
@@ -242,13 +242,13 @@ function Home() {
             elevation={0}
             sx={{ p: 3, borderRadius: 4, border: '1px solid', borderColor: 'divider', display: 'flex', flexDirection: 'column', gap: 2 }}
           >
-             <Button variant="outlined" color="primary" fullWidth size="large" onClick={() => navigate('/users')} sx={{ justifyContent: 'flex-start', py: 1.5, borderRadius: 2 }}>
+             <Button variant="outlined" color="primary" fullWidth size="large" onClick={() => navigate('/dashboard/users')} sx={{ justifyContent: 'flex-start', py: 1.5, borderRadius: 2 }}>
                <PersonIcon sx={{ mr: 2 }} /> Create New User
              </Button>
-             <Button variant="outlined" color="secondary" fullWidth size="large" onClick={() => navigate('/courses')} sx={{ justifyContent: 'flex-start', py: 1.5, borderRadius: 2 }}>
+             <Button variant="outlined" color="secondary" fullWidth size="large" onClick={() => navigate('/dashboard/courses')} sx={{ justifyContent: 'flex-start', py: 1.5, borderRadius: 2 }}>
                <SchoolIcon sx={{ mr: 2 }} /> Draft New Course
              </Button>
-             <Button variant="outlined" color="info" fullWidth size="large" onClick={() => navigate('/courses/categories')} sx={{ justifyContent: 'flex-start', py: 1.5, borderRadius: 2 }}>
+             <Button variant="outlined" color="info" fullWidth size="large" onClick={() => navigate('/dashboard/courses/categories')} sx={{ justifyContent: 'flex-start', py: 1.5, borderRadius: 2 }}>
                <CategoryIcon sx={{ mr: 2 }} /> Define Category
              </Button>
           </MotionPaper>

@@ -7,7 +7,7 @@ function Footer() {
     <Box
       component="footer"
       sx={{
-        py: 3,
+        py: 1.5,
         px: 2,
         backgroundColor: (theme) =>
           theme.palette.mode === 'light' ? theme.palette.grey[200] : theme.palette.grey[800]

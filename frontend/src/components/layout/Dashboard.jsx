@@ -25,7 +25,7 @@ function DashboardContent() {
         }}
       >
         <Toolbar />
-        <Container maxWidth="xl" sx={{ flex: 1, mt: 4 }}>
+        <Container maxWidth={false} sx={{ flex: 1, mt: 4, px: { xs: 2, sm: 3, md: 4 } }}>
           <Outlet />
         </Container>
         <Footer />

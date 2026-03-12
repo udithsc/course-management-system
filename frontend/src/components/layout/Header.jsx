@@ -56,7 +56,7 @@ function Header({ open, toggleDrawer }) {
 
   const handleAccountClick = () => {
     handleCloseUserMenu();
-    navigate('/account');
+    navigate('/dashboard/account');
   };
 
   return (
@@ -82,7 +82,7 @@ function Header({ open, toggleDrawer }) {
         >
           {open ? <MenuOpenIcon /> : <MenuIcon />}
         </IconButton>
-        <Typography component="h1" variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
+        <Typography component="h1" variant="h6" color="inherit" noWrap sx={{ flexGrow: 1, opacity: open ? 0 : 1, transition: 'opacity 0.3s' }}>
           {configData.APP_NAME}
         </Typography>
         <Box sx={{ flexGrow: 0 }}>

@@ -13,15 +13,18 @@ import ProtectedRoute from './protectedRoute';
 import CourseManager from './pages/courses/CourseManager';
 import CourseIndex from './pages/courses/CourseIndex';
 import Account from './pages/account/Account';
+import LandingPage from './pages/landing/LandingPage';
 
 function App() {
   return (
     <div className="App">
       <Routes>
-        <Route path="/" element={<ProtectedRoute />}>
-          <Route path="/" element={<Dashboard />}>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<Auth />} />
+        
+        <Route path="/dashboard" element={<ProtectedRoute />}>
+          <Route element={<Dashboard />}>
             <Route index element={<Home />} />
-            <Route path="dashboard" element={<Home />} />
             <Route path="users" element={<User />} />
             <Route path="account" element={<Account />} />
             <Route path="courses" element={<CourseIndex />}>
@@ -32,7 +35,7 @@ function App() {
             </Route>
           </Route>
         </Route>
-        <Route path="/login" element={<Auth />} />
+
         <Route path="/*" element={<NotFound />} />
       </Routes>
     </div>

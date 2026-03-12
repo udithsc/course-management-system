@@ -1,11 +1,10 @@
 import React from 'react';
 import MuiDrawer from '@mui/material/Drawer';
-import { Typography } from '@mui/material';
+import { Typography, Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
 import PropTypes from 'prop-types';
 import ListItems from './ListItems';
-import logo from '../../resources/images/logo.png';
 import configData from '../../data.json';
 
 const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -20,8 +19,9 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
       }),
       boxSizing: 'border-box',
       borderRight: '1px solid',
-      borderRightColor: theme.palette.divider,
-      backgroundColor: theme.palette.background.paper,
+      borderRightColor: 'rgba(0, 0, 0, 0.08)',
+      backgroundColor: theme.palette.background.paper, 
+      boxShadow: open ? '4px 0 24px rgba(0,0,0,0.02)' : 'none',
       ...(!open && {
         overflowX: 'hidden',
         transition: theme.transitions.create('width', {
@@ -42,26 +42,57 @@ function SideBar({ open }) {
     <Drawer variant="permanent" open={open}>
       <Toolbar
         sx={{
-          pt: 0.5,
+          py: 2,
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center',
-          px: [1]
+          justifyContent: open ? 'flex-start' : 'center',
+          px: open ? 3 : 1,
+          mb: 1,
         }}
       >
-        <img src={logo} alt="Logo" width={40} />
-        {open && (
-          <Typography variant="h6" sx={{ color: 'primary.main', ml: 1, fontWeight: 'bold' }}>
-            Skilgloo
+        {open ? (
+          <Typography 
+            variant="h6" 
+            sx={{ 
+              ml: 1.5, 
+              fontWeight: 800,
+              flexShrink: 0,
+              fontSize: '1rem',
+              letterSpacing: '-0.5px',
+              background: 'linear-gradient(45deg, #1976d2 30%, #21CBF3 90%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+            }}
+          >
+            UDT Course Manager
+          </Typography>
+        ) : (
+          <Typography 
+            variant="h6" 
+            sx={{ 
+              fontWeight: 800,
+              background: 'linear-gradient(45deg, #1976d2 30%, #21CBF3 90%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+            }}
+          >
+            UDT
           </Typography>
         )}
       </Toolbar>
-      <ListItems open={open} />
+      <Box sx={{ flexGrow: 1, overflowY: 'auto' }}>
+        <ListItems open={open} />
+      </Box>
+      <Box sx={{ p: open ? 2 : 1, textAlign: 'center', transition: 'all 0.3s', borderTop: '1px solid rgba(0,0,0,0.05)' }}>
+        <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>
+          {open ? 'v1.0.0' : 'v1'}
+        </Typography>
+      </Box>
     </Drawer>
   );
 }
 
-ListItems.propTypes = {
+SideBar.propTypes = {
   open: PropTypes.bool.isRequired
 };
 

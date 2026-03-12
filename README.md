@@ -1,4 +1,4 @@
-# Skilgloo - Course Management System
+# UDT Course Manager
 
 A modern platform for the administration, documentation, reporting, and delivery of educational courses and training programs.
 
