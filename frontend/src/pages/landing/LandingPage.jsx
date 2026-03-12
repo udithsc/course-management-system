@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -6,98 +6,104 @@ import {
   Container,
   Typography,
   Grid,
-  Paper,
   Stack,
-  Card,
-  CardContent,
   Avatar,
   IconButton,
-  Divider,
   useTheme,
-  Chip,
   useMediaQuery,
   Drawer,
-  List,
-  ListItem,
-  ListItemText
+  Paper,
+  Chip,
+  alpha,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails
 } from '@mui/material';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
-import { motion } from 'framer-motion';
 import SchoolIcon from '@mui/icons-material/School';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import GroupIcon from '@mui/icons-material/Group';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import CheckIcon from '@mui/icons-material/Check';
-import TwitterIcon from '@mui/icons-material/Twitter';
-import LinkedInIcon from '@mui/icons-material/LinkedIn';
-import GitHubIcon from '@mui/icons-material/GitHub';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import LightModeIcon from '@mui/icons-material/LightMode';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
 
-// Images
-import heroImg from '../../resources/images/landing/hero.png';
+// Theme Context
+import { useColorMode } from '../../ColorModeProvider';
+
+// Assets
+import bgMesh from '../../resources/images/landing/bg_mesh.png';
+import iconBook from '../../resources/images/landing/icon_book.png';
+import iconChart from '../../resources/images/landing/icon_chart.png';
 import team1 from '../../resources/images/landing/team1.png';
 import team2 from '../../resources/images/landing/team2.png';
 import team3 from '../../resources/images/landing/team3.png';
+import service1 from '../../resources/images/landing/service1.png';
+import service2 from '../../resources/images/landing/service2.png';
+import service3 from '../../resources/images/landing/service3.png';
+
+const MotionBox = motion(Box);
+const MotionTypography = motion(Typography);
 
 const LandingPage = () => {
   const navigate = useNavigate();
   const theme = useTheme();
+  const { mode, toggleColorMode } = useColorMode();
+  const isDark = theme.palette.mode === 'dark';
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const isSmallMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const { scrollY } = useScroll();
 
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
-
-  const sectionVariants = {
-    hidden: { opacity: 0, y: 50 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: 'easeOut' } }
-  };
-
-  const navItems = ['Features', 'Pricing', 'Team'];
-
-  const drawer = (
-    <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center', p: 3 }}>
-      <Typography variant="h5" sx={{ fontWeight: 900, mb: 4, background: 'linear-gradient(45deg, #1976d2 30%, #21CBF3 90%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-        UDT.
-      </Typography>
-      <Divider sx={{ mb: 2 }} />
-      <List>
-        {navItems.map((item) => (
-          <ListItem key={item} disablePadding>
-            <ListItemText primary={item} sx={{ textAlign: 'center', py: 1, '& .MuiTypography-root': { fontWeight: 600 } }} />
-          </ListItem>
-        ))}
-      </List>
-      <Button
-        variant="contained"
-        fullWidth
-        onClick={() => navigate('/login')}
-        sx={{ mt: 2, borderRadius: '12px', fontWeight: 700, py: 1.5 }}
-      >
-        Dashboard
-      </Button>
-    </Box>
+  const headerBg = useTransform(
+    scrollY,
+    [0, 50],
+    [isDark ? 'rgba(15, 23, 42, 0)' : 'rgba(255, 255, 255, 0)', 
+     isDark ? 'rgba(15, 23, 42, 0.8)' : 'rgba(255, 255, 255, 0.9)']
   );
 
+  const headerBlur = useTransform(
+    scrollY,
+    [0, 50],
+    ['blur(0px)', 'blur(12px)']
+  );
+
+  const navItems = ['Features', 'Services', 'Pricing', 'Team', 'FAQ'];
+
+  const services = [
+    { title: 'System Architecture', desc: 'Custom enterprise blueprints tailored for your academic scale. We design the backbone of your digital campus.', icon: service1, color: '#38bdf8' },
+    { title: 'Security & Compliance', desc: 'Military-grade encryption and FERPA/GDPR compliance at every layer of your data transmission.', icon: service2, color: '#10b981' },
+    { title: 'Rapid Deployment', desc: 'Get your entire department online in under 48 hours with our automated provisioning engine.', icon: service3, color: '#a855f7' }
+  ];
+
+  const faqs = [
+    { q: "How secure is the student data stored in UDT?", a: "We utilize AES-256 encryption at rest and TLS 1.3 for data in transit. Your data is isolated in secure VPCs with regular third-party audits." },
+    { q: "Can we integrate with existing LMS systems?", a: "Yes, UDT provides a comprehensive REST API and pre-built connectors for Canvas, Moodle, and Blackboard integrations." },
+    { q: "What kind of support do we get with the Ultimate plan?", a: "The Ultimate plan includes a dedicated Slack channel with our engineering team and a guaranteed 2-hour response time for critical issues." },
+    { q: "Is there a limit to the number of courses we can host?", a: "No. All our plans include unlimited course hosting. We scale horizontally to accommodate your growth automatically." }
+  ];
+
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: '#ffffff', overflow: 'hidden' }}>
-      {/* Header/Navbar */}
-      <Box
+    <Box sx={{ bgcolor: 'background.default', color: 'text.primary', minHeight: '100vh', overflowX: 'hidden', transition: 'background-color 0.3s' }}>
+      {/* Dynamic Navbar */}
+      <MotionBox
         component="nav"
+        style={{ backgroundColor: headerBg, backdropFilter: headerBlur }}
         sx={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 1000,
           py: 2,
-          px: { xs: 2, sm: 4, md: 8 },
+          px: { xs: 2, md: 8 },
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          position: 'sticky',
-          top: 0,
-          zIndex: 1000,
-          bgcolor: 'rgba(255, 255, 255, 0.8)',
-          backdropFilter: 'blur(10px)',
-          borderBottom: '1px solid rgba(0,0,0,0.05)'
+          borderBottom: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)'
         }}
       >
         <Typography
@@ -105,450 +111,541 @@ const LandingPage = () => {
           onClick={() => navigate('/')}
           sx={{
             fontWeight: 900,
-            letterSpacing: '-1px',
             cursor: 'pointer',
-            background: 'linear-gradient(45deg, #1976d2 30%, #21CBF3 90%)',
+            background: isDark ? 'linear-gradient(90deg, #38bdf8, #818cf8)' : 'linear-gradient(90deg, #4f46e5, #0ea5e9)',
             WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent'
+            WebkitTextFillColor: 'transparent',
+            letterSpacing: '-1.5px'
           }}
         >
-          UDT.
+          UDT COURSE MANAGER
         </Typography>
 
-        {isMobile ? (
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-          >
-            <MenuIcon />
+        <Stack direction="row" spacing={3} alignItems="center">
+          {!isMobile && navItems.map((item) => (
+            <Typography
+              key={item}
+              sx={{
+                fontSize: '0.9rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                color: 'text.secondary',
+                transition: 'color 0.2s',
+                '&:hover': { color: 'primary.main' }
+              }}
+            >
+              {item}
+            </Typography>
+          ))}
+          
+          <IconButton onClick={toggleColorMode} sx={{ color: 'text.primary' }}>
+            {isDark ? <LightModeIcon /> : <DarkModeIcon />}
           </IconButton>
-        ) : (
-          <Stack direction="row" spacing={3} alignItems="center">
-            {navItems.map((item) => (
-              <Button key={item} sx={{ color: 'text.secondary', fontWeight: 600, textTransform: 'none' }}>{item}</Button>
-            ))}
+
+          {!isMobile ? (
             <Button
               variant="contained"
               onClick={() => navigate('/login')}
               sx={{
-                borderRadius: '12px',
-                px: 3,
-                py: 1,
-                textTransform: 'none',
-                fontWeight: 700,
-                boxShadow: '0 4px 14px 0 rgba(25, 118, 210, 0.3)'
+                bgcolor: 'primary.main',
+                color: 'white',
+                fontWeight: 800,
+                borderRadius: '50px',
+                px: 4,
+                textTransform: 'none'
               }}
             >
-              Dashboard
+              Sign In
             </Button>
-          </Stack>
-        )}
-
-        <Drawer
-          variant="temporary"
-          anchor="right"
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{ keepMounted: true }}
-          sx={{
-            display: { xs: 'block', md: 'none' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 280, borderRadius: '20px 0 0 20px' },
-          }}
-        >
-          {drawer}
-        </Drawer>
-      </Box>
+          ) : (
+            <IconButton onClick={() => setMobileOpen(true)} sx={{ color: 'text.primary' }}>
+              <MenuIcon />
+            </IconButton>
+          )}
+        </Stack>
+      </MotionBox>
 
       {/* Hero Section */}
-      <Container maxWidth="xl" sx={{ pt: { xs: 8, md: 15 }, pb: { xs: 8, md: 12 } }}>
-        <Grid container spacing={8} alignItems="center">
-          <Grid item xs={12} md={6}>
-            <motion.div initial="hidden" animate="visible" variants={sectionVariants}>
-              <Chip 
-                label="Version 2.0 is out" 
-                color="primary" 
-                variant="soft" 
-                sx={{ mb: 2, fontWeight: 700, bgcolor: 'rgba(25, 118, 210, 0.1)', color: 'primary.main' }} 
-              />
-              <Typography
-                variant="h1"
-                sx={{
-                  fontSize: { xs: '2.5rem', sm: '3.5rem', md: '5.5rem' },
-                  fontWeight: 900,
-                  color: '#0f172a',
-                  lineHeight: { xs: 1.1, md: 1 },
-                  mb: 3,
-                  letterSpacing: { xs: '-1px', md: '-2px' },
-                  textAlign: { xs: 'center', md: 'left' }
-                }}
-              >
-                Elevate Your <br />
-                <span style={{ background: 'linear-gradient(45deg, #1976d2 30%, #21CBF3 90%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                  Learning System.
-                </span>
-              </Typography>
-              <Typography variant="h5" sx={{ color: '#475569', mb: 6, fontWeight: 400, maxWidth: 580, lineHeight: 1.6, textAlign: { xs: 'center', md: 'left' }, mx: { xs: 'auto', md: 0 } }}>
-                The all-in-one platform for educational excellence. Manage courses, track progress, and empower your educators with UDT Course Manager.
-              </Typography>
-              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ alignItems: 'center', justifyContent: { xs: 'center', md: 'flex-start' } }}>
-                <Button
-                  variant="contained"
-                  size="large"
-                  endIcon={<ArrowForwardIcon />}
-                  onClick={() => navigate('/login')}
-                  sx={{
-                    py: 2.5,
-                    px: 5,
-                    borderRadius: '16px',
-                    fontSize: '1.1rem',
-                    fontWeight: 800,
-                    textTransform: 'none',
-                    boxShadow: '0 20px 35px -10px rgba(25, 118, 210, 0.5)'
-                  }}
-                >
-                  Start Your Journey
-                </Button>
-                <Button
-                  variant="outlined"
-                  size="large"
-                  sx={{
-                    py: 2.5,
-                    px: 5,
-                    borderRadius: '16px',
-                    fontSize: '1.1rem',
-                    fontWeight: 700,
-                    textTransform: 'none',
-                    borderWidth: '2px',
-                    '&:hover': { borderWidth: '2px' }
-                  }}
-                >
-                  Watch Demo
-                </Button>
-              </Stack>
-            </motion.div>
-          </Grid>
-
-          <Grid item xs={12} md={6} sx={{ display: 'flex', justifyContent: 'center' }}>
-            <motion.div 
-                initial={{ opacity: 0, scale: 0.8 }} 
-                animate={{ opacity: 1, scale: 1 }} 
-                transition={{ duration: 1, ease: 'easeOut' }}
+      <Box sx={{ position: 'relative', pt: { xs: 15, md: 25 }, pb: { xs: 10, md: 20 } }}>
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '100%',
+            backgroundImage: `url(${bgMesh})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            opacity: isDark ? 0.4 : 0.8,
+            zIndex: 0,
+            maskImage: 'linear-gradient(to bottom, black 50%, transparent 100%)',
+            filter: isDark ? 'none' : 'hue-rotate(180deg) brightness(1.2)'
+          }}
+        />
+        
+        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
+          <Stack spacing={4} alignItems="center" textAlign="center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
             >
-              <Box 
-                sx={{ 
-                    position: 'relative',
-                    maxWidth: { xs: 500, md: '100%' },
-                    mx: 'auto',
-                    '&::before': {
-                        content: '""',
-                        position: 'absolute',
-                        width: '120%',
-                        height: '100%',
-                        top: '-10%',
-                        left: '-10%',
-                        background: 'radial-gradient(circle, rgba(25, 118, 210, 0.1) 0%, rgba(255,255,255,0) 70%)',
-                        zIndex: -1
-                    }
+              <Chip
+                label="Revolutionizing Education"
+                sx={{
+                  bgcolor: alpha(theme.palette.primary.main, 0.1),
+                  color: 'primary.main',
+                  fontWeight: 800,
+                  border: `1px solid ${alpha(theme.palette.primary.main, 0.3)}`,
+                  mb: 3,
+                  py: 2,
+                  px: 1
+                }}
+              />
+            </motion.div>
+            
+            <MotionTypography
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.1 }}
+              variant="h1"
+              sx={{
+                fontSize: { xs: '2.8rem', sm: '4rem', md: '6rem' },
+                fontWeight: 900,
+                lineHeight: 1,
+                letterSpacing: '-3px',
+                maxWidth: 900,
+                color: 'text.primary'
+              }}
+            >
+              The Next Frontier <br />
+              of <span style={{ color: theme.palette.primary.main }}>Academic Excellence.</span>
+            </MotionTypography>
+
+            <MotionTypography
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              sx={{
+                fontSize: { xs: '1.1rem', md: '1.4rem' },
+                color: 'text.secondary',
+                maxWidth: 700,
+                lineHeight: 1.6
+              }}
+            >
+              Enterprise-grade course management for modern scale. 
+              Empower your faculty, engage your students, and dominate your niche.
+            </MotionTypography>
+
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3} sx={{ mt: 4 }}>
+              <Button
+                variant="contained"
+                size="large"
+                onClick={() => navigate('/login')}
+                endIcon={<ArrowForwardIcon />}
+                sx={{
+                  py: 2,
+                  px: 6,
+                  borderRadius: '50px',
+                  bgcolor: 'text.primary',
+                  color: 'background.default',
+                  fontWeight: 900,
+                  fontSize: '1.1rem',
+                  transition: 'all 0.3s',
+                  '&:hover': { transform: 'scale(1.05)', opacity: 0.9 }
                 }}
               >
-                <Box
-                  component="img"
-                  src={heroImg}
-                  alt="UDT Hero"
-                  sx={{
-                    width: '100%',
-                    height: 'auto',
-                    borderRadius: '32px',
-                    boxShadow: '0 50px 100px -20px rgba(0,0,0,0.25)',
-                    transform: 'perspective(1000px) rotateY(-5deg) rotateX(5deg)',
-                    transition: 'transform 0.5s',
-                    '&:hover': {
-                        transform: 'perspective(1000px) rotateY(0deg) rotateX(0deg)'
-                    }
-                  }}
-                />
-              </Box>
-            </motion.div>
-          </Grid>
-        </Grid>
-      </Container>
+                Join the Future
+              </Button>
+              <Button
+                variant="outlined"
+                size="large"
+                startIcon={<PlayArrowIcon />}
+                sx={{
+                  py: 2,
+                  px: 6,
+                  borderRadius: '50px',
+                  borderColor: 'divider',
+                  color: 'text.primary',
+                  fontWeight: 700,
+                  fontSize: '1.1rem',
+                  backdropFilter: 'blur(10px)',
+                  transition: 'all 0.3s',
+                  '&:hover': { borderColor: 'text.primary', bgcolor: alpha(theme.palette.text.primary, 0.05) }
+                }}
+              >
+                Watch Demo
+              </Button>
+            </Stack>
+          </Stack>
+        </Container>
+      </Box>
 
-      {/* Features Overview */}
-      <Box sx={{ py: { xs: 8, md: 15 }, bgcolor: '#f8fafc' }}>
+      {/* Services Section */}
+      <Box sx={{ py: { xs: 8, md: 20 }, bgcolor: 'background.default' }}>
         <Container maxWidth="lg">
-          <Box sx={{ textAlign: 'center', mb: { xs: 6, md: 10 } }}>
-            <Typography variant="h3" sx={{ fontWeight: 900, mb: 2, color: '#0f172a', fontSize: { xs: '2rem', md: '3rem' } }}>
-              Why Choose UDT?
+          <Stack spacing={2} sx={{ mb: { xs: 6, md: 10 }, textAlign: { xs: 'center', md: 'left' } }}>
+            <Typography sx={{ fontWeight: 900, color: 'primary.main', letterSpacing: { xs: 2, md: 3 }, fontSize: { xs: '0.75rem', md: '1rem' } }}>
+                OUR SERVICES
             </Typography>
-            <Typography variant="h6" sx={{ color: '#64748b', maxWidth: 600, mx: 'auto', px: 2, fontSize: { xs: '1rem', md: '1.25rem' } }}>
-              We provide the tools you need to scale your educational institution with ease and efficiency.
+            <Typography 
+                variant="h2" 
+                sx={{ 
+                    fontWeight: 900, 
+                    letterSpacing: '-2px', 
+                    color: 'text.primary',
+                    fontSize: { xs: '2.4rem', sm: '3rem', md: '3.75rem' },
+                    lineHeight: 1.1
+                }}
+            >
+                Holistic Platform <br />Care.
             </Typography>
-          </Box>
-          <Grid container spacing={4}>
-            {[
-              { 
-                icon: <DashboardIcon sx={{ fontSize: 40 }} />, 
-                title: 'Powerful Dashboard', 
-                desc: 'Get instant insights into your academic performance and student engagement metrics.',
-                color: '#1976d2'
-              },
-              { 
-                icon: <SchoolIcon sx={{ fontSize: 40 }} />, 
-                title: 'Seamless Management', 
-                desc: 'Intuitive tools to create, categorize and manage complex course structures effortlessly.',
-                color: '#10b981'
-              },
-              { 
-                icon: <GroupIcon sx={{ fontSize: 40 }} />, 
-                title: 'Collaborative Authors', 
-                desc: 'Connect with expert instructors and manage their contributions in a unified gateway.',
-                color: '#f59e0b'
-              }
-            ].map((feature, i) => (
-              <Grid item xs={12} md={4} key={i}>
-                <motion.div whileHover={{ y: -15 }} transition={{ duration: 0.3 }}>
-                  <Paper
-                    sx={{
-                      p: 5,
-                      borderRadius: '24px',
-                      height: '100%',
-                      textAlign: 'left',
-                      border: '1px solid rgba(0,0,0,0.05)',
-                      boxShadow: '0 10px 30px -5px rgba(0,0,0,0.05)'
-                    }}
-                  >
-                    <Box sx={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        justifyContent: 'center', 
-                        width: 70, 
-                        height: 70, 
-                        bgcolor: `${feature.color}15`, 
-                        color: feature.color, 
-                        borderRadius: '20px', 
-                        mb: 3 
-                    }}>
-                      {feature.icon}
-                    </Box>
-                    <Typography variant="h5" sx={{ fontWeight: 800, mb: 2 }}>{feature.title}</Typography>
-                    <Typography variant="body1" sx={{ color: '#64748b', mb: 4, lineHeight: 1.7 }}>{feature.desc}</Typography>
-                    <Button color="primary" sx={{ fontWeight: 700, p: 0, '&:hover': { bgcolor: 'transparent', textDecoration: 'underline' } }}>
-                      Learn more
-                    </Button>
-                  </Paper>
-                </motion.div>
+          </Stack>
+          <Grid container spacing={{ xs: 3, md: 4 }}>
+            {services.map((item, i) => (
+              <Grid item xs={12} sm={6} md={4} key={i}>
+                <Paper
+                  elevation={0}
+                  sx={{
+                    p: { xs: 4, md: 5 },
+                    height: '100%',
+                    borderRadius: { xs: '32px', md: '40px' },
+                    bgcolor: alpha(theme.palette.background.paper, 0.5),
+                    border: isDark ? '1px solid rgba(255, 255, 255, 0.05)' : '1px solid rgba(0, 0, 0, 0.05)',
+                    transition: 'all 0.3s',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: { xs: 'center', md: 'flex-start' },
+                    textAlign: { xs: 'center', md: 'left' },
+                    '&:hover': { border: `1px solid ${item.color}`, bgcolor: alpha(item.color, 0.05) }
+                  }}
+                >
+                  <Box 
+                    component="img" 
+                    src={item.icon} 
+                    sx={{ 
+                        width: { xs: 80, md: 100 }, 
+                        mb: 4, 
+                        filter: isDark ? 'none' : 'drop-shadow(0 10px 10px rgba(0,0,0,0.1))' 
+                    }} 
+                  />
+                  <Typography variant="h5" sx={{ fontWeight: 800, mb: 2, fontSize: { xs: '1.25rem', md: '1.5rem' } }}>
+                    {item.title}
+                  </Typography>
+                  <Typography sx={{ color: 'text.secondary', lineHeight: 1.7, fontSize: { xs: '0.9rem', md: '1rem' } }}>
+                    {item.desc}
+                  </Typography>
+                </Paper>
               </Grid>
             ))}
           </Grid>
         </Container>
       </Box>
 
+      {/* Bento Grid Features */}
+      <Container maxWidth="lg" sx={{ py: 20 }}>
+        <Grid container spacing={4}>
+          <Grid item xs={12} md={8}>
+            <MotionBox
+              whileHover={{ scale: 1.01 }}
+              sx={{
+                height: 400,
+                borderRadius: '32px',
+                p: 6,
+                background: isDark 
+                  ? 'linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(129, 140, 248, 0.1))'
+                  : 'linear-gradient(135deg, #eff6ff, #eef2ff)',
+                border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.05)',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                position: 'relative',
+                overflow: 'hidden'
+              }}
+            >
+              <Box component="img" src={iconChart} sx={{ position: 'absolute', right: -50, bottom: -50, width: 350, opacity: isDark ? 0.6 : 0.8 }} />
+              <Typography variant="h3" sx={{ fontWeight: 800, mb: 2, color: 'text.primary' }}>Visual Intelligence</Typography>
+              <Typography variant="h6" sx={{ color: 'text.secondary', maxWidth: 400 }}>
+                Real-time analytics engine that predicts student outcomes and optimizes curriculum engagement.
+              </Typography>
+            </MotionBox>
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <MotionBox
+              whileHover={{ scale: 1.01 }}
+              sx={{
+                height: 400,
+                borderRadius: '32px',
+                p: 6,
+                bgcolor: alpha(theme.palette.primary.main, 0.05),
+                border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.05)',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                textAlign: 'center'
+              }}
+            >
+              <Box sx={{ p: 2, borderRadius: '24px', bgcolor: 'primary.main', color: 'white', alignSelf: 'center', mb: 3 }}>
+                <DashboardIcon fontSize="large" />
+              </Box>
+              <Typography variant="h4" sx={{ fontWeight: 800, mb: 2, color: 'text.primary' }}>Aero UI</Typography>
+              <Typography sx={{ color: 'text.secondary' }}>
+                Breathtakingly fast interface designed for minimalist efficiency.
+              </Typography>
+            </MotionBox>
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <MotionBox
+              whileHover={{ scale: 1.01 }}
+              sx={{
+                height: 400,
+                borderRadius: '32px',
+                p: 6,
+                bgcolor: alpha(theme.palette.primary.light, 0.05),
+                border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.05)',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center'
+              }}
+            >
+              <GroupIcon sx={{ fontSize: 50, color: 'primary.main', mb: 3 }} />
+              <Typography variant="h4" sx={{ fontWeight: 800, mb: 2, color: 'text.primary' }}>Faculty Force</Typography>
+              <Typography sx={{ color: 'text.secondary' }}>
+                Collaborative management for elite instructor teams.
+              </Typography>
+            </MotionBox>
+          </Grid>
+          <Grid item xs={12} md={8}>
+            <MotionBox
+              whileHover={{ scale: 1.01 }}
+              sx={{
+                height: 400,
+                borderRadius: '32px',
+                p: 6,
+                bgcolor: alpha(theme.palette.background.paper, 0.8),
+                border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.05)',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                position: 'relative',
+                overflow: 'hidden'
+              }}
+            >
+              <Box component="img" src={iconBook} sx={{ position: 'absolute', right: -20, top: -20, width: 300, opacity: isDark ? 0.5 : 0.7 }} />
+              <Typography variant="h3" sx={{ fontWeight: 800, mb: 2, color: 'text.primary' }}>Smart Library</Typography>
+              <Typography variant="h6" sx={{ color: 'text.secondary', maxWidth: 500 }}>
+                AI-powered categorization and knowledge mapping for complex course hierarchies.
+              </Typography>
+            </MotionBox>
+          </Grid>
+        </Grid>
+      </Container>
+
       {/* Pricing Section */}
-      <Container maxWidth="lg" sx={{ py: { xs: 8, md: 15 } }}>
-        <Box sx={{ textAlign: 'center', mb: { xs: 6, md: 10 } }}>
-          <Typography variant="overline" sx={{ fontWeight: 800, color: 'primary.main', letterSpacing: 2 }}>PRICING PLANS</Typography>
-          <Typography variant="h3" sx={{ fontWeight: 900, mt: 1, mb: 2, fontSize: { xs: '2rem', md: '3rem' } }}>Scalable for Any Size</Typography>
-        </Box>
-        <Grid container spacing={4} justifyContent="center">
-          {[
-            { 
-                title: 'Standard', 
-                price: '49', 
-                features: ['Unlimited Courses', 'Up to 5 Authors', 'Basic Analytics', 'Community Support'],
-                featured: false
-            },
-            { 
-                title: 'Premium', 
-                price: '99', 
-                features: ['Unlimited Courses', 'Unlimited Authors', 'Advanced Dashboard', 'Priority Support', 'White-labeling'],
-                featured: true
-            },
-            { 
-                title: 'Enterprise', 
-                price: 'Custom', 
-                features: ['Custom Integration', 'Dedicated Manager', 'SSO Security', '24/7 Expert Support'],
-                featured: false
-            }
-          ].map((plan, i) => (
-            <Grid item xs={12} sm={6} md={4} key={i}>
-              <Card 
-                sx={{ 
-                    p: 2, 
-                    borderRadius: '32px', 
-                    height: '100%', 
-                    position: 'relative',
-                    border: plan.featured ? '2px solid' : '1px solid',
-                    borderColor: plan.featured ? 'primary.main' : 'rgba(0,0,0,0.08)',
-                    boxShadow: plan.featured ? '0 30px 60px -15px rgba(25, 118, 210, 0.2)' : 'none',
-                    transform: plan.featured ? 'scale(1.05)' : 'none'
-                }}
-              >
-                {plan.featured && (
-                    <Chip 
-                        label="MOST POPULAR" 
-                        color="primary" 
-                        sx={{ position: 'absolute', top: -15, left: '50%', transform: 'translateX(-50%)', fontWeight: 900 }} 
-                    />
-                )}
-                <CardContent sx={{ textAlign: 'center', p: 4 }}>
-                  <Typography variant="h6" sx={{ fontWeight: 700, color: 'text.secondary', mb: 3 }}>{plan.title}</Typography>
-                  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'baseline', mb: 4 }}>
-                    <Typography variant="h2" sx={{ fontWeight: 900 }}>${plan.price}</Typography>
-                    {plan.price !== 'Custom' && <Typography variant="h6" color="text.secondary">/mo</Typography>}
-                  </Box>
-                  <Divider sx={{ mb: 4 }} />
+      <Box sx={{ py: 20, bgcolor: alpha(theme.palette.primary.main, 0.02) }}>
+        <Container maxWidth="lg">
+          <Stack spacing={2} textAlign="center" sx={{ mb: 10 }}>
+            <Typography sx={{ fontWeight: 900, color: 'primary.main', letterSpacing: 3 }}>INVESTMENT</Typography>
+            <Typography variant="h2" sx={{ fontWeight: 900, color: 'text.primary' }}>Elite Access Plans</Typography>
+          </Stack>
+
+          <Grid container spacing={4} justifyContent="center">
+            {[
+              { title: 'Standard', price: '49', features: ['Core Module', '5 Staff Seats', '24/7 API Access'], color: 'text.primary' },
+              { title: 'Ultimate', price: '149', features: ['All Core + AI', 'Unlimited Seats', 'Premium Support', 'White-labeling'], color: 'primary.main', featured: true },
+              { title: 'Enterprise', price: '999', features: ['Custom Infrastructure', 'Dedicated Architect', 'On-premise Options'], color: 'text.primary' }
+            ].map((plan, i) => (
+              <Grid item xs={12} md={4} key={i}>
+                <Paper
+                  elevation={0}
+                  sx={{
+                    p: 6,
+                    height: '100%',
+                    borderRadius: '40px',
+                    bgcolor: plan.featured ? alpha(theme.palette.primary.main, 0.1) : theme.palette.background.paper,
+                    border: `1px solid ${plan.featured ? theme.palette.primary.main : alpha(theme.palette.text.primary, 0.1)}`,
+                    transition: 'all 0.3s',
+                    '&:hover': { transform: 'translateY(-10px)', bgcolor: plan.featured ? alpha(theme.palette.primary.main, 0.15) : alpha(theme.palette.text.primary, 0.03) }
+                  }}
+                >
+                  <Typography variant="h6" sx={{ fontWeight: 800, color: plan.color, mb: 4 }}>{plan.title}</Typography>
+                  <Typography variant="h2" sx={{ fontWeight: 900, mb: 1, color: 'text.primary' }}>${plan.price}</Typography>
+                  <Typography sx={{ color: 'text.secondary', mb: 4 }}>per month, billed annually</Typography>
+                  
                   <Stack spacing={2} sx={{ mb: 6 }}>
-                    {plan.features.map((feature, idx) => (
-                      <Box sx={{ display: 'flex', alignItems: 'center' }} key={idx}>
-                        <CheckIcon sx={{ color: 'success.main', mr: 2, fontSize: 20 }} />
-                        <Typography variant="body2" sx={{ fontWeight: 500 }}>{feature}</Typography>
-                      </Box>
+                    {plan.features.map((f, idx) => (
+                      <Stack key={idx} direction="row" spacing={2} alignItems="center">
+                        <CheckCircleIcon sx={{ color: plan.color, fontSize: 20 }} />
+                        <Typography sx={{ fontWeight: 500, color: 'text.primary', opacity: 0.8 }}>{f}</Typography>
+                      </Stack>
                     ))}
                   </Stack>
-                  <Button 
-                    fullWidth 
-                    variant={plan.featured ? 'contained' : 'outlined'} 
-                    size="large"
-                    sx={{ borderRadius: '14px', py: 1.5, fontWeight: 700 }}
+
+                  <Button
+                    fullWidth
+                    variant={plan.featured ? 'contained' : 'outlined'}
+                    sx={{
+                      borderRadius: '50px',
+                      py: 2,
+                      fontWeight: 900,
+                      bgcolor: plan.featured ? 'primary.main' : 'transparent',
+                      color: plan.featured ? 'white' : 'text.primary',
+                      borderColor: plan.featured ? 'primary.main' : 'divider',
+                      '&:hover': { bgcolor: plan.featured ? 'primary.dark' : alpha(theme.palette.text.primary, 0.1) }
+                    }}
                   >
                     Select Plan
                   </Button>
-                </CardContent>
-              </Card>
+                </Paper>
+              </Grid>
+            ))}
+          </Grid>
+        </Container>
+      </Box>
+
+      {/* FAQ Section */}
+      <Box sx={{ py: 20 }}>
+        <Container maxWidth="md">
+          <Stack spacing={2} textAlign="center" sx={{ mb: 10 }}>
+            <Typography sx={{ fontWeight: 900, color: 'primary.main', letterSpacing: 3 }}>KNOWLEDGE BASE</Typography>
+            <Typography variant="h2" sx={{ fontWeight: 900, color: 'text.primary' }}>Frequently Asked Questions</Typography>
+          </Stack>
+          <Box>
+            {faqs.map((faq, i) => (
+              <Accordion 
+                key={i} 
+                sx={{ 
+                  bgcolor: 'transparent', 
+                  color: 'text.primary', 
+                  borderBottom: `1px solid ${theme.palette.divider}`,
+                  boxShadow: 'none',
+                  '&:before': { display: 'none' },
+                  mb: 2
+                }}
+              >
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon sx={{ color: 'primary.main' }} />}
+                  sx={{ px: 0, '& .MuiAccordionSummary-content': { my: 3 } }}
+                >
+                  <Typography variant="h5" sx={{ fontWeight: 700 }}>{faq.q}</Typography>
+                </AccordionSummary>
+                <AccordionDetails sx={{ px: 0, pb: 4 }}>
+                  <Typography sx={{ color: 'text.secondary', fontSize: '1.1rem', lineHeight: 1.8 }}>
+                    {faq.a}
+                  </Typography>
+                </AccordionDetails>
+              </Accordion>
+            ))}
+          </Box>
+        </Container>
+      </Box>
+
+      {/* Team Section */}
+      <Container maxWidth="lg" sx={{ py: 20 }}>
+        <Stack spacing={2} textAlign="center" sx={{ mb: 12 }}>
+          <Typography variant="h2" sx={{ fontWeight: 900, color: 'text.primary' }}>Architected for You</Typography>
+          <Typography sx={{ color: 'text.secondary', maxWidth: 600, mx: 'auto' }}>
+            Built by engineers, educators, and designers who believe in the power of frictionless software.
+          </Typography>
+        </Stack>
+
+        <Grid container spacing={8}>
+          {[
+            { name: 'Adam Vance', role: 'Architect', img: team1 },
+            { name: 'Elena Rossi', role: 'Platform Lead', img: team2 },
+            { name: 'Kenji Wu', role: 'CTO', img: team3 }
+          ].map((m, i) => (
+            <Grid item xs={12} md={4} key={i}>
+              <Stack spacing={3} alignItems="center">
+                <Avatar 
+                  src={m.img} 
+                  sx={{ 
+                    width: 200, 
+                    height: 200, 
+                    borderRadius: '60px', 
+                    filter: isDark ? 'grayscale(100%)' : 'none',
+                    transition: 'all 0.5s',
+                    '&:hover': { filter: 'grayscale(0%)', borderRadius: '40px' }
+                  }} 
+                />
+                <Box textAlign="center">
+                  <Typography variant="h5" sx={{ fontWeight: 800, color: 'text.primary' }}>{m.name}</Typography>
+                  <Typography sx={{ color: 'primary.main', fontWeight: 700, letterSpacing: 1 }}>{m.role}</Typography>
+                </Box>
+              </Stack>
             </Grid>
           ))}
         </Grid>
       </Container>
 
-      {/* Team Section */}
-      <Box sx={{ py: { xs: 8, md: 15 }, bgcolor: '#f8fafc' }}>
-        <Container maxWidth="lg">
-          <Box sx={{ textAlign: 'center', mb: { xs: 6, md: 10 } }}>
-            <Typography variant="h3" sx={{ fontWeight: 900, mb: 2, fontSize: { xs: '2rem', md: '3rem' } }}>The Minds Behind UDT</Typography>
-            <Typography variant="h6" sx={{ color: '#64748b', fontSize: { xs: '1rem', md: '1.25rem' }, px: 2 }}>A passionate team committed to revolutionizing digital education.</Typography>
-          </Box>
-          <Grid container spacing={6}>
-            {[
-              { name: 'David Chen', role: 'CEO & Founder', bio: 'Visionary leader with 15+ years in EdTech.', img: team1 },
-              { name: 'Sarah Jenkins', role: 'Head of Engineering', bio: 'Expert architect specialized in scalable systems.', img: team2 },
-              { name: 'Mark Tanaka', role: 'Product Strategy', bio: 'Driving user-centric design and innovative features.', img: team3 }
-            ].map((member, i) => (
-              <Grid item xs={12} md={4} key={i}>
-                <Box sx={{ textAlign: 'center' }}>
-                  <Avatar 
-                    src={member.img} 
-                    sx={{ 
-                        width: 240, 
-                        height: 240, 
-                        mx: 'auto', 
-                        mb: 4, 
-                        boxShadow: '0 20px 40px -10px rgba(0,0,0,0.15)',
-                        border: '8px solid #ffffff'
-                    }} 
-                  />
-                  <Typography variant="h5" sx={{ fontWeight: 800, mb: 1 }}>{member.name}</Typography>
-                  <Typography variant="subtitle1" color="primary" sx={{ fontWeight: 700, mb: 2 }}>{member.role}</Typography>
-                  <Typography variant="body1" sx={{ color: '#64748b', px: 2 }}>{member.bio}</Typography>
-                  <Stack direction="row" spacing={1} justifyContent="center" sx={{ mt: 3 }}>
-                    <IconButton size="small"><TwitterIcon fontSize="small" /></IconButton>
-                    <IconButton size="small"><LinkedInIcon fontSize="small" /></IconButton>
-                  </Stack>
-                </Box>
-              </Grid>
-            ))}
-          </Grid>
-        </Container>
-      </Box>
-
-      {/* Final CTA */}
-      <Container maxWidth="md" sx={{ py: { xs: 8, md: 15 }, textAlign: 'center' }}>
-        <Paper 
-            sx={{ 
-                p: { xs: 4, sm: 6, md: 10 }, 
-                borderRadius: { xs: '24px', md: '40px' }, 
-                background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
-                color: '#ffffff',
-                boxShadow: '0 40px 80px -20px rgba(15, 23, 42, 0.4)'
-            }}
-        >
-          <Typography variant="h2" sx={{ fontWeight: 900, mb: 3, fontSize: { xs: '2rem', sm: '2.5rem', md: '3.75rem' } }}>Ready to Transform?</Typography>
-          <Typography variant="h6" sx={{ opacity: 0.8, mb: { xs: 4, md: 6 }, maxWidth: 500, mx: 'auto', fontSize: { xs: '1rem', md: '1.25rem' } }}>
-            Join hundreds of institutions already using UDT to deliver world-class education.
-          </Typography>
-          <Button 
-            variant="contained" 
-            size="large" 
-            onClick={() => navigate('/login')}
-            sx={{ 
-                py: { xs: 1.5, md: 2.5 }, 
-                px: { xs: 4, md: 8 }, 
-                borderRadius: '16px', 
-                bgcolor: '#ffffff', 
-                color: '#0f172a', 
-                fontWeight: 900,
-                fontSize: { xs: '1rem', md: '1.2rem' },
-                '&:hover': { bgcolor: '#f1f5f9' }
-            }}
-          >
-            Go to Platform
-          </Button>
-        </Paper>
-      </Container>
-
       {/* Footer */}
-      <Box sx={{ py: { xs: 6, md: 10 }, bgcolor: '#ffffff', borderTop: '1px solid rgba(0,0,0,0.05)' }}>
+      <Box sx={{ py: 10, borderTop: `1px solid ${theme.palette.divider}`, bgcolor: 'background.paper' }}>
         <Container maxWidth="lg">
-          <Grid container spacing={{ xs: 4, md: 8 }}>
-            <Grid item xs={12} md={4}>
-              <Typography variant="h5" sx={{ fontWeight: 900, mb: 3, background: 'linear-gradient(45deg, #1976d2 30%, #21CBF3 90%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                UDT.
+          <Grid container spacing={8}>
+            <Grid item xs={12} md={6}>
+              <Typography variant="h4" sx={{ fontWeight: 900, mb: 4, letterSpacing: '-2px', color: 'text.primary' }}>UDT.</Typography>
+              <Typography sx={{ color: 'text.secondary', maxWidth: 400, mb: 4 }}>
+                A sophisticated platform for modern institutions. 
+                Redefining the relationship between technology and knowledge.
               </Typography>
-              <Typography variant="body1" sx={{ color: '#64748b', mb: 4, lineHeight: 1.8 }}>
-                Crafting the future of educational management with cutting-edge technology and human-centric design.
-              </Typography>
-              <Stack direction="row" spacing={2}>
-                <IconButton color="inherit"><TwitterIcon /></IconButton>
-                <IconButton color="inherit"><GitHubIcon /></IconButton>
-                <IconButton color="inherit"><LinkedInIcon /></IconButton>
+              <Stack direction="row" spacing={3}>
+                {['LinkedIn', 'Twitter', 'GitHub'].map(s => (
+                  <Typography key={s} sx={{ fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer', '&:hover': { color: 'primary.main' } }}>{s}</Typography>
+                ))}
               </Stack>
             </Grid>
-            <Grid item xs={12} sm={6} md={2}>
-              <Typography variant="h6" sx={{ fontWeight: 800, mb: 3 }}>Product</Typography>
-              <Stack spacing={2}>
-                <Typography variant="body2" color="text.secondary" sx={{ cursor: 'pointer' }}>Features</Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ cursor: 'pointer' }}>Integrations</Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ cursor: 'pointer' }}>Pricing</Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ cursor: 'pointer' }}>Changelog</Typography>
-              </Stack>
-            </Grid>
-            <Grid item xs={12} sm={6} md={2}>
-              <Typography variant="h6" sx={{ fontWeight: 800, mb: 3 }}>Company</Typography>
-              <Stack spacing={2}>
-                <Typography variant="body2" color="text.secondary" sx={{ cursor: 'pointer' }}>About Us</Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ cursor: 'pointer' }}>Our Team</Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ cursor: 'pointer' }}>Careers</Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ cursor: 'pointer' }}>Contact</Typography>
-              </Stack>
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <Typography variant="h6" sx={{ fontWeight: 800, mb: 3 }}>Subscribe to Updates</Typography>
-              <Stack direction="row" spacing={1}>
-                <Paper sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: '100%', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.1)', boxShadow: 'none' }}>
-                  <Box component="input" placeholder="Email Address" sx={{ ml: 1, flex: 1, border: 'none', outline: 'none', fontSize: '0.9rem', width: '100%' }} />
-                  <Button variant="contained" sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 700 }}>Join</Button>
-                </Paper>
+            <Grid item xs={12} md={6}>
+              <Stack direction="row" spacing={10} justifyContent={{ md: 'flex-end' }}>
+                <Stack spacing={2}>
+                  <Typography sx={{ fontWeight: 800, mb: 1, color: 'text.primary' }}>PRODUCT</Typography>
+                  {['Features', 'Engine', 'Aero UI'].map(l => (
+                    <Typography key={l} sx={{ color: 'text.secondary', fontSize: '0.9rem', cursor: 'pointer' }}>{l}</Typography>
+                  ))}
+                </Stack>
+                <Stack spacing={2}>
+                  <Typography sx={{ fontWeight: 800, mb: 1, color: 'text.primary' }}>LEGAL</Typography>
+                  {['Privacy', 'Terms', 'License'].map(l => (
+                    <Typography key={l} sx={{ color: 'text.secondary', fontSize: '0.9rem', cursor: 'pointer' }}>{l}</Typography>
+                  ))}
+                </Stack>
               </Stack>
             </Grid>
           </Grid>
-          <Box sx={{ mt: { xs: 6, md: 10 }, pt: 8, borderTop: '1px solid rgba(0,0,0,0.05)', textAlign: 'center' }}>
-            <Typography variant="body2" color="text.secondary">
-              © 2026 UDT Course Manager. All rights reserved. Made by [Your Name/Company].
+          <Box sx={{ mt: 15, pt: 8, borderTop: `1px solid ${theme.palette.divider}`, textAlign: 'center' }}>
+            <Typography variant="caption" sx={{ color: 'text.disabled' }}>
+              © 2026 UDT COURSE MANAGER. DESIGNED BY UDITH.CC
             </Typography>
           </Box>
         </Container>
       </Box>
+
+      {/* Mobile Drawer */}
+      <Drawer
+        anchor="right"
+        open={mobileOpen}
+        onClose={() => setMobileOpen(false)}
+        PaperProps={{ sx: { bgcolor: 'background.default', width: '100%', p: 4 } }}
+      >
+        <Stack direction="row" justifyContent="flex-end" sx={{ mb: 6 }}>
+          <IconButton onClick={() => setMobileOpen(false)} sx={{ color: 'text.primary' }}>
+            <CloseIcon />
+          </IconButton>
+        </Stack>
+        <Stack spacing={4} alignItems="center">
+          {navItems.map(item => (
+            <Typography key={item} variant="h4" sx={{ fontWeight: 900, color: 'text.primary' }}>{item}</Typography>
+          ))}
+          <Button
+            fullWidth
+            variant="contained"
+            onClick={() => navigate('/login')}
+            sx={{ py: 2, borderRadius: '50px', bgcolor: 'primary.main', color: 'white', fontWeight: 900, mt: 4 }}
+          >
+            Dashboard
+          </Button>
+        </Stack>
+      </Drawer>
     </Box>
   );
 };
