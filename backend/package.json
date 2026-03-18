@@ -11,9 +11,7 @@
     "db:up": "migrate-mongo up",
     "test": "jest --watchAll --colors",
     "format:check": "prettier --check .",
-    "format:write": "prettier --write .",
-    "lint:check": "eslint .",
-    "lint:fix": "eslint --fix ."
+    "format:write": "prettier --write ."
   },
   "keywords": [],
   "author": "",
@@ -28,11 +26,8 @@
     "crypto": "^1.0.1",
     "debug": "^4.4.3",
     "dotenv": "^17.3.1",
-    "eslint-plugin-jest": "^29.15.0",
     "express": "^4.22.1",
     "express-async-handler": "^1.2.0",
-    "install": "^0.13.0",
-    "jest": "^30.3.0",
     "joi": "^18.0.2",
     "jsonwebtoken": "^9.0.3",
     "lodash": "^4.17.23",
@@ -49,13 +44,8 @@
     "winston": "^3.19.0"
   },
   "devDependencies": {
-    "eslint": "^10.0.3",
-    "eslint-config-airbnb": "^19.0.4",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-prettier": "^5.5.5",
     "husky": "^9.1.7",
+    "jest": "^30.3.0",
     "lint-staged": "^16.3.3",
     "nodemon": "^3.1.14",
     "prettier": "^3.8.1",

@@ -1,4 +1,3 @@
-version: '3.8'
 
 services:
   frontend:
@@ -17,7 +16,7 @@ services:
       - 3001:3001
     env_file: ./backend/.env
     environment:
-      DATABASE_URL: postgresql://postgres:eC*vtL*DJ7pLw-p@db.ppcubyilaktvllezdzkw.supabase.co:5432/postgres
+      DATABASE_URL: "postgresql://postgres.ppcubyilaktvllezdzkw:eC*vtL*DJ7pLw-p@aws-1-ap-northeast-2.pooler.supabase.com:5432/postgres"
     command: ./docker-entrypoint.sh
     volumes:
       - ./backend:/app
