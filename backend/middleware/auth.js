@@ -1,9 +1,8 @@
 const jwt = require('jsonwebtoken');
-const config = require('config');
 const AppError = require('../utils/AppError');
 
 module.exports = (req, res, next) => {
-  if (!config.get('requiresAuth')) return next();
+  if (process.env.REQUIRES_AUTH === 'false') return next();
 
   const token = req.header('x-auth-token');
   if (!token) throw new AppError('Access denied. No token provided.', 401);

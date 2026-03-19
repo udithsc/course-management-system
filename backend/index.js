@@ -1,9 +1,7 @@
 require('express-async-errors');
 const express = require('express');
 require('dotenv').config();
-const config = require('config');
 const { dirname } = require('path');
-
 const app = express();
 const appDir = dirname(require.main.filename);
 const logger = require('./utils/logger');
@@ -17,10 +15,9 @@ require('./startup/db')();
 
 // Static file serving
 app.use('/files', express.static(`${appDir}/data/uploads`));
-app.use('/resources', express.static(`${appDir}/resources`));
 
 // Start server
-const port = process.env.PORT || config.get('port');
+const port = process.env.PORT || 3001;
 const server = app.listen(port, () =>
   logger.info(`Listening on port ${port}...`)
 );
