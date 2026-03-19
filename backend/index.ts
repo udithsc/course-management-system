@@ -1,4 +1,3 @@
-require('express-async-errors');
 const express = require('express');
 require('dotenv').config();
 const { dirname } = require('path');
