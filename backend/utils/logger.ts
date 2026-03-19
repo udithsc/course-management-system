@@ -2,7 +2,7 @@ const { createLogger, transports, format } = require('winston');
 const moment = require('moment');
 const { combine, timestamp, printf, colorize, simple } = format;
 const { dirname, resolve } = require('path');
-const appDir = dirname(require.main?.filename || resolve(__dirname, '../index.js'));
+const appDir = dirname(require.main?.filename || resolve(__dirname, '../index.ts'));
 
 const logFormat = printf(
   ({ level, message, timestamp }) => `${timestamp}|${level}|${message}`

@@ -2,11 +2,17 @@ require('express-async-errors');
 const express = require('express');
 require('dotenv').config();
 const { dirname } = require('path');
+const validateEnv = require('./utils/env');
+
+// Validate env vars first
+validateEnv();
+
 const app = express();
 const appDir = dirname(require.main.filename);
 const logger = require('./utils/logger');
 
 // Startup modules
+require('./startup/security')(app);
 require('./startup/http')(app);
 require('./startup/cors')(app);
 require('./startup/routes')(app);

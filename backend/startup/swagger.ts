@@ -16,7 +16,7 @@ module.exports = (app) => {
         }
       ]
     },
-    apis: ['./routes/*.js']
+    apis: ['./routes/*.ts']
   };
 
   const specs = swaggerJsDoc(options);
