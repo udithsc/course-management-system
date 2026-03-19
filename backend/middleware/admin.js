@@ -1,11 +1,12 @@
 const config = require('config');
+const AppError = require('../utils/AppError');
 
 module.exports = (req, res, next) => {
-  // 401 Unauthorized
-  // 403 Forbidden
   if (!config.get('requiresAuth')) return next();
 
-  if (!req.user.isAdmin) return res.status(403).send('Access denied.');
+  if (!req.user.isAdmin) {
+    throw new AppError('Access denied. Admin privileges required.', 403);
+  }
 
   next();
 };

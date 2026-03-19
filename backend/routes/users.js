@@ -1,37 +1,40 @@
 const router = require('express').Router();
-const multer = require('multer');
-const { dirname } = require('path');
-const fs = require('fs');
 const validate = require('../middleware/validate');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
+const AppError = require('../utils/AppError');
+const { success, created, paginated, message } = require('../utils/response');
 const { validateModel } = require('../models/user.model');
-const appDir = dirname(require.main.filename);
+const { createUpload, getFileUrl } = require('../utils/upload');
 const prisma = require('../db');
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const dir = `/${appDir}/data/uploads/users`;
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-    cb(null, dir);
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  }
-});
+const upload = createUpload('users');
 
-const upload = multer({ storage });
+// Fields to return for user queries (never include password)
+const USER_SELECT = {
+  id: true,
+  username: true,
+  email: true,
+  firstName: true,
+  lastName: true,
+  mobile: true,
+  dob: true,
+  image: true,
+  bookmarks: true,
+  isVerified: true,
+  isAdmin: true,
+  createdAt: true,
+  updatedAt: true,
+};
 
+// ─── List Users (paginated) ─────────────────────────────
 router.get('/', [auth], async (req, res) => {
   const pageNo = parseInt(req.query.pageNo, 10) || 0;
   const pageSize = parseInt(req.query.pageSize, 10) || 10;
   const name = req.query.name || '';
 
   const where = {
-    firstName: {
-      contains: name,
-      mode: 'insensitive'
-    }
+    firstName: { contains: name, mode: 'insensitive' },
   };
 
   const totalElements = await prisma.user.count({ where });
@@ -42,226 +45,237 @@ router.get('/', [auth], async (req, res) => {
     skip: pageNo * pageSize,
     take: pageSize,
     orderBy: { firstName: 'asc' },
-    select: {
-      id: true,
-      username: true,
-      email: true,
-      firstName: true,
-      lastName: true,
-      mobile: true,
-      dob: true,
-      image: true,
-      bookmarks: true,
-      isVerified: true,
-      isAdmin: true,
-      createdAt: true,
-      updatedAt: true
-    }
+    select: USER_SELECT,
   });
 
-  res.send({ totalElements, pageNo, totalPages, data });
+  return paginated(res, { data, totalElements, pageNo, totalPages });
 });
 
+// ─── Create User ────────────────────────────────────────
 router.post('/', [auth, admin, validate(validateModel)], async (req, res) => {
   const { username, email, firstName, lastName, mobile } = req.body;
+
   const user = await prisma.user.create({
     data: {
       username,
       email,
       firstName,
       lastName,
-      mobile: mobile ? mobile.toString() : ''
-    }
+      mobile: mobile ? mobile.toString() : '',
+    },
+    select: USER_SELECT,
   });
-  res.send(user);
+
+  return created(res, user);
 });
 
+// ─── Update User ────────────────────────────────────────
 router.put('/:id', [auth, admin, validate(validateModel)], async (req, res) => {
+  // Never allow password to be set through this endpoint
+  const { password, ...updateData } = req.body;
+
   try {
     const user = await prisma.user.update({
-      where: { id: req.params.id || req.params.id },
-      data: req.body
+      where: { id: req.params.id },
+      data: updateData,
+      select: USER_SELECT,
     });
-    res.send(user);
+    return success(res, user);
   } catch (e) {
-    return res.status(404).send('The user not found.');
+    throw new AppError('User not found.', 404);
   }
 });
 
+// ─── Delete User ────────────────────────────────────────
 router.delete('/:id', [auth, admin], async (req, res) => {
   try {
-    const result = await prisma.user.delete({ where: { id: req.params.id } });
-    res.send(result);
+    await prisma.user.delete({ where: { id: req.params.id } });
+    return message(res, 'User deleted successfully.');
   } catch (e) {
-    res.status(404).send('User not found');
+    throw new AppError('User not found.', 404);
   }
 });
 
+// ─── Get Current User ───────────────────────────────────
 router.get('/me', [auth], async (req, res) => {
   const user = await prisma.user.findUnique({
     where: { id: req.user.id },
-    select: {
-      id: true,
-      username: true,
-      email: true,
-      firstName: true,
-      lastName: true,
-      mobile: true,
-      dob: true,
-      image: true,
-      bookmarks: true,
-      isVerified: true,
-      isAdmin: true,
-      subscriptions: true
-    }
+    select: { ...USER_SELECT, subscriptions: true },
   });
-  res.send(user);
+  if (!user) throw new AppError('User not found.', 404);
+  return success(res, user);
 });
 
+// ─── Close Account ──────────────────────────────────────
 router.delete('/closeAccount', [auth], async (req, res) => {
   try {
-    const result = await prisma.user.delete({ where: { id: req.user.id } });
-    res.send(result);
+    await prisma.user.delete({ where: { id: req.user.id } });
+    return message(res, 'Account closed successfully.');
   } catch (e) {
-    res.status(400).send('Error');
+    throw new AppError('Error closing account.', 400);
   }
 });
 
+// ─── Dashboard Data ─────────────────────────────────────
 router.get('/dashboard', [auth], async (req, res) => {
   const user = await prisma.user.findUnique({
     where: { id: req.user.id },
-    include: { subscriptions: true }
+    select: { ...USER_SELECT, subscriptions: true },
   });
-  
+  if (!user) throw new AppError('User not found.', 404);
+
   const courses = await prisma.course.findMany({
-    include: { lessons: true }
+    include: { lessons: true },
   });
+
   const categories = await prisma.category.findMany({
-    select: { id: true, name: true }
+    select: { id: true, name: true },
   });
 
-  const subscriptions = user.subscriptions.map((sub) => {
-    const subCourse = courses.find((o) => o.id === sub.courseId);
-    if(!subCourse) return null;
-    const subCategory = categories.find((o) => o.id === subCourse.categoryId);
-    const precentage = subCourse.lessons.length > 0
-      ? (sub.watchedVideoId.length / subCourse.lessons.length) * 100
-      : 0;
+  const subscriptions = user.subscriptions
+    .map((sub) => {
+      const subCourse = courses.find((o) => o.id === sub.courseId);
+      if (!subCourse) return null;
+      const subCategory = categories.find((o) => o.id === subCourse.categoryId);
+      const percentage =
+        subCourse.lessons.length > 0
+          ? (sub.watchedVideoId.length / subCourse.lessons.length) * 100
+          : 0;
 
-    return {
-      id: sub.courseId,
-      name: subCourse.name,
-      precentage: Math.round(precentage),
-      category: subCategory?.name
-    };
-  }).filter(Boolean);
+      return {
+        id: sub.courseId,
+        name: subCourse.name,
+        percentage: Math.round(percentage),
+        category: subCategory?.name,
+      };
+    })
+    .filter(Boolean);
 
-  res.json({
+  return success(res, {
     user,
     subscriptions,
     courses,
     categories,
-    developerPicks: courses
+    developerPicks: courses,
   });
 });
 
+// ─── Subscribe to Course ────────────────────────────────
 router.post('/subscribe', [auth], async (req, res) => {
+  const courseId = req.body.course || req.body.id;
+  if (!courseId) throw new AppError('Course ID is required.', 400);
+
   const existingSub = await prisma.subscription.findFirst({
-    where: { userId: req.user.id, courseId: req.body.course || req.body.id }
+    where: { userId: req.user.id, courseId },
   });
 
   if (!existingSub) {
     await prisma.subscription.create({
-      data: {
-        userId: req.user.id,
-        courseId: req.body.course || req.body.id
-      }
+      data: { userId: req.user.id, courseId },
     });
 
     await prisma.course.update({
-      where: { id: req.body.id || req.body.course },
-      data: { subscriptions: { increment: 1 } }
+      where: { id: courseId },
+      data: { subscriptions: { increment: 1 } },
     });
   }
 
-  res.send('Success');
+  return message(res, 'Subscribed successfully.');
 });
 
+// ─── Unsubscribe from Course ────────────────────────────
 router.post('/unsubscribe', [auth], async (req, res) => {
+  const courseId = req.body.id;
+  if (!courseId) throw new AppError('Course ID is required.', 400);
+
   const existingSub = await prisma.subscription.findFirst({
-    where: { userId: req.user.id, courseId: req.body.id }
+    where: { userId: req.user.id, courseId },
   });
 
   if (existingSub) {
     await prisma.subscription.delete({ where: { id: existingSub.id } });
     await prisma.course.update({
-      where: { id: req.body.id },
-      data: { subscriptions: { decrement: 1 } }
+      where: { id: courseId },
+      data: { subscriptions: { decrement: 1 } },
     });
   }
 
-  res.send('Success');
+  return message(res, 'Unsubscribed successfully.');
 });
 
+// ─── Bookmark Course ────────────────────────────────────
 router.post('/bookmark', [auth], async (req, res) => {
-  const userId = req.user.id;
-  const user = await prisma.user.findUnique({ where: { id: userId } });
-  
-  if (user && !user.bookmarks.includes(req.body.id)) {
+  const { id } = req.body;
+  if (!id) throw new AppError('Course ID is required.', 400);
+
+  const user = await prisma.user.findUnique({ where: { id: req.user.id } });
+  if (!user) throw new AppError('User not found.', 404);
+
+  if (!user.bookmarks.includes(id)) {
     await prisma.user.update({
-      where: { id: userId },
-      data: { bookmarks: { push: req.body.id } }
+      where: { id: req.user.id },
+      data: { bookmarks: { push: id } },
     });
   }
-  res.send('Success');
+
+  return message(res, 'Bookmark added.');
 });
 
+// ─── Remove Bookmark ────────────────────────────────────
 router.delete('/bookmark/:id', [auth], async (req, res) => {
-  const userId = req.user.id;
-  const user = await prisma.user.findUnique({ where: { id: userId } });
-  
-  if (user) {
-    await prisma.user.update({
-      where: { id: userId },
-      data: { bookmarks: user.bookmarks.filter(b => b !== req.params.id) }
-    });
-  }
-  res.send('Success');
+  const user = await prisma.user.findUnique({ where: { id: req.user.id } });
+  if (!user) throw new AppError('User not found.', 404);
+
+  await prisma.user.update({
+    where: { id: req.user.id },
+    data: { bookmarks: user.bookmarks.filter((b) => b !== req.params.id) },
+  });
+
+  return message(res, 'Bookmark removed.');
 });
 
+// ─── Mark Video as Watched ──────────────────────────────
 router.post('/watch', [auth], async (req, res) => {
-  const userId = req.user.id;
+  const { id, video } = req.body;
+  if (!id || !video) throw new AppError('Course ID and video ID are required.', 400);
+
   const sub = await prisma.subscription.findFirst({
-    where: { userId, courseId: req.body.id }
+    where: { userId: req.user.id, courseId: id },
   });
-  
-  if (sub && !sub.watchedVideoId.includes(req.body.video)) {
+  if (!sub) throw new AppError('You are not subscribed to this course.', 400);
+
+  if (!sub.watchedVideoId.includes(video)) {
     await prisma.subscription.update({
       where: { id: sub.id },
-      data: { watchedVideoId: { push: req.body.video } }
+      data: { watchedVideoId: { push: video } },
     });
   }
-  res.send('Success');
+
+  return message(res, 'Video marked as watched.');
 });
 
+// ─── Upload Profile Image ───────────────────────────────
 router.post('/image', [auth, upload.single('file')], async (req, res) => {
   const result = await prisma.user.update({
     where: { id: req.user.id },
     data: {
       image: req.file?.filename
-        ? `http://${req.headers.host}/files/categories/${req.file.filename}`
-        : null
-    }
+        ? getFileUrl(req, 'users', req.file.filename)
+        : null,
+    },
+    select: USER_SELECT,
   });
-  res.send(result);
+  return success(res, result);
 });
 
+// ─── Remove Profile Image ───────────────────────────────
 router.delete('/image', [auth], async (req, res) => {
   const result = await prisma.user.update({
     where: { id: req.user.id },
-    data: { image: '' }
+    data: { image: '' },
+    select: USER_SELECT,
   });
-  res.send(result);
+  return success(res, result);
 });
 
 module.exports = router;

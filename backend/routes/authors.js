@@ -1,37 +1,23 @@
 const router = require('express').Router();
-const multer = require('multer');
-const fs = require('fs');
-const { dirname } = require('path');
 const validate = require('../middleware/validate');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
+const AppError = require('../utils/AppError');
+const { success, created, paginated, message } = require('../utils/response');
 const { validateModel } = require('../models/author.model');
-const appDir = dirname(require.main.filename);
+const { createUpload, getFileUrl } = require('../utils/upload');
 const prisma = require('../db');
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const dir = `/${appDir}/data/uploads/authors`;
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-    cb(null, dir);
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  }
-});
+const upload = createUpload('authors');
 
-const upload = multer({ storage });
-
+// ─── List Authors (paginated) ───────────────────────────
 router.get('/', [auth], async (req, res) => {
   const pageNo = parseInt(req.query.pageNo, 10) || 0;
   const pageSize = parseInt(req.query.pageSize, 10) || 10;
   const name = req.query.name || '';
 
   const where = {
-    name: {
-      contains: name,
-      mode: 'insensitive'
-    }
+    name: { contains: name, mode: 'insensitive' },
   };
 
   const totalElements = await prisma.author.count({ where });
@@ -41,44 +27,51 @@ router.get('/', [auth], async (req, res) => {
     where,
     skip: pageNo * pageSize,
     take: pageSize,
-    orderBy: { name: 'asc' }
+    orderBy: { name: 'asc' },
   });
 
-  res.send({ totalElements, pageNo, totalPages, data });
+  return paginated(res, { data, totalElements, pageNo, totalPages });
 });
 
+// ─── Get Single Author ──────────────────────────────────
 router.get('/:id', [auth], async (req, res) => {
-  const author = await prisma.author.findUnique({ where: { id: req.params.id } });
-  if (!author)
-    return res.status(404).send('The author with the given ID was not found.');
-  return res.send(author);
+  const author = await prisma.author.findUnique({
+    where: { id: req.params.id },
+  });
+  if (!author) throw new AppError('Author not found.', 404);
+  return success(res, author);
 });
 
+// ─── Create Author ──────────────────────────────────────
 router.post(
   '/',
   [auth, admin, upload.single('file'), validate(validateModel)],
   async (req, res) => {
     const { name, profession, email, mobile } = req.body;
-    let author = await prisma.author.create({
+
+    const author = await prisma.author.create({
       data: {
         name,
         profession,
         email: email || null,
         mobile: mobile ? mobile.toString() : null,
         image: req.file?.filename
-          ? `http://${req.headers.host}/files/authors/${req.file.filename}`
-          : null
-      }
+          ? getFileUrl(req, 'authors', req.file.filename)
+          : null,
+      },
     });
-    res.send(author);
+
+    return created(res, author);
   }
 );
 
+// ─── Update Author ──────────────────────────────────────
 router.put(
   '/:id',
   [auth, admin, upload.single('file'), validate(validateModel)],
   async (req, res) => {
     const { name, profession, email, mobile } = req.body;
+
     try {
       const author = await prisma.author.update({
         where: { id: req.params.id },
@@ -88,23 +81,24 @@ router.put(
           email: email || null,
           mobile: mobile ? mobile.toString() : null,
           image: req.file?.filename
-            ? `http://${req.headers.host}/files/authors/${req.file.filename}`
-            : req.body.file
-        }
+            ? getFileUrl(req, 'authors', req.file.filename)
+            : req.body.file,
+        },
       });
-      return res.send(author);
+      return success(res, author);
     } catch (e) {
-      return res.status(404).send('The author with the given ID was not found.');
+      throw new AppError('Author not found.', 404);
     }
   }
 );
 
+// ─── Delete Author ──────────────────────────────────────
 router.delete('/:id', [auth, admin], async (req, res) => {
   try {
-    const result = await prisma.author.delete({ where: { id: req.params.id } });
-    res.send(result);
+    await prisma.author.delete({ where: { id: req.params.id } });
+    return message(res, 'Author deleted successfully.');
   } catch (e) {
-    res.status(404).send('Author not found');
+    throw new AppError('Author not found.', 404);
   }
 });
 

@@ -1,37 +1,23 @@
 const router = require('express').Router();
-const multer = require('multer');
-const fs = require('fs');
-const { dirname } = require('path');
 const validate = require('../middleware/validate');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
+const AppError = require('../utils/AppError');
+const { success, created, paginated, message } = require('../utils/response');
 const { validateModel } = require('../models/category.model');
-const appDir = dirname(require.main.filename);
+const { createUpload, getFileUrl } = require('../utils/upload');
 const prisma = require('../db');
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const dir = `/${appDir}/data/uploads/categories`;
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-    cb(null, dir);
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  }
-});
+const upload = createUpload('categories');
 
-const upload = multer({ storage });
-
+// ─── List Categories (paginated) ────────────────────────
 router.get('/', [auth], async (req, res) => {
   const pageNo = parseInt(req.query.pageNo, 10) || 0;
   const pageSize = parseInt(req.query.pageSize, 10) || 100;
   const name = req.query.name || '';
 
   const where = {
-    name: {
-      contains: name,
-      mode: 'insensitive'
-    }
+    name: { contains: name, mode: 'insensitive' },
   };
 
   const totalElements = await prisma.category.count({ where });
@@ -41,64 +27,72 @@ router.get('/', [auth], async (req, res) => {
     where,
     skip: pageNo * pageSize,
     take: pageSize,
-    orderBy: { name: 'asc' }
+    orderBy: { name: 'asc' },
   });
 
-  res.send({ totalElements, pageNo, totalPages, data });
+  return paginated(res, { data, totalElements, pageNo, totalPages });
 });
 
+// ─── Get Single Category ────────────────────────────────
 router.get('/:id', [auth], async (req, res) => {
-  const category = await prisma.category.findUnique({ where: { id: req.params.id } });
-  if (!category)
-    return res.status(404).send('The category with the given ID was not found.');
-  return res.send(category);
+  const category = await prisma.category.findUnique({
+    where: { id: req.params.id },
+  });
+  if (!category) throw new AppError('Category not found.', 404);
+  return success(res, category);
 });
 
+// ─── Create Category ────────────────────────────────────
 router.post(
   '/',
   [auth, admin, upload.single('file'), validate(validateModel)],
   async (req, res) => {
     const { name } = req.body;
-    let category = await prisma.category.create({
+
+    const category = await prisma.category.create({
       data: {
         name,
         icon: req.file?.filename
-          ? `http://${req.headers.host}/files/categories/${req.file.filename}`
-          : req.body.file || ''
-      }
+          ? getFileUrl(req, 'categories', req.file.filename)
+          : req.body.file || '',
+      },
     });
-    res.send(category);
+
+    return created(res, category);
   }
 );
 
+// ─── Update Category ────────────────────────────────────
 router.put(
   '/:id',
   [auth, admin, upload.single('file'), validate(validateModel)],
   async (req, res) => {
     const { name } = req.body;
+
     try {
       const category = await prisma.category.update({
         where: { id: req.params.id },
         data: {
           name,
           icon: req.file?.filename
-            ? `http://${req.headers.host}/files/categories/${req.file.filename}`
-            : req.body.file
-        }
+            ? getFileUrl(req, 'categories', req.file.filename)
+            : req.body.file,
+        },
       });
-      return res.send(category);
+      return success(res, category);
     } catch (e) {
-      return res.status(404).send('The category with the given ID was not found.');
+      throw new AppError('Category not found.', 404);
     }
   }
 );
 
+// ─── Delete Category ────────────────────────────────────
 router.delete('/:id', [auth, admin], async (req, res) => {
   try {
-    const result = await prisma.category.delete({ where: { id: req.params.id } });
-    res.send(result);
+    await prisma.category.delete({ where: { id: req.params.id } });
+    return message(res, 'Category deleted successfully.');
   } catch (e) {
-    res.status(404).send('Category not found');
+    throw new AppError('Category not found.', 404);
   }
 });
 

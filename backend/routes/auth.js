@@ -1,243 +1,245 @@
 const router = require('express').Router();
 const bcrypt = require('bcryptjs');
-const nodemailerSendgrid = require('nodemailer-sendgrid');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
+const nodemailerSendgrid = require('nodemailer-sendgrid');
 const crypto = require('crypto');
-const Joi = require('joi');
 const validate = require('../middleware/validate');
 const auth = require('../middleware/auth');
 const logger = require('../utils/logger');
-const { validateModel, generateAccessToken, generateRefreshToken } = require('../models/user.model');
+const AppError = require('../utils/AppError');
+const { success } = require('../utils/response');
+const {
+  validateModel,
+  validateLogin,
+  validateChangePassword,
+  generateAccessToken,
+  generateRefreshToken,
+} = require('../models/user.model');
 const prisma = require('../db');
 
+// ─── Login ──────────────────────────────────────────────
 router.post('/login', validate(validateLogin), async (req, res) => {
-  try {
-    const user = await prisma.user.findUnique({ where: { email: req.body.email } });
-    if (!user) return res.status(404).send('User not found.');
-
-    const match = await bcrypt.compare(req.body.password, user.password);
-    if (!match) return res.status(400).send('Login failed');
-
-    const accessToken = generateAccessToken(user);
-    const refreshToken = generateRefreshToken(user);
-
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { token: refreshToken }
-    });
-
-    logger.info(`login|${user.username}`);
-
-    return res.json({
-      accessToken,
-      refreshToken
-    });
-  } catch (error) {
-    res.send(error.message);
-  }
-});
-
-function validateLogin(user) {
-  const schema = {
-    email: Joi.string().min(5).max(255).required().email(),
-    password: Joi.string().min(5).max(255).required()
-  };
-  return Joi.object().keys(schema).validate(user);
-}
-
-router.post('/forgotPassword', async (req, res) => {
-  const validationKey = Math.random().toString(36).substring(7);
-  const password = await bcrypt.hash(validationKey, 10);
-
-  let user;
-  try {
-    user = await prisma.user.update({
-      where: { email: req.body.email },
-      data: { password }
-    });
-  } catch (e) {
-    return res.send('user not found');
-  }
-
-  const transporter = nodemailer.createTransport(
-    nodemailerSendgrid({ apiKey: process.env.SENDGRID_API_KEY })
-  );
-
-  const mailOptions = {
-    from: 'no-reply@udith.cc',
-    to: user.email,
-    subject: 'Account Verification Link',
-    text: `Hello ${user.username},  
-              
-              'Your validation key for account password reset is ${validationKey}            
-               
-              Thank You!`
-  };
-
-  const info = await transporter.sendMail(mailOptions);
-  logger.info(`forgot_password|${user.username}|${info}`);
-
-  return res.json(
-    `A verification code has been sent to ${user.email}. It will be expire after one day. If you not get verification Email click on resend token.`
-  );
-});
-
-router.post('/changePassword', [auth], async (req, res) => {
-  let user = await prisma.user.findUnique({ where: { id: req.user.id } });
+  const user = await prisma.user.findUnique({
+    where: { email: req.body.email },
+  });
+  if (!user) throw new AppError('Invalid email or password.', 401);
 
   const match = await bcrypt.compare(req.body.password, user.password);
-  if (!match) return res.send(`password doesn't match`);
+  if (!match) throw new AppError('Invalid email or password.', 401);
 
-  const password = await bcrypt.hash(req.body.newPassword, 10);
+  const accessToken = generateAccessToken(user);
+  const refreshToken = generateRefreshToken(user);
 
   await prisma.user.update({
     where: { id: user.id },
-    data: { password }
+    data: { token: refreshToken },
   });
 
-  logger.info(`password_changed|${user.username}`);
+  logger.info(`login|${user.username}`);
 
-  return res.send('password changes successfully');
+  return success(res, { accessToken, refreshToken });
 });
 
-router.get('/tokens/:token', async (req, res) => {
-  const token = req.params.token;
-  if (!token) return res.status(401).send('token not found');
-
-  let user = await prisma.user.findFirst({ where: { token } });
-  if (!user) return res.status(400).send('user not found');
-
-  jwt.verify(token, process.env.REFRESH_TOKEN_SECRET, async (error) => {
-    if (error) return res.status(403).send(error.message);
-    const accessToken = generateAccessToken(user);
-    const refreshToken = generateRefreshToken(user);
-
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { token: refreshToken }
-    });
-    return res.json({
-      accessToken,
-      refreshToken
-    });
-  });
-});
-
+// ─── Signup ─────────────────────────────────────────────
 router.post('/signup', validate(validateModel), async (req, res) => {
-  try {
-    const password = await bcrypt.hash(req.body.password, 10);
-    const { username, email, firstName, lastName, mobile } = req.body;
+  const { username, email, firstName, lastName, mobile, password } = req.body;
 
-    const existingUser = await prisma.user.findUnique({ where: { username } });
-    if (existingUser) return res.send('username already taken');
+  if (!password) throw new AppError('Password is required.', 400);
 
-    const user = await prisma.user.create({
-      data: {
-        username,
-        email,
-        firstName,
-        lastName,
-        mobile: mobile.toString(),
-        password
-      }
-    });
+  const existingUser = await prisma.user.findUnique({ where: { username } });
+  if (existingUser) throw new AppError('Username already taken.', 409);
 
-    const tokenRecord = await prisma.token.create({
-      data: {
-        userId: user.id,
-        token: crypto.randomBytes(16).toString('hex')
-      }
-    });
+  const existingEmail = await prisma.user.findUnique({ where: { email } });
+  if (existingEmail) throw new AppError('Email already registered.', 409);
 
-    const transporter = nodemailer.createTransport(
-      nodemailerSendgrid({ apiKey: process.env.SENDGRID_API_KEY })
-    );
+  const hashedPassword = await bcrypt.hash(password, 10);
 
-    const mailOptions = {
-      from: 'no-reply@udith.cc',
-      to: user.email,
-      subject: 'Account Verification',
-      text: `Hello ${user.username},
-              Please verify your account by clicking the link: http://${req.headers.host}/users/confirmation/${user.email}/${tokenRecord.token}
-
-              Thank You!`
-    };
-
-    const info = await transporter.sendMail(mailOptions);
-
-    return res.send(
-      `A verification email has been sent to ${user.email}. It will be expire after one day. If you not get verification Email click on resend token.`
-    );
-  } catch (error) {
-    return res.send(error.message);
-  }
-});
-
-router.get('/confirmation/:email/:token', async (req, res) => {
-  const token = await prisma.token.findFirst({ where: { token: req.params.token } });
-  if (!token)
-    return res
-      .status(404)
-      .send(
-        'Your verification link may have expired. Please click on resend for verify your Email.'
-      );
-
-  let user = await prisma.user.findFirst({
-    where: {
-      id: token.userId,
-      email: req.params.email
-    }
+  const user = await prisma.user.create({
+    data: {
+      username,
+      email,
+      firstName,
+      lastName,
+      mobile: mobile.toString(),
+      password: hashedPassword,
+    },
   });
-
-  if (!user) return res.status(404).send('user not found');
-  if (user.isVerified)
-    return res.send('User has been already verified. Please Login');
-
-  await prisma.user.update({
-    where: { id: user.id },
-    data: { isVerified: true }
-  });
-
-  return res.send('Your account has been successfully verified');
-});
-
-router.get('/resendLink/:email', async (req, res) => {
-  const user = await prisma.user.findFirst({ where: { email: req.params.email } });
-  if (!user)
-    return res.send(
-      'We were unable to find a user with that email. Make sure your Email is correct!'
-    );
-  if (user.isVerified)
-    return res.send('This account has been already verified. Please log in.');
 
   const tokenRecord = await prisma.token.create({
     data: {
       userId: user.id,
-      token: crypto.randomBytes(16).toString('hex')
-    }
+      token: crypto.randomBytes(32).toString('hex'),
+    },
   });
 
-  const transporter = nodemailer.createTransport(
-    nodemailerSendgrid({ apiKey: process.env.SENDGRID_API_KEY })
-  );
+  // Send verification email (non-blocking — don't crash if email fails)
+  try {
+    const transporter = nodemailer.createTransport(
+      nodemailerSendgrid({ apiKey: process.env.SENDGRID_API_KEY })
+    );
 
-  const mailOptions = {
-    from: 'no-reply@udith.cc',
-    to: user.email,
-    subject: 'Account Verification',
-    text: `Hello ${user.username},
-               
-              Please verify your account by clicking the link: http://${req.headers.host}/users/confirmation/${user.email}/${tokenRecord.token}
-      
-              Thank You!`
-  };
+    await transporter.sendMail({
+      from: 'no-reply@udith.cc',
+      to: user.email,
+      subject: 'Account Verification',
+      text: `Hello ${user.username},\n\nPlease verify your account by clicking the link:\nhttp://${req.headers.host}/api/auth/confirmation/${user.email}/${tokenRecord.token}\n\nThank You!`,
+    });
+  } catch (emailErr) {
+    logger.warn(`Failed to send verification email to ${user.email}: ${emailErr.message}`);
+  }
 
-  const info = await transporter.sendMail(mailOptions);
+  return success(res, {
+    message: `A verification email has been sent to ${user.email}.`,
+  }, 201);
+});
 
-  return res.send(
-    `A verification email has been sent to ${user.email}. It will be expire after one day. If you not get verification Email click on resend token.`
-  );
+// ─── Email Confirmation ─────────────────────────────────
+router.get('/confirmation/:email/:token', async (req, res) => {
+  const token = await prisma.token.findFirst({
+    where: { token: req.params.token },
+  });
+  if (!token) {
+    throw new AppError('Verification link has expired or is invalid.', 404);
+  }
+
+  const user = await prisma.user.findFirst({
+    where: { id: token.userId, email: req.params.email },
+  });
+  if (!user) throw new AppError('User not found.', 404);
+  if (user.isVerified) {
+    return success(res, { message: 'Account is already verified. Please login.' });
+  }
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { isVerified: true },
+  });
+
+  return success(res, { message: 'Your account has been successfully verified.' });
+});
+
+// ─── Resend Verification Link ───────────────────────────
+router.get('/resendLink/:email', async (req, res) => {
+  const user = await prisma.user.findFirst({
+    where: { email: req.params.email },
+  });
+  if (!user) throw new AppError('No user found with that email.', 404);
+  if (user.isVerified) {
+    throw new AppError('Account is already verified. Please login.', 400);
+  }
+
+  const tokenRecord = await prisma.token.create({
+    data: {
+      userId: user.id,
+      token: crypto.randomBytes(32).toString('hex'),
+    },
+  });
+
+  try {
+    const transporter = nodemailer.createTransport(
+      nodemailerSendgrid({ apiKey: process.env.SENDGRID_API_KEY })
+    );
+
+    await transporter.sendMail({
+      from: 'no-reply@udith.cc',
+      to: user.email,
+      subject: 'Account Verification',
+      text: `Hello ${user.username},\n\nPlease verify your account by clicking the link:\nhttp://${req.headers.host}/api/auth/confirmation/${user.email}/${tokenRecord.token}\n\nThank You!`,
+    });
+  } catch (emailErr) {
+    logger.warn(`Failed to send verification email: ${emailErr.message}`);
+  }
+
+  return success(res, {
+    message: `A verification email has been sent to ${user.email}.`,
+  });
+});
+
+// ─── Forgot Password (sends reset token instead of changing password) ───
+router.post('/forgotPassword', async (req, res) => {
+  const { email } = req.body;
+  if (!email) throw new AppError('Email is required.', 400);
+
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (!user) {
+    // Don't reveal whether user exists — return same response
+    return success(res, { message: 'If that email is registered, a reset code has been sent.' });
+  }
+
+  // Generate a 6-character reset code
+  const resetCode = crypto.randomBytes(3).toString('hex').toUpperCase();
+  const resetCodeHash = await bcrypt.hash(resetCode, 10);
+
+  // Store the reset code as a token
+  await prisma.token.create({
+    data: {
+      userId: user.id,
+      token: resetCodeHash,
+    },
+  });
+
+  try {
+    const transporter = nodemailer.createTransport(
+      nodemailerSendgrid({ apiKey: process.env.SENDGRID_API_KEY })
+    );
+
+    await transporter.sendMail({
+      from: 'no-reply@udith.cc',
+      to: user.email,
+      subject: 'Password Reset Code',
+      text: `Hello ${user.username},\n\nYour password reset code is: ${resetCode}\n\nThis code will expire in 24 hours.\n\nThank You!`,
+    });
+  } catch (emailErr) {
+    logger.warn(`Failed to send reset email: ${emailErr.message}`);
+  }
+
+  return success(res, { message: 'If that email is registered, a reset code has been sent.' });
+});
+
+// ─── Change Password (authenticated) ───────────────────
+router.post('/changePassword', [auth, validate(validateChangePassword)], async (req, res) => {
+  const user = await prisma.user.findUnique({ where: { id: req.user.id } });
+  if (!user) throw new AppError('User not found.', 404);
+
+  const match = await bcrypt.compare(req.body.password, user.password);
+  if (!match) throw new AppError('Current password is incorrect.', 400);
+
+  const hashedPassword = await bcrypt.hash(req.body.newPassword, 10);
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { password: hashedPassword },
+  });
+
+  logger.info(`password_changed|${user.username}`);
+
+  return success(res, { message: 'Password changed successfully.' });
+});
+
+// ─── Refresh Token ──────────────────────────────────────
+router.get('/tokens/:token', async (req, res) => {
+  const token = req.params.token;
+  if (!token) throw new AppError('Refresh token is required.', 400);
+
+  const user = await prisma.user.findFirst({ where: { token } });
+  if (!user) throw new AppError('Invalid refresh token.', 401);
+
+  try {
+    jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
+  } catch (err) {
+    throw new AppError('Refresh token has expired. Please login again.', 403);
+  }
+
+  const accessToken = generateAccessToken(user);
+  const refreshToken = generateRefreshToken(user);
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { token: refreshToken },
+  });
+
+  return success(res, { accessToken, refreshToken });
 });
 
 module.exports = router;
