@@ -30,7 +30,7 @@ const authSlice = createSlice({
 
     loggedIn: (state, action) => {
       state.isLoading = false;
-      state.accessToken = action.payload.accessToken;
+      state.accessToken = action.payload.data.accessToken;
       state.notification = initialState.notification;
     },
 
