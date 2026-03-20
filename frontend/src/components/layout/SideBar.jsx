@@ -18,9 +18,9 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
         duration: theme.transitions.duration.enteringScreen
       }),
       boxSizing: 'border-box',
-      borderRight: '1px solid',
-      borderRightColor: 'rgba(0, 0, 0, 0.08)',
-      backgroundColor: theme.palette.background.paper, 
+      borderRight: '1px solid rgba(0,0,0,0.05)',
+      backgroundColor: 'rgba(255, 255, 255, 0.4)',
+      backdropFilter: 'blur(10px)',
       boxShadow: open ? '4px 0 24px rgba(0,0,0,0.02)' : 'none',
       ...(!open && {
         overflowX: 'hidden',
@@ -30,7 +30,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
         }),
         width: theme.spacing(7),
         [theme.breakpoints.up('sm')]: {
-          width: theme.spacing(9)
+          width: theme.spacing(10)
         }
       })
     }
@@ -42,51 +42,64 @@ function SideBar({ open }) {
     <Drawer variant="permanent" open={open}>
       <Toolbar
         sx={{
-          py: 2,
+          py: 3,
           display: 'flex',
           alignItems: 'center',
           justifyContent: open ? 'flex-start' : 'center',
           px: open ? 3 : 1,
-          mb: 1,
+          mb: 2,
         }}
       >
-        {open ? (
-          <Typography 
-            variant="h6" 
-            sx={{ 
-              ml: 1.5, 
-              fontWeight: 800,
-              flexShrink: 0,
-              fontSize: '1rem',
-              letterSpacing: '-0.5px',
-              background: 'linear-gradient(45deg, #1976d2 30%, #21CBF3 90%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Box
+            sx={{
+              width: 32,
+              height: 32,
+              borderRadius: 1,
+              background: 'linear-gradient(45deg, #4F46E5 30%, #10B981 90%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'white',
+              fontWeight: 900,
+              fontSize: '1.2rem',
+              boxShadow: '0 4px 10px rgba(79, 70, 229, 0.3)'
             }}
           >
-            UDT Course Manager
-          </Typography>
-        ) : (
-          <Typography 
-            variant="h6" 
-            sx={{ 
-              fontWeight: 800,
-              background: 'linear-gradient(45deg, #1976d2 30%, #21CBF3 90%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }}
-          >
-            UDT
-          </Typography>
-        )}
+            U
+          </Box>
+          {open && (
+            <Typography 
+              variant="h6" 
+              sx={{ 
+                ml: 1.5, 
+                fontWeight: 800,
+                fontSize: '1.1rem',
+                letterSpacing: '-0.5px',
+                color: 'text.primary',
+              }}
+            >
+              UDT Manager
+            </Typography>
+          )}
+        </Box>
       </Toolbar>
-      <Box sx={{ flexGrow: 1, overflowY: 'auto' }}>
+      <Box sx={{ flexGrow: 1, overflowY: 'auto', px: open ? 2 : 1 }}>
         <ListItems open={open} />
       </Box>
-      <Box sx={{ p: open ? 2 : 1, textAlign: 'center', transition: 'all 0.3s', borderTop: '1px solid rgba(0,0,0,0.05)' }}>
-        <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>
-          {open ? 'v1.0.0' : 'v1'}
-        </Typography>
+      <Box sx={{ p: open ? 3 : 1, transition: 'all 0.3s' }}>
+        <Box 
+          sx={{ 
+            p: open ? 2 : 0, 
+            borderRadius: 3, 
+            bgcolor: open ? 'rgba(79, 70, 229, 0.05)' : 'transparent',
+            textAlign: 'center' 
+          }}
+        >
+          <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700, fontSize: '0.7rem' }}>
+            {open ? 'VERSION 1.0.0' : 'V1'}
+          </Typography>
+        </Box>
       </Box>
     </Drawer>
   );

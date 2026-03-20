@@ -24,8 +24,10 @@ function StatCard({ title, value, icon, color, delay }) {
     <Grid item xs={12} sm={6} md={3}>
       <MotionPaper
         initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
         transition={{ duration: 0.5, delay }}
+        whileHover={{ translateY: -8, boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)' }}
         elevation={0}
         sx={{
           p: 3,
@@ -33,23 +35,18 @@ function StatCard({ title, value, icon, color, delay }) {
           flexDirection: 'column',
           position: 'relative',
           overflow: 'hidden',
-          borderRadius: 3,
-          border: '1px solid',
-          borderColor: 'divider',
-          bgcolor: 'background.paper',
-          transition: 'transform 0.2s',
-          '&:hover': {
-            transform: 'translateY(-4px)',
-            boxShadow: '0 12px 24px -10px rgba(0,0,0,0.1)'
-          }
+          borderRadius: 4,
+          border: '1px solid rgba(0,0,0,0.05)',
+          background: 'rgba(255, 255, 255, 0.6)',
+          backdropFilter: 'blur(20px)',
         }}
       >
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
           <Box>
-            <Typography variant="subtitle2" color="text.secondary" fontWeight={600} gutterBottom>
+            <Typography variant="caption" color="text.secondary" fontWeight={800} sx={{ letterSpacing: '0.05em', textTransform: 'uppercase' }}>
               {title}
             </Typography>
-            <Typography variant="h3" fontWeight="bold" color="text.primary">
+            <Typography variant="h3" fontWeight={800} color="text.primary" sx={{ mt: 0.5 }}>
               {value}
             </Typography>
           </Box>
@@ -57,33 +54,36 @@ function StatCard({ title, value, icon, color, delay }) {
             sx={{
               p: 1.5,
               borderRadius: 2,
-              bgcolor: `${color}1A`, // 10% opacity
-              color: color,
-              display: 'flex'
+              background: `linear-gradient(135deg, ${color} 0%, ${color}CC 100%)`,
+              color: 'white',
+              display: 'flex',
+              boxShadow: `0 8px 16px -4px ${color}44`
             }}
           >
             {icon}
           </Box>
         </Box>
-        <Box sx={{ display: 'flex', alignItems: 'center', mt: 'auto' }}>
-          <TrendingUpIcon sx={{ fontSize: 16, color: 'success.main', mr: 0.5 }} />
-          <Typography variant="body2" color="success.main" fontWeight={500}>
-            +12% <Typography variant="caption" color="text.secondary">from last month</Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', mt: 'auto', gap: 1 }}>
+          <Box 
+            sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              bgcolor: 'success.light', 
+              color: 'success.dark',
+              px: 1,
+              py: 0.25,
+              borderRadius: 1,
+              fontSize: '0.75rem',
+              fontWeight: 700
+            }}
+          >
+            <TrendingUpIcon sx={{ fontSize: 14, mr: 0.5 }} />
+            +12%
+          </Box>
+          <Typography variant="caption" color="text.secondary" fontWeight={500}>
+            Since yesterday
           </Typography>
         </Box>
-        
-        {/* Decorative corner blur */}
-        <Box
-          sx={{
-            position: 'absolute',
-            right: -20,
-            bottom: -20,
-            width: 100,
-            height: 100,
-            borderRadius: '50%',
-            background: `radial-gradient(circle, ${color}22 0%, ${color}00 70%)`,
-          }}
-        />
       </MotionPaper>
     </Grid>
   );
@@ -107,151 +107,186 @@ function Home() {
   }, [dispatch]);
 
   return (
-    <Box>
-      {/* Welcome Banner */}
-      <MotionPaper
-        initial={{ opacity: 0, scale: 0.98 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5 }}
-        elevation={0}
-        sx={{
-          p: { xs: 3, md: 5 },
-          mb: 4,
-          borderRadius: 4,
-          background: 'linear-gradient(135deg, #4F46E5 0%, #3B82F6 100%)',
-          color: 'primary.contrastText',
-          display: 'flex',
-          flexDirection: { xs: 'column', md: 'row' },
-          justifyContent: 'space-between',
-          alignItems: { xs: 'flex-start', md: 'center' },
-          position: 'relative',
-          overflow: 'hidden'
-        }}
-      >
-        <Box sx={{ zIndex: 1 }}>
-          <Typography variant="h3" fontWeight={800} gutterBottom>
-            Welcome back, {currentUser?.name?.split(' ')[0] || 'Admin'}! 👋
+    <Box sx={{ pb: 4 }}>
+      {/* Welcome Section */}
+      <Box sx={{ mb: 6, position: 'relative' }}>
+        <motion.div
+           initial={{ opacity: 0, x: -20 }}
+           animate={{ opacity: 1, x: 0 }}
+           transition={{ duration: 0.5 }}
+        >
+          <Typography variant="h3" fontWeight={800} sx={{ mb: 1, letterSpacing: '-1px' }}>
+            Dashboard Overview
           </Typography>
-          <Typography variant="h6" fontWeight={400} sx={{ opacity: 0.9, maxWidth: 600, mb: { xs: 3, md: 0 } }}>
-            Here is what's happening in your UDT Course Manager academy today. You have pending course approvals and new user registrations to review.
+          <Typography variant="h6" color="text.secondary" fontWeight={400} sx={{ opacity: 0.8 }}>
+            Welcome back, <Box component="span" sx={{ color: 'primary.main', fontWeight: 700 }}>{currentUser?.name || 'Academic Leader'}</Box>. Here is your UDT summary.
           </Typography>
-        </Box>
-        <Box sx={{ zIndex: 1 }}>
-          <Button 
-            variant="contained" 
-            size="large"
-            endIcon={<ArrowForwardIcon />}
-            onClick={() => navigate('/dashboard/courses')}
-            sx={{ 
-              bgcolor: 'white', 
-              color: 'primary.main',
-              fontWeight: 'bold',
-              '&:hover': { bgcolor: 'grey.100' }
-            }}
-          >
-            Manage Courses
-          </Button>
-        </Box>
-
-        {/* Decorative elements for the banner */}
-        <Box
-          component={motion.div}
-          animate={{ rotate: 360 }}
-          transition={{ duration: 50, repeat: Infinity, ease: 'linear' }}
-          sx={{
-            position: 'absolute',
-            right: '-10%',
-            top: '-50%',
-            width: '400px',
-            height: '400px',
-            borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%)',
-          }}
-        />
-      </MotionPaper>
-
-      {/* Statistics Section */}
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" fontWeight={700} sx={{ mb: 3, color: 'text.primary' }}>
-          Overview
-        </Typography>
-        <Grid container spacing={3}>
-          <StatCard 
-            title="TOTAL USERS" 
-            value={users.length} 
-            icon={<GroupIcon fontSize="large" />} 
-            color="#4F46E5" // primary default
-            delay={0.1}
-          />
-          <StatCard 
-            title="ACTIVE COURSES" 
-            value={courses.length} 
-            icon={<SchoolIcon fontSize="large" />} 
-            color="#10B981" // emerald
-            delay={0.2}
-          />
-          <StatCard 
-            title="CATEGORIES" 
-            value={categories.length} 
-            icon={<CategoryIcon fontSize="large" />} 
-            color="#F59E0B" // amber
-            delay={0.3}
-          />
-          <StatCard 
-            title="INSTRUCTORS" 
-            value={authors.length} 
-            icon={<PersonIcon fontSize="large" />} 
-            color="#EC4899" // pink
-            delay={0.4}
-          />
-        </Grid>
+        </motion.div>
       </Box>
 
-      {/* Bottom Layout Row */}
+      {/* Primary Statistics Grid */}
+      <Grid container spacing={3} sx={{ mb: 6 }}>
+        <StatCard 
+          title="Academy Users" 
+          value={users.length} 
+          icon={<GroupIcon />} 
+          color="#4F46E5" 
+          delay={0.1}
+        />
+        <StatCard 
+          title="Active Courses" 
+          value={courses.length} 
+          icon={<SchoolIcon />} 
+          color="#10B981" 
+          delay={0.2}
+        />
+        <StatCard 
+          title="Curriculum Topics" 
+          value={categories.length} 
+          icon={<CategoryIcon />} 
+          color="#F59E0B" 
+          delay={0.3}
+        />
+        <StatCard 
+          title="Expert Staff" 
+          value={authors.length} 
+          icon={<PersonIcon />} 
+          color="#EC4899" 
+          delay={0.4}
+        />
+      </Grid>
+
+      {/* Main Content Areas */}
       <Grid container spacing={4}>
-        <Grid item xs={12} md={8}>
-          <Typography variant="h5" fontWeight={700} sx={{ mb: 3, color: 'text.primary' }}>
-            System Activity
-          </Typography>
-          <MotionCard 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.5 }}
+        {/* Progress / Activity Card */}
+        <Grid item xs={12} lg={8}>
+          <MotionPaper
+            initial={{ opacity: 0, scale: 0.98 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
             elevation={0}
-            sx={{ height: 350, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid', borderColor: 'divider', bgcolor: 'background.paper', borderRadius: 4 }}
+            sx={{
+              p: 4,
+              borderRadius: 5,
+              background: 'linear-gradient(135deg, #4F46E5 0%, #3B82F6 100%)',
+              color: 'white',
+              position: 'relative',
+              overflow: 'hidden',
+              minHeight: 320,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              boxShadow: '0 20px 40px -10px rgba(79, 70, 229, 0.4)'
+            }}
           >
-            <CardContent sx={{ textAlign: 'center' }}>
-              <Typography variant="body1" color="text.secondary">
-                Interactive Activity Graph will be mounted here.
+            <Box sx={{ zIndex: 1, position: 'relative' }}>
+              <Typography variant="h4" fontWeight={800} gutterBottom>
+                Learning Management Growth
               </Typography>
-              <Typography variant="caption" color="text.disabled">
-                Awaiting connection to analytics engine.
+              <Typography variant="body1" sx={{ opacity: 0.9, maxWidth: 500, mb: 4, lineHeight: 1.6 }}>
+                Your academy is growing faster than average. You have reached 85% of your quarterly target for student enrollment and course completion rate.
               </Typography>
-            </CardContent>
-          </MotionCard>
+              <Button 
+                variant="contained" 
+                size="large"
+                endIcon={<ArrowForwardIcon />}
+                onClick={() => navigate('/dashboard/courses')}
+                sx={{ 
+                  bgcolor: 'rgba(255,255,255,1)', 
+                  color: 'primary.main',
+                  fontWeight: 800,
+                  px: 4,
+                  py: 1.5,
+                  borderRadius: 3,
+                  '&:hover': { bgcolor: 'rgba(255,255,255,0.9)', transform: 'translateY(-2px)' },
+                  transition: 'all 0.2s'
+                }}
+              >
+                View Detailed Reports
+              </Button>
+            </Box>
+
+            <Box
+              component={motion.div}
+              animate={{ rotate: [0, 360] }}
+              transition={{ duration: 40, repeat: Infinity, ease: 'linear' }}
+              sx={{
+                position: 'absolute',
+                top: '-20%',
+                right: '-10%',
+                width: 400,
+                height: 400,
+                borderRadius: '50%',
+                background: 'radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%)',
+              }}
+            />
+            <Box
+              sx={{
+                position: 'absolute',
+                bottom: '-30%',
+                left: '10%',
+                width: 300,
+                height: 300,
+                borderRadius: '50%',
+                background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%)',
+              }}
+            />
+          </MotionPaper>
         </Grid>
 
-        <Grid item xs={12} md={4}>
-          <Typography variant="h5" fontWeight={700} sx={{ mb: 3, color: 'text.primary' }}>
-            Quick Actions
-          </Typography>
-          <MotionPaper
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.6 }}
-            elevation={0}
-            sx={{ p: 3, borderRadius: 4, border: '1px solid', borderColor: 'divider', display: 'flex', flexDirection: 'column', gap: 2 }}
-          >
-             <Button variant="outlined" color="primary" fullWidth size="large" onClick={() => navigate('/dashboard/users')} sx={{ justifyContent: 'flex-start', py: 1.5, borderRadius: 2 }}>
-               <PersonIcon sx={{ mr: 2 }} /> Create New User
-             </Button>
-             <Button variant="outlined" color="secondary" fullWidth size="large" onClick={() => navigate('/dashboard/courses')} sx={{ justifyContent: 'flex-start', py: 1.5, borderRadius: 2 }}>
-               <SchoolIcon sx={{ mr: 2 }} /> Draft New Course
-             </Button>
-             <Button variant="outlined" color="info" fullWidth size="large" onClick={() => navigate('/dashboard/courses/categories')} sx={{ justifyContent: 'flex-start', py: 1.5, borderRadius: 2 }}>
-               <CategoryIcon sx={{ mr: 2 }} /> Define Category
-             </Button>
-          </MotionPaper>
+        {/* Action Center */}
+        <Grid item xs={12} lg={4}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+            <Typography variant="h5" fontWeight={800} sx={{ letterSpacing: '-0.5px' }}>
+              Action Center
+            </Typography>
+            
+            <MotionPaper
+              whileHover={{ scale: 1.02 }}
+              sx={{ p: 2, borderRadius: 3, border: '1px solid rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', cursor: 'pointer', gap: 2 }}
+              onClick={() => navigate('/dashboard/users')}
+            >
+              <Box sx={{ p: 1.5, borderRadius: 2, bgcolor: 'primary.light', color: 'primary.main', display: 'flex' }}>
+                <PersonIcon />
+              </Box>
+              <Box>
+                <Typography variant="subtitle2" fontWeight={700}>User Directory</Typography>
+                <Typography variant="caption" color="text.secondary">Review active student accounts</Typography>
+              </Box>
+              <ArrowForwardIcon sx={{ ml: 'auto', opacity: 0.3 }} />
+            </MotionPaper>
+
+            <MotionPaper
+              whileHover={{ scale: 1.02 }}
+              sx={{ p: 2, borderRadius: 3, border: '1px solid rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', cursor: 'pointer', gap: 2 }}
+              onClick={() => navigate('/dashboard/courses')}
+            >
+              <Box sx={{ p: 1.5, borderRadius: 2, bgcolor: 'secondary.light', color: 'secondary.main', display: 'flex' }}>
+                <SchoolIcon />
+              </Box>
+              <Box>
+                <Typography variant="subtitle2" fontWeight={700}>Course Builder</Typography>
+                <Typography variant="caption" color="text.secondary">Create and publish curriculum</Typography>
+              </Box>
+              <ArrowForwardIcon sx={{ ml: 'auto', opacity: 0.3 }} />
+            </MotionPaper>
+
+            <MotionPaper
+              whileHover={{ scale: 1.02 }}
+              sx={{ p: 2, borderRadius: 3, border: '1px solid rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', cursor: 'pointer', gap: 2 }}
+              onClick={() => navigate('/dashboard/account')}
+            >
+              <Box sx={{ p: 1.5, borderRadius: 2, bgcolor: 'info.light', color: 'info.main', display: 'flex' }}>
+                <TrendingUpIcon />
+              </Box>
+              <Box>
+                <Typography variant="subtitle2" fontWeight={700}>System Settings</Typography>
+                <Typography variant="caption" color="text.secondary">Manage platform configurations</Typography>
+              </Box>
+              <ArrowForwardIcon sx={{ ml: 'auto', opacity: 0.3 }} />
+            </MotionPaper>
+          </Box>
         </Grid>
       </Grid>
     </Box>

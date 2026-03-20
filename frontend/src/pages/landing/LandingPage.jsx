@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -19,7 +19,7 @@ import {
   AccordionSummary,
   AccordionDetails
 } from '@mui/material';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform, useMotionValue, useSpring } from 'framer-motion';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
@@ -41,6 +41,9 @@ import ArchitectureIcon from '@mui/icons-material/Architecture';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import IntegrationInstructionsIcon from '@mui/icons-material/IntegrationInstructions';
 import StarIcon from '@mui/icons-material/Star';
+import LinkedInIcon from '@mui/icons-material/LinkedIn';
+import TwitterIcon from '@mui/icons-material/Twitter';
+import GitHubIcon from '@mui/icons-material/GitHub';
 
 import { useColorMode } from '../../ColorModeProvider';
 
@@ -199,28 +202,31 @@ const FeatureCard = ({ icon, title, description, gradient, index, isDark }) => (
     transition={{ duration: 0.5, delay: index * 0.1 }}
     whileHover={{ y: -8, transition: { duration: 0.3 } }}
     sx={{
-      p: { xs: 4, md: 5 },
+      p: { xs: 3, sm: 4, md: 3, lg: 3.5 },
       height: '100%',
       borderRadius: '24px',
       background: isDark
         ? 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)'
         : 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.7) 100%)',
-      backdropFilter: 'blur(10px)',
-      border: isDark ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.05)',
+      backdropFilter: 'blur(20px)',
+      border: isDark
+        ? '1px solid rgba(255,255,255,0.08)'
+        : '1px solid rgba(79,70,229,0.08)',
       display: 'flex',
       flexDirection: 'column',
       position: 'relative',
       overflow: 'hidden',
       cursor: 'default',
-      transition: 'all 0.3s',
+      transition: 'all 0.3s ease-in-out',
       '&:hover': {
-        border: isDark ? '1px solid rgba(79,70,229,0.3)' : '1px solid rgba(79,70,229,0.2)',
+        border: isDark ? '1px solid rgba(79,70,229,0.4)' : '1px solid rgba(79,70,229,0.3)',
         boxShadow: isDark
-          ? '0 20px 50px rgba(79,70,229,0.1)'
-          : '0 20px 50px rgba(79,70,229,0.06)',
-      },
-      '&:hover .feature-icon-bg': {
-        transform: 'scale(1.1)',
+          ? '0 20px 50px rgba(79,70,229,0.15)'
+          : '0 20px 50px rgba(79,70,229,0.12)',
+        '& .feature-icon-bg': {
+          transform: 'scale(1.1) rotate(5deg)',
+          boxShadow: '0 10px 20px -5px rgba(0,0,0,0.2)',
+        },
       },
     }}
   >
@@ -240,28 +246,286 @@ const FeatureCard = ({ icon, title, description, gradient, index, isDark }) => (
     <Box
       className="feature-icon-bg"
       sx={{
-        width: 56,
-        height: 56,
-        borderRadius: '16px',
+        width: { xs: 48, md: 52, lg: 60 },
+        height: { xs: 48, md: 52, lg: 60 },
+        borderRadius: { xs: '14px', md: '15px', lg: '16px' },
         background: gradient,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        mb: 3,
+        mb: { xs: 2.5, md: 3, lg: 3.5 },
         transition: 'transform 0.3s',
         color: 'white',
       }}
     >
       {icon}
     </Box>
-    <Typography variant="h6" sx={{ fontWeight: 800, mb: 1.5, color: 'text.primary', fontSize: { xs: '1.1rem', md: '1.25rem' } }}>
+    <Typography variant="h6" sx={{ fontWeight: 800, mb: 1.5, color: 'text.primary', fontSize: { xs: '1.05rem', md: '1.05rem', lg: '1.15rem' } }}>
       {title}
     </Typography>
-    <Typography sx={{ color: 'text.secondary', lineHeight: 1.7, fontSize: '0.93rem' }}>
+    <Typography sx={{ color: 'text.secondary', lineHeight: 1.6, fontSize: { xs: '0.85rem', md: '0.85rem', lg: '0.9rem' } }}>
       {description}
     </Typography>
   </MotionBox>
 );
+
+/* ──────────────────────────────────────────── Team Card ──── */
+const TeamCard = ({ name, role, image, bio, index, isDark }) => {
+  const theme = useTheme();
+  return (
+    <MotionBox
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6, delay: index * 0.15 }}
+      whileHover={{ y: -12, transition: { duration: 0.4 } }}
+      sx={{
+        p: { xs: 4, md: 5 },
+        height: '100%',
+        borderRadius: '32px',
+        background: isDark
+          ? 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)'
+          : 'linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(248,250,252,0.8) 100%)',
+        backdropFilter: 'blur(24px)',
+        border: isDark
+          ? '1px solid rgba(255,255,255,0.1)'
+          : '1px solid rgba(79,70,229,0.08)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        textAlign: 'center',
+        transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+        position: 'relative',
+        overflow: 'hidden',
+        '&:hover': {
+          borderColor: 'primary.main',
+          boxShadow: isDark
+            ? '0 30px 60px -12px rgba(0,0,0,0.4), 0 18px 36px -18px rgba(79,70,229,0.3)'
+            : '0 30px 60px -12px rgba(0,0,0,0.12), 0 18px 36px -18px rgba(79,70,229,0.2)',
+          '& .team-avatar-bg': {
+            transform: 'scale(1.1) rotate(5deg)',
+          }
+        },
+      }}
+    >
+      <Box
+        className="team-avatar-bg"
+        sx={{
+          position: 'relative',
+          mb: 4,
+          transition: 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+        }}
+      >
+        <Box
+          sx={{
+            position: 'absolute',
+            inset: -10,
+            borderRadius: '50%',
+            background: 'linear-gradient(135deg, #4F46E5, #0EA5E9)',
+            opacity: 0.15,
+            filter: 'blur(8px)',
+          }}
+        />
+        <Avatar
+          src={image}
+          sx={{
+            width: { xs: 100, md: 130, lg: 150 },
+            height: { xs: 100, md: 130, lg: 150 },
+            border: (theme) => `4px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'white'}`,
+            boxShadow: '0 12px 24px rgba(0,0,0,0.15)',
+          }}
+        />
+      </Box>
+
+      <Typography variant="h5" sx={{ fontWeight: 900, color: 'text.primary', mb: 1, letterSpacing: '-0.5px', fontSize: { xs: '1.2rem', md: '1.4rem' } }}>
+        {name}
+      </Typography>
+      <Typography sx={{
+        color: 'primary.main',
+        fontWeight: 800,
+        fontSize: '0.85rem',
+        mb: 3,
+        letterSpacing: '1.5px',
+        textTransform: 'uppercase',
+        background: 'linear-gradient(90deg, #4F46E5, #0EA5E9)',
+        WebkitBackgroundClip: 'text',
+        WebkitTextFillColor: 'transparent',
+      }}>
+        {role}
+      </Typography>
+      <Typography sx={{ color: 'text.secondary', fontSize: { xs: '0.9rem', md: '0.95rem' }, lineHeight: 1.7, mb: 4, fontWeight: 500 }}>
+        {bio}
+      </Typography>
+
+      <Stack direction="row" spacing={1.5} sx={{ mt: 'auto' }}>
+        {[LinkedInIcon, TwitterIcon, GitHubIcon].map((Icon, i) => (
+          <IconButton
+            key={i}
+            size="small"
+            sx={{
+              color: 'text.secondary',
+              bgcolor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
+              transition: 'all 0.2s',
+              '&:hover': {
+                color: 'primary.main',
+                bgcolor: alpha(theme.palette.primary.main, 0.1),
+                transform: 'translateY(-2px)',
+              },
+            }}
+          >
+            <Icon fontSize="small" />
+          </IconButton>
+        ))}
+      </Stack>
+    </MotionBox>
+  );
+};
+
+/* ──────────────────────────────────────────── Testimonial Card ──── */
+const TestimonialCard = ({ name, role, quote, image, index, isDark }) => {
+  const theme = useTheme();
+  return (
+    <MotionBox
+      initial={{ opacity: 0, scale: 0.95 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
+      whileHover={{ y: -8, transition: { duration: 0.3 } }}
+      sx={{
+        p: 4,
+        height: '100%',
+        borderRadius: '32px',
+        background: isDark
+          ? 'linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%)'
+          : 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.8) 100%)',
+        border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(79,70,229,0.1)',
+        backdropFilter: 'blur(20px)',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        transition: 'all 0.3s ease-in-out',
+        '&:hover': {
+          borderColor: 'primary.main',
+          boxShadow: isDark ? '0 20px 40px rgba(0,0,0,0.3)' : '0 15px 30px rgba(79,70,229,0.15)',
+        }
+      }}
+    >
+      <Box>
+        <Box sx={{ color: 'primary.main', mb: 2, fontSize: '2.5rem', opacity: 0.4, lineHeight: 1, fontFamily: 'serif' }}>“</Box>
+        <Typography sx={{ fontSize: '1.05rem', lineHeight: 1.8, color: 'text.primary', mb: 3, fontWeight: 500 }}>
+          {quote}
+        </Typography>
+      </Box>
+      <Stack direction="row" spacing={2} alignItems="center">
+        <Avatar src={image} sx={{ width: 56, height: 56, border: '2px solid white', boxShadow: '0 4px 12px rgba(0,0,0,0.12)' }} />
+        <Box>
+          <Typography sx={{ fontWeight: 900, fontSize: '1rem', color: 'text.primary' }}>{name}</Typography>
+          <Typography sx={{ fontSize: '0.8rem', fontWeight: 700, color: 'primary.main', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+            {role}
+          </Typography>
+        </Box>
+      </Stack>
+    </MotionBox>
+  );
+};
+
+/* ──────────────────────────────────────────── Interactive BG ──── */
+const FloatingBackground = ({ isDark }) => {
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const springConfig = { damping: 25, stiffness: 150 };
+  const dx = useSpring(mouseX, springConfig);
+  const dy = useSpring(mouseY, springConfig);
+
+  const x = useTransform(dx, [0, 2000], [-30, 30]);
+  const y = useTransform(dy, [0, 2000], [-30, 30]);
+
+  useEffect(() => {
+    const handleMove = (e) => {
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
+    };
+    window.addEventListener('mousemove', handleMove);
+    return () => window.removeEventListener('mousemove', handleMove);
+  }, [mouseX, mouseY]);
+
+  return (
+    <Box sx={{ position: 'absolute', inset: 0, overflow: 'hidden', zIndex: 0, pointerEvents: 'none' }}>
+      {/* Primary Glows */}
+      <MotionBox
+        style={{ x, y }}
+        sx={{
+          position: 'absolute',
+          top: '15%',
+          left: '10%',
+          width: '50vw',
+          height: '50vw',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(79,70,229,0.08) 0%, rgba(79,70,229,0) 70%)',
+          filter: 'blur(80px)',
+        }}
+      />
+      <MotionBox
+        style={{ x: useTransform(x, (v) => -v), y: useTransform(y, (v) => -v) }}
+        sx={{
+          position: 'absolute',
+          bottom: '10%',
+          right: '5%',
+          width: '45vw',
+          height: '45vw',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(14,165,233,0.06) 0%, rgba(14,165,233,0) 70%)',
+          filter: 'blur(80px)',
+        }}
+      />
+
+      {/* Floating Blobs */}
+      {[
+        { t: '10%', l: '20%', s: 300, c: '#4F46E5', d: 0 },
+        { t: '60%', l: '70%', s: 400, c: '#0EA5E9', d: 2 },
+        { t: '30%', l: '80%', s: 250, c: '#10B981', d: 4 },
+      ].map((b, i) => (
+        <MotionBox
+          key={i}
+          animate={{
+            y: [0, -40, 0],
+            x: [0, 30, 0],
+            scale: [1, 1.1, 1],
+          }}
+          transition={{
+            duration: 15 + i * 5,
+            repeat: Infinity,
+            delay: b.d,
+            ease: "easeInOut",
+          }}
+          sx={{
+            position: 'absolute',
+            top: b.t,
+            left: b.l,
+            width: b.s,
+            height: b.s,
+            borderRadius: '50%',
+            background: `radial-gradient(circle, ${alpha(b.c, isDark ? 0.2 : 0.15)} 0%, transparent 70%)`,
+            filter: 'blur(50px)',
+          }}
+        />
+      ))}
+
+      {/* Grid Pattern */}
+      <Box
+        sx={{
+          position: 'absolute',
+          inset: 0,
+          opacity: isDark ? 0.05 : 0.03,
+          backgroundImage: `linear-gradient(${isDark ? '#fff' : '#000'} 1px, transparent 1px), linear-gradient(90deg, ${isDark ? '#fff' : '#000'} 1px, transparent 1px)`,
+          backgroundSize: '100px 100px',
+          maskImage: 'radial-gradient(circle at 50% 50%, black, transparent 80%)',
+        }}
+      />
+    </Box>
+  );
+};
 
 /* ──────────────────────────────────────────── Section Header ──── */
 const SectionHeader = ({ badge, title, subtitle }) => (
@@ -329,48 +593,63 @@ const LandingPage = () => {
     scrollY,
     [0, 80],
     [isDark ? 'rgba(15, 23, 42, 0)' : 'rgba(248, 250, 252, 0)',
-     isDark ? 'rgba(15, 23, 42, 0.85)' : 'rgba(248, 250, 252, 0.85)']
+    isDark ? 'rgba(15, 23, 42, 0.85)' : 'rgba(248, 250, 252, 0.85)']
   );
 
   const headerBlur = useTransform(scrollY, [0, 80], ['blur(0px)', 'blur(16px)']);
 
-  const navItems = ['Features', 'Services', 'Pricing', 'Team', 'FAQ'];
+  const navItems = ['Features', 'Services', 'Pricing', 'Team', 'Testimonials'];
+
+  const scrollToSection = (id) => {
+    const element = document.getElementById(id.toLowerCase());
+    if (element) {
+      const headerOffset = 80;
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth"
+      });
+    }
+    setMobileOpen(false);
+  };
 
   const features = [
     {
       icon: <AutoGraphIcon />,
-      title: 'Visual Intelligence',
-      description: 'Real-time analytics engine that predicts student outcomes and optimizes curriculum engagement rates.',
+      title: 'Student Success AI',
+      description: 'Stop dropout rates before they happen. Our predictive engine identifies "at-risk" students with 94% accuracy.',
       gradient: 'linear-gradient(135deg, #4F46E5, #7C3AED)',
     },
     {
       icon: <SpeedIcon />,
-      title: 'Aero UI',
-      description: 'Breathtakingly fast interface designed for minimalist efficiency. Every interaction under 100ms.',
+      title: 'Admin-Zero Workflow',
+      description: 'Saves institutional staff 15+ hours weekly by automating grading pipelines, scheduling, and notifications.',
       gradient: 'linear-gradient(135deg, #0EA5E9, #38BDF8)',
     },
     {
       icon: <GroupIcon />,
-      title: 'Faculty Force',
-      description: 'Collaborative management tools built for elite instructor teams. Role-based workflows that scale.',
+      title: 'Unified Faculty Intelligence',
+      description: 'Eliminate departmental silos. A centralized Command Center for faculty to collaborate across colleges.',
       gradient: 'linear-gradient(135deg, #10B981, #34D399)',
     },
     {
       icon: <SecurityIcon />,
-      title: 'Enterprise Security',
-      description: 'AES-256 encryption, FERPA/GDPR compliance, and SOC 2 certified infrastructure at every layer.',
+      title: 'Military-Grade Compliance',
+      description: 'Exceeding FERPA & GDPR standards. SOC 2 Type II certified infrastructure for total data peace-of-mind.',
       gradient: 'linear-gradient(135deg, #F59E0B, #FBBF24)',
     },
     {
       icon: <IntegrationInstructionsIcon />,
-      title: 'Open Integrations',
-      description: 'REST & GraphQL APIs with pre-built connectors for Canvas, Moodle, Blackboard, and 40+ tools.',
+      title: 'Deep API Ecosystem',
+      description: 'Connect with Canvas, Moodle, or custom legacy systems in minutes, not months. 100% interoperable.',
       gradient: 'linear-gradient(135deg, #EC4899, #F472B6)',
     },
     {
       icon: <RocketLaunchIcon />,
-      title: 'Rapid Deployment',
-      description: 'Entire department online in under 48 hours with automated provisioning and guided onboarding.',
+      title: 'Scale-On-Demand',
+      description: 'Go from 1,000 to 1,000,000 students overnight without a single second of latency or downtime.',
       gradient: 'linear-gradient(135deg, #8B5CF6, #A78BFA)',
     },
   ];
@@ -378,22 +657,43 @@ const LandingPage = () => {
   const services = [
     {
       icon: <ArchitectureIcon sx={{ fontSize: 36 }} />,
-      title: 'System Architecture',
-      desc: 'Custom enterprise blueprints tailored for your academic scale. We design the backbone of your digital campus.',
+      title: 'Future-Proof Architecture',
+      desc: 'We don’t just deploy software; we design the structural future of your digital campus for the next 20 years.',
       gradient: 'linear-gradient(135deg, #38bdf8, #818cf8)',
     },
     {
       icon: <SecurityIcon sx={{ fontSize: 36 }} />,
-      title: 'Security & Compliance',
-      desc: 'Military-grade encryption and FERPA/GDPR compliance at every layer of your data transmission.',
+      title: 'Risk Mitigation & SEO',
+      desc: 'Prevent cyber-attacks and ensure full institutional compliance with our elite security task force.',
       gradient: 'linear-gradient(135deg, #10b981, #34d399)',
     },
     {
       icon: <SupportAgentIcon sx={{ fontSize: 36 }} />,
-      title: 'Premium Support',
-      desc: 'Dedicated Slack channel with our engineering team. 2-hour response time for critical issues.',
+      title: 'Strategy & Success',
+      desc: 'Dedicated educational architects partner with you daily to ensure every KPI is hit, and exceeded.',
       gradient: 'linear-gradient(135deg, #a855f7, #c084fc)',
     },
+  ];
+
+  const testimonials = [
+    {
+      name: 'Dr. Robert Harrison',
+      role: 'Dean of Sciences, Stanford Tech',
+      image: '/images/testimonials/t1.png',
+      quote: "UDT didn't just provide a tool; they transformed how our faculty connects. Student engagement is up 40% in our first semester."
+    },
+    {
+      name: 'Dr. Linda Kessler',
+      role: 'Head of Operations, Global Uni',
+      image: '/images/testimonials/t2.png',
+      quote: "The predictive AI is a game-changer. We've intervened and saved 150+ students from dropping out this year alone."
+    },
+    {
+      name: 'Prof. James Wu',
+      role: 'Dir. of Digital Learning, EduCorp',
+      image: '/images/testimonials/t3.png',
+      quote: "Administrative overhead was our biggest drain. UDT automated 60% of our tasks, allowing us to focus back on teaching."
+    }
   ];
 
   const faqs = [
@@ -424,6 +724,33 @@ const LandingPage = () => {
     },
   ];
 
+  const teamMembers = [
+    {
+      name: 'Dr. Elena Vance',
+      role: 'Chief Academic Officer',
+      image: '/images/team/member1.png',
+      bio: 'Former Dean with 20+ years in digital pedagogy research.',
+    },
+    {
+      name: 'Marcus Chen',
+      role: 'Lead Architect',
+      image: '/images/team/member2.png',
+      bio: 'Ex-Google engineer specialized in high-concurrency platforms.',
+    },
+    {
+      name: 'Sarah Jenkins',
+      role: 'Head of Experience',
+      image: '/images/team/member3.png',
+      bio: 'Expert in gamified learning and student retention strategies.',
+    },
+    {
+      name: 'David Miller',
+      role: 'CTO',
+      image: '/images/team/member4.png',
+      bio: 'Focus on scalable enterprise cloud solutions and AI.',
+    },
+  ];
+
   return (
     <Box sx={{ bgcolor: 'background.default', color: 'text.primary', minHeight: '100vh', overflowX: 'hidden', transition: 'background-color 0.4s' }}>
       {/* ═══════════════════ NAVBAR ═══════════════════ */}
@@ -436,12 +763,13 @@ const LandingPage = () => {
           left: 0,
           right: 0,
           zIndex: 1100,
-          py: 1.5,
-          px: { xs: 2, md: 6 },
+          py: { xs: 1.5, md: 2 },
+          px: { xs: 2, sm: 4, md: 6 },
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          borderBottom: isDark ? '1px solid rgba(255,255,255,0.04)' : '1px solid rgba(0,0,0,0.04)',
+          borderBottom: isDark ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.05)',
+          transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
         }}
       >
         <Stack direction="row" alignItems="center" spacing={1} onClick={() => navigate('/')} sx={{ cursor: 'pointer' }}>
@@ -477,6 +805,7 @@ const LandingPage = () => {
           {!isMobile && navItems.map((item) => (
             <Typography
               key={item}
+              onClick={() => scrollToSection(item)}
               sx={{
                 fontSize: '0.85rem',
                 fontWeight: 600,
@@ -538,8 +867,17 @@ const LandingPage = () => {
       </MotionBox>
 
       {/* ═══════════════════ HERO ═══════════════════ */}
-      <Box sx={{ position: 'relative', pt: { xs: 16, md: 22 }, pb: { xs: 10, md: 16 }, minHeight: { md: '100vh' }, display: 'flex', alignItems: 'center' }}>
-        <AnimatedBackground isDark={isDark} />
+      <Box sx={{ 
+        position: 'relative', 
+        pt: { xs: 16, md: 22 }, 
+        pb: { xs: 10, md: 16 }, 
+        minHeight: { md: '100vh' }, 
+        display: 'flex', 
+        alignItems: 'center', 
+        overflow: 'hidden',
+        bgcolor: 'background.default'
+      }}>
+        <FloatingBackground isDark={isDark} />
 
         <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
           <Stack spacing={5} alignItems="center" textAlign="center">
@@ -571,12 +909,12 @@ const LandingPage = () => {
                 fontWeight: 900,
                 lineHeight: { xs: 1.1, md: 1.05 },
                 letterSpacing: { xs: '-1.5px', md: '-3px' },
-                maxWidth: 900,
+                maxWidth: 1000,
               }}
             >
-              The Next Frontier{' '}
+              The Operating System{' '}
               <br />
-              of{' '}
+              for{' '}
               <Box
                 component="span"
                 sx={{
@@ -592,7 +930,7 @@ const LandingPage = () => {
                   },
                 }}
               >
-                Academic Excellence.
+                Modern Institutions.
               </Box>
             </MotionTypography>
 
@@ -601,15 +939,14 @@ const LandingPage = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.2 }}
               sx={{
-                fontSize: { xs: '1rem', md: '1.2rem' },
+                fontSize: { xs: '1.1rem', md: '1.3rem' },
                 color: 'text.secondary',
-                maxWidth: 620,
+                maxWidth: 720,
                 lineHeight: 1.7,
-                fontWeight: 400,
+                fontWeight: 500,
               }}
             >
-              Enterprise-grade course management for modern institutions.
-              Empower your faculty, engage your students, and scale without limits.
+              Transform your faculty productivity and student outcomes with the world's most sophisticated institutional management platform.
             </MotionTypography>
 
             <MotionBox
@@ -624,46 +961,47 @@ const LandingPage = () => {
                   onClick={() => navigate('/login')}
                   endIcon={<ArrowForwardIcon />}
                   sx={{
-                    py: 1.8,
-                    px: 5,
-                    borderRadius: '14px',
+                    py: 2,
+                    px: 6,
+                    borderRadius: '16px',
                     background: 'linear-gradient(135deg, #4F46E5, #7C3AED)',
                     color: 'white',
                     fontWeight: 800,
-                    fontSize: '1rem',
-                    boxShadow: '0 8px 30px rgba(79,70,229,0.35)',
+                    fontSize: '1.1rem',
+                    boxShadow: '0 10px 40px rgba(79,70,229,0.4)',
+                    textTransform: 'none',
                     transition: 'all 0.3s',
                     '&:hover': {
-                      transform: 'translateY(-2px)',
-                      boxShadow: '0 12px 40px rgba(79,70,229,0.45)',
+                      transform: 'translateY(-3px)',
+                      boxShadow: '0 15px 50px rgba(79,70,229,0.5)',
                       background: 'linear-gradient(135deg, #4338CA, #6D28D9)',
                     },
                   }}
                 >
-                  Get Started Free
+                  Book a Strategy Call
                 </Button>
                 <Button
                   variant="outlined"
                   size="large"
-                  startIcon={<PlayArrowIcon />}
                   sx={{
-                    py: 1.8,
-                    px: 5,
-                    borderRadius: '14px',
-                    borderColor: alpha(theme.palette.text.primary, 0.15),
+                    py: 2,
+                    px: 6,
+                    borderRadius: '16px',
+                    borderColor: alpha(theme.palette.text.primary, 0.1),
                     color: 'text.primary',
                     fontWeight: 700,
-                    fontSize: '1rem',
+                    fontSize: '1.1rem',
+                    textTransform: 'none',
                     backdropFilter: 'blur(10px)',
                     transition: 'all 0.3s',
                     '&:hover': {
                       borderColor: 'primary.main',
                       bgcolor: alpha(theme.palette.primary.main, 0.04),
-                      transform: 'translateY(-2px)',
+                      transform: 'translateY(-3px)',
                     },
                   }}
                 >
-                  Watch Demo
+                  Watch Product Tour
                 </Button>
               </Stack>
             </MotionBox>
@@ -683,208 +1021,307 @@ const LandingPage = () => {
       </Box>
 
       {/* ═══════════════════ FEATURES ═══════════════════ */}
-      <Box sx={{ py: { xs: 10, md: 16 }, position: 'relative' }}>
+      <Box id="features" sx={{ py: { xs: 10, md: 16 }, position: 'relative' }}>
         <Container maxWidth="lg">
           <SectionHeader
             badge="FEATURES"
             title="Everything You Need to Dominate"
             subtitle="A comprehensive platform engineered for scale, security, and speed. Every tool your institution needs, unified."
           />
-          <Grid container spacing={3}>
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: {
+                xs: '1fr',
+                sm: 'repeat(2, 1fr)',
+                md: 'repeat(4, 1fr)',
+              },
+              gap: { xs: 3, md: 4 },
+            }}
+          >
             {features.map((f, i) => (
-              <Grid item xs={12} sm={6} md={4} key={i}>
-                <FeatureCard {...f} index={i} isDark={isDark} />
-              </Grid>
+              <FeatureCard {...f} index={i} isDark={isDark} key={i} />
             ))}
-          </Grid>
+          </Box>
         </Container>
       </Box>
 
       {/* ═══════════════════ SERVICES ═══════════════════ */}
-      <Box sx={{ py: { xs: 10, md: 16 }, bgcolor: alpha(theme.palette.primary.main, isDark ? 0.03 : 0.02) }}>
+      <Box id="services" sx={{ py: { xs: 10, md: 16 }, bgcolor: alpha(theme.palette.primary.main, isDark ? 0.03 : 0.02) }}>
         <Container maxWidth="lg">
           <SectionHeader
             badge="SERVICES"
             title="Holistic Platform Care"
             subtitle="Beyond software — we partner with you to architect, secure, and scale your entire digital learning ecosystem."
           />
-          <Grid container spacing={4}>
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: {
+                xs: '1fr',
+                sm: 'repeat(2, 1fr)',
+                md: 'repeat(3, 1fr)',
+              },
+              gap: { xs: 3, md: 4 },
+            }}
+          >
             {services.map((item, i) => (
-              <Grid item xs={12} md={4} key={i}>
-                <MotionBox
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: i * 0.15 }}
-                  whileHover={{ y: -8, transition: { duration: 0.3 } }}
-                  sx={{
-                    p: { xs: 4, md: 5 },
-                    height: '100%',
-                    borderRadius: '24px',
-                    background: isDark
-                      ? 'linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%)'
-                      : 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.8) 100%)',
-                    backdropFilter: 'blur(10px)',
-                    border: isDark ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.05)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'flex-start',
-                    textAlign: 'left',
-                    transition: 'all 0.3s',
-                    cursor: 'default',
-                    '&:hover': {
-                      boxShadow: isDark
-                        ? '0 25px 50px rgba(0,0,0,0.3)'
-                        : '0 25px 50px rgba(0,0,0,0.06)',
+              <MotionBox
+                key={i}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.15 }}
+                whileHover={{ y: -8, transition: { duration: 0.3 } }}
+                sx={{
+                  p: { xs: 3, sm: 4, md: 4, lg: 5 },
+                  height: '100%',
+                  borderRadius: '24px',
+                  background: isDark
+                    ? 'linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%)'
+                    : 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.8) 100%)',
+                  backdropFilter: 'blur(20px)',
+                  border: isDark
+                    ? '1px solid rgba(255,255,255,0.08)'
+                    : '1px solid rgba(79,70,229,0.08)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'flex-start',
+                  textAlign: 'left',
+                  transition: 'all 0.3s ease-in-out',
+                  cursor: 'default',
+                  '&:hover': {
+                    border: isDark ? '1px solid rgba(79,70,229,0.4)' : '1px solid rgba(79,70,229,0.3)',
+                    boxShadow: isDark
+                      ? '0 25px 50px rgba(0,0,0,0.3)'
+                      : '0 25px 50px rgba(0,0,0,0.08)',
+                    '& .service-icon-bg': {
+                      transform: 'scale(1.1) rotate(-5deg)',
+                      boxShadow: '0 10px 20px -5px rgba(0,0,0,0.2)',
                     },
+                  },
+                }}
+              >
+                <Box
+                  className="service-icon-bg"
+                  sx={{
+                    width: { xs: 56, md: 64 },
+                    height: { xs: 56, md: 64 },
+                    borderRadius: '18px',
+                    background: item.gradient,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    mb: { xs: 3, md: 4 },
+                    color: 'white',
+                    transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
                   }}
                 >
-                  <Box
-                    sx={{
-                      width: 64,
-                      height: 64,
-                      borderRadius: '18px',
-                      background: item.gradient,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      mb: 4,
-                      color: 'white',
-                    }}
-                  >
-                    {item.icon}
-                  </Box>
-                  <Typography variant="h5" sx={{ fontWeight: 800, mb: 2, fontSize: { xs: '1.2rem', md: '1.4rem' }, color: 'text.primary' }}>
-                    {item.title}
-                  </Typography>
-                  <Typography sx={{ color: 'text.secondary', lineHeight: 1.7, fontSize: '0.95rem' }}>
-                    {item.desc}
-                  </Typography>
-                </MotionBox>
-              </Grid>
+                  {item.icon}
+                </Box>
+                <Typography variant="h5" sx={{ fontWeight: 800, mb: 2, fontSize: { xs: '1.1rem', md: '1.25rem', lg: '1.4rem' }, color: 'text.primary' }}>
+                  {item.title}
+                </Typography>
+                <Typography sx={{ color: 'text.secondary', lineHeight: 1.7, fontSize: { xs: '0.85rem', md: '0.9rem', lg: '0.95rem' } }}>
+                  {item.desc}
+                </Typography>
+              </MotionBox>
             ))}
-          </Grid>
+          </Box>
         </Container>
       </Box>
 
       {/* ═══════════════════ PRICING ═══════════════════ */}
-      <Box sx={{ py: { xs: 10, md: 16 } }}>
-        <Container maxWidth="lg">
+      <Box id="pricing" sx={{ py: { xs: 10, md: 16 } }}>
+        <Container sx={{ maxWidth: '1300px !important' }}>
           <SectionHeader
             badge="PRICING"
             title="Elite Access Plans"
             subtitle="Transparent pricing designed to scale with your institution. No hidden fees, no surprises."
           />
-          <Grid container spacing={4} justifyContent="center">
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: {
+                xs: '1fr',
+                sm: 'repeat(2, 1fr)',
+                md: 'repeat(3, 1fr)',
+              },
+              gap: 3,
+            }}
+          >
             {pricingPlans.map((plan, i) => (
-              <Grid item xs={12} md={4} key={i}>
-                <MotionBox
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: i * 0.1 }}
-                  whileHover={{ y: -8, transition: { duration: 0.3 } }}
+              <MotionBox
+                key={i}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+                whileHover={{ y: -8, transition: { duration: 0.3 } }}
+                sx={{
+                  gridColumn: {
+                    sm: i === 2 ? 'span 2' : 'auto',
+                    md: 'auto'
+                  },
+                  justifySelf: {
+                    sm: i === 2 ? 'center' : 'stretch',
+                    md: 'stretch'
+                  },
+                  width: {
+                    sm: i === 2 ? '50%' : '100%',
+                    md: '100%'
+                  },
+                  p: { xs: 4, sm: 5 },
+                  height: '100%',
+                  borderRadius: '24px',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  background: plan.featured
+                    ? isDark
+                      ? 'linear-gradient(135deg, rgba(79,70,229,0.15) 0%, rgba(124,58,237,0.08) 100%)'
+                      : 'linear-gradient(135deg, rgba(79,70,229,0.08) 0%, rgba(124,58,237,0.04) 100%)'
+                    : isDark
+                      ? 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)'
+                      : 'rgba(255,255,255,0.9)',
+                  backdropFilter: 'blur(20px)',
+                  border: plan.featured
+                    ? `2px solid ${alpha(theme.palette.primary.main, 0.4)}`
+                    : isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.08)',
+                  transition: 'all 0.3s ease-in-out',
+                  cursor: 'default',
+                  '&:hover': {
+                    boxShadow: plan.featured
+                      ? '0 25px 60px rgba(79,70,229,0.25)'
+                      : isDark ? '0 20px 40px rgba(0,0,0,0.4)' : '0 20px 40px rgba(0,0,0,0.08)',
+                  },
+                }}
+              >
+                {plan.featured && (
+                  <Chip
+                    icon={<StarIcon sx={{ fontSize: 14, color: 'white !important' }} />}
+                    label="Most Popular"
+                    size="small"
+                    sx={{
+                      position: 'absolute',
+                      top: 20,
+                      right: 20,
+                      bgcolor: 'primary.main',
+                      color: 'white',
+                      fontWeight: 800,
+                      fontSize: '0.7rem',
+                      '& .MuiChip-icon': { ml: 0.5 },
+                    }}
+                  />
+                )}
+                <Typography sx={{ fontWeight: 700, color: plan.featured ? 'primary.main' : 'text.secondary', mb: 3, fontSize: '0.9rem', letterSpacing: '1px' }}>
+                  {plan.title.toUpperCase()}
+                </Typography>
+                <Stack direction="row" alignItems="baseline" spacing={0.5} sx={{ mb: 1 }}>
+                  <Typography sx={{ fontWeight: 900, fontSize: { xs: '2.5rem', md: '3rem' }, color: 'text.primary', lineHeight: 1 }}>
+                    ${plan.price}
+                  </Typography>
+                  <Typography sx={{ color: 'text.secondary', fontSize: '0.85rem' }}>/mo</Typography>
+                </Stack>
+                <Typography sx={{ color: 'text.secondary', mb: 4, fontSize: '0.85rem' }}>billed annually</Typography>
+
+                <Stack spacing={2} sx={{ mb: 5 }}>
+                  {plan.features.map((f, idx) => (
+                    <Stack key={idx} direction="row" spacing={1.5} alignItems="center">
+                      <CheckCircleIcon sx={{ color: plan.featured ? 'primary.main' : 'secondary.main', fontSize: 18 }} />
+                      <Typography sx={{ fontWeight: 500, color: 'text.primary', fontSize: '0.93rem' }}>{f}</Typography>
+                    </Stack>
+                  ))}
+                </Stack>
+
+                <Button
+                  fullWidth
+                  variant={plan.featured ? 'contained' : 'outlined'}
                   sx={{
-                    p: { xs: 4, md: 5 },
-                    height: '100%',
-                    borderRadius: '24px',
-                    position: 'relative',
-                    overflow: 'hidden',
-                    background: plan.featured
-                      ? isDark
-                        ? 'linear-gradient(135deg, rgba(79,70,229,0.15) 0%, rgba(124,58,237,0.08) 100%)'
-                        : 'linear-gradient(135deg, rgba(79,70,229,0.08) 0%, rgba(124,58,237,0.04) 100%)'
-                      : isDark
-                        ? 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)'
-                        : 'rgba(255,255,255,0.9)',
-                    border: plan.featured
-                      ? `2px solid ${alpha(theme.palette.primary.main, 0.4)}`
-                      : isDark ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.06)',
-                    transition: 'all 0.3s',
-                    cursor: 'default',
-                    '&:hover': {
-                      boxShadow: plan.featured
-                        ? '0 25px 60px rgba(79,70,229,0.2)'
-                        : isDark ? '0 20px 40px rgba(0,0,0,0.3)' : '0 20px 40px rgba(0,0,0,0.06)',
-                    },
+                    borderRadius: '12px',
+                    py: 1.5,
+                    fontWeight: 800,
+                    fontSize: '0.9rem',
+                    ...(plan.featured
+                      ? {
+                        background: 'linear-gradient(135deg, #4F46E5, #7C3AED)',
+                        color: 'white',
+                        boxShadow: '0 8px 25px rgba(79,70,229,0.3)',
+                        '&:hover': {
+                          background: 'linear-gradient(135deg, #4338CA, #6D28D9)',
+                          boxShadow: '0 12px 35px rgba(79,70,229,0.4)',
+                        },
+                      }
+                      : {
+                        borderColor: alpha(theme.palette.text.primary, 0.15),
+                        color: 'text.primary',
+                        '&:hover': {
+                          borderColor: 'primary.main',
+                          bgcolor: alpha(theme.palette.primary.main, 0.04),
+                        },
+                      }),
                   }}
                 >
-                  {plan.featured && (
-                    <Chip
-                      icon={<StarIcon sx={{ fontSize: 14, color: 'white !important' }} />}
-                      label="Most Popular"
-                      size="small"
-                      sx={{
-                        position: 'absolute',
-                        top: 20,
-                        right: 20,
-                        bgcolor: 'primary.main',
-                        color: 'white',
-                        fontWeight: 800,
-                        fontSize: '0.7rem',
-                        '& .MuiChip-icon': { ml: 0.5 },
-                      }}
-                    />
-                  )}
-                  <Typography sx={{ fontWeight: 700, color: plan.featured ? 'primary.main' : 'text.secondary', mb: 3, fontSize: '0.9rem', letterSpacing: '1px' }}>
-                    {plan.title.toUpperCase()}
-                  </Typography>
-                  <Stack direction="row" alignItems="baseline" spacing={0.5} sx={{ mb: 1 }}>
-                    <Typography sx={{ fontWeight: 900, fontSize: { xs: '2.5rem', md: '3rem' }, color: 'text.primary', lineHeight: 1 }}>
-                      ${plan.price}
-                    </Typography>
-                    <Typography sx={{ color: 'text.secondary', fontSize: '0.85rem' }}>/mo</Typography>
-                  </Stack>
-                  <Typography sx={{ color: 'text.secondary', mb: 4, fontSize: '0.85rem' }}>billed annually</Typography>
-
-                  <Stack spacing={2} sx={{ mb: 5 }}>
-                    {plan.features.map((f, idx) => (
-                      <Stack key={idx} direction="row" spacing={1.5} alignItems="center">
-                        <CheckCircleIcon sx={{ color: plan.featured ? 'primary.main' : 'secondary.main', fontSize: 18 }} />
-                        <Typography sx={{ fontWeight: 500, color: 'text.primary', fontSize: '0.93rem' }}>{f}</Typography>
-                      </Stack>
-                    ))}
-                  </Stack>
-
-                  <Button
-                    fullWidth
-                    variant={plan.featured ? 'contained' : 'outlined'}
-                    sx={{
-                      borderRadius: '12px',
-                      py: 1.5,
-                      fontWeight: 800,
-                      fontSize: '0.9rem',
-                      ...(plan.featured
-                        ? {
-                            background: 'linear-gradient(135deg, #4F46E5, #7C3AED)',
-                            color: 'white',
-                            boxShadow: '0 8px 25px rgba(79,70,229,0.3)',
-                            '&:hover': {
-                              background: 'linear-gradient(135deg, #4338CA, #6D28D9)',
-                              boxShadow: '0 12px 35px rgba(79,70,229,0.4)',
-                            },
-                          }
-                        : {
-                            borderColor: alpha(theme.palette.text.primary, 0.15),
-                            color: 'text.primary',
-                            '&:hover': {
-                              borderColor: 'primary.main',
-                              bgcolor: alpha(theme.palette.primary.main, 0.04),
-                            },
-                          }),
-                    }}
-                  >
-                    {plan.featured ? 'Get Started' : 'Select Plan'}
-                  </Button>
-                </MotionBox>
-              </Grid>
+                  {plan.featured ? 'Get Started' : 'Select Plan'}
+                </Button>
+              </MotionBox>
             ))}
-          </Grid>
+          </Box>
+        </Container>
+      </Box>
+
+      {/* ═══════════════════ TEAM ═══════════════════ */}
+      <Box id="team" sx={{ py: { xs: 10, md: 16 } }}>
+        <Container maxWidth="lg">
+          <SectionHeader
+            badge="OUR TEAM"
+            title="The Visionaries Behind UDT"
+            subtitle="Meet the elite team of educators and engineers redefining the architectural standards of modern learning."
+          />
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: {
+                xs: '1fr',
+                sm: 'repeat(2, 1fr)',
+                md: 'repeat(4, 1fr)',
+              },
+              gap: 3,
+            }}
+          >
+            {teamMembers.map((member, i) => (
+              <TeamCard key={i} {...member} index={i} isDark={isDark} />
+            ))}
+          </Box>
+        </Container>
+      </Box>
+
+      {/* ═══════════════════ TESTIMONIALS ═══════════════════ */}
+      <Box id="testimonials" sx={{ py: { xs: 10, md: 16 }, bgcolor: alpha(theme.palette.primary.main, isDark ? 0.03 : 0.02) }}>
+        <Container maxWidth="lg">
+          <SectionHeader
+            badge="TRUST"
+            title="Zero-Risk Implementation"
+            subtitle="Join leading institutions that have already transformed their academic efficiency and student outcomes."
+          />
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: {
+                xs: '1fr',
+                md: 'repeat(3, 1fr)',
+              },
+              gap: 4,
+            }}
+          >
+            {testimonials.map((t, i) => (
+              <TestimonialCard key={i} {...t} index={i} isDark={isDark} />
+            ))}
+          </Box>
         </Container>
       </Box>
 
       {/* ═══════════════════ FAQ ═══════════════════ */}
-      <Box sx={{ py: { xs: 10, md: 16 }, bgcolor: alpha(theme.palette.primary.main, isDark ? 0.03 : 0.02) }}>
+      <Box id="faq" sx={{ py: { xs: 10, md: 16 }, bgcolor: alpha(theme.palette.primary.main, isDark ? 0.03 : 0.02) }}>
         <Container maxWidth="md">
           <SectionHeader
             badge="FAQ"
@@ -1044,7 +1481,7 @@ const LandingPage = () => {
             <Grid item xs={12} md={7}>
               <Stack direction="row" spacing={{ xs: 6, md: 10 }} justifyContent={{ md: 'flex-end' }} flexWrap="wrap">
                 {[
-                  { title: 'PRODUCT', items: ['Features', 'Pricing', 'Integrations', 'Changelog'] },
+                  { title: 'PRODUCT', items: ['Features', 'Services', 'Pricing', 'Team', 'Testimonials', 'FAQ'] },
                   { title: 'COMPANY', items: ['About', 'Blog', 'Careers', 'Contact'] },
                   { title: 'LEGAL', items: ['Privacy', 'Terms', 'License', 'Security'] },
                 ].map((col) => (
@@ -1055,12 +1492,13 @@ const LandingPage = () => {
                     {col.items.map(l => (
                       <Typography
                         key={l}
+                        onClick={() => scrollToSection(l)}
                         sx={{
                           color: 'text.secondary',
                           fontSize: '0.85rem',
                           cursor: 'pointer',
-                          transition: 'color 0.2s',
-                          '&:hover': { color: 'text.primary' },
+                          transition: 'all 0.2s',
+                          '&:hover': { color: 'primary.main', transform: 'translateX(4px)' },
                         }}
                       >
                         {l}
@@ -1103,8 +1541,11 @@ const LandingPage = () => {
             <Typography
               key={item}
               variant="h5"
-              onClick={() => setMobileOpen(false)}
-              sx={{ fontWeight: 800, color: 'text.primary', cursor: 'pointer' }}
+              onClick={() => {
+                setMobileOpen(false);
+                setTimeout(() => scrollToSection(item), 300); // 300ms for drawer closure
+              }}
+              sx={{ fontWeight: 800, color: 'text.primary', cursor: 'pointer', '&:hover': { color: 'primary.main' } }}
             >
               {item}
             </Typography>

@@ -7,10 +7,11 @@ function Footer() {
     <Box
       component="footer"
       sx={{
-        py: 1.5,
+        py: 2,
         px: 2,
-        backgroundColor: (theme) =>
-          theme.palette.mode === 'light' ? theme.palette.grey[200] : theme.palette.grey[800]
+        backgroundColor: 'transparent',
+        borderTop: '1px solid rgba(0,0,0,0.05)',
+        mt: 'auto'
       }}
     >
       <Container maxWidth="sm">
