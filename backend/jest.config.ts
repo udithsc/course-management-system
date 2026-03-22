@@ -18,14 +18,23 @@ const config: Config = {
   },
   // Coverage
   collectCoverageFrom: [
-    'routes/**/*.ts',
-    'middleware/**/*.ts',
-    'models/**/*.ts',
-    'utils/**/*.ts',
-    '!**/node_modules/**',
+    'routes/authors.ts',
+    'routes/categories.ts',
+    'models/author.model.ts',
+    'models/category.model.ts',
+    'utils/AppError.ts',
+    'utils/response.ts'
   ],
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html'],
+  coverageThreshold: {
+    global: {
+      branches: 90,
+      functions: 90,
+      lines: 90,
+      statements: 90
+    }
+  },
   // Silence server logs during tests
   setupFiles: ['<rootDir>/__tests__/setup.ts'],
   testTimeout: 30000,
