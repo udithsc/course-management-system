@@ -22,6 +22,12 @@ module.exports = (app) => {
   app.use('/api/categories', categories);
   app.use('/api/authors', authors);
 
+  // Catch-all utility for unhandled API routes (404)
+  const AppError = require('../utils/AppError');
+  app.use((req, res, next) => {
+    next(new AppError(`Can't find ${req.originalUrl} on this server.`, 404));
+  });
+
   // Global error handler (must be last)
   app.use(error);
 };

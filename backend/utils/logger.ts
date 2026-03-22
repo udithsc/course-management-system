@@ -26,7 +26,7 @@ const logger = createLogger({
       filename: `${appDir}/data/logs/${moment().format('YYYYMMDD')}-info.log`,
     }),
   ],
-  exitOnError: false,
+  exitOnError: true,
 });
 
 module.exports = logger;

@@ -7,8 +7,28 @@ const AppError = require('../utils/AppError');
  */
 module.exports = (err, req, res, next) => {
   // Default to 500 for unexpected errors
-  const statusCode = err.statusCode || 500;
-  const isOperational = err.isOperational || false;
+  let statusCode = err.statusCode || 500;
+  let isOperational = err.isOperational || false;
+  let errorMsg = err.message || 'Internal Server Error';
+
+  // Handle Prisma Specific Errors
+  if (err.name === 'PrismaClientKnownRequestError') {
+    isOperational = true;
+    if (err.code === 'P2002') {
+      statusCode = 409;
+      errorMsg = 'Duplicate database entry found.';
+    } else if (err.code === 'P2025') {
+      statusCode = 404;
+      errorMsg = 'Record not found in the database.';
+    } else {
+      statusCode = 400;
+      errorMsg = 'Invalid database request.';
+    }
+  } else if (err.name === 'PrismaClientValidationError') {
+    isOperational = true;
+    statusCode = 400;
+    errorMsg = 'Database validation failed. Invalid data format.';
+  }
 
   // Log the error
   if (statusCode >= 500) {
@@ -20,7 +40,7 @@ module.exports = (err, req, res, next) => {
   // Send structured error response
   res.status(statusCode).json({
     success: false,
-    error: err.message || 'Internal Server Error',
+    error: errorMsg,
     ...(process.env.NODE_ENV === 'development' && !isOperational && { stack: err.stack }),
   });
 };

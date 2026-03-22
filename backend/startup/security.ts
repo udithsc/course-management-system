@@ -33,7 +33,11 @@ module.exports = (app) => {
   // 2. Data Sanitization against XSS
   app.use(xssClean);
 
-  // 3. Rate Limiting (General API)
+  // 3. Prevent HTTP Parameter Pollution
+  const hpp = require('hpp');
+  app.use(hpp());
+
+  // 4. Rate Limiting (General API)
   const apiLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 1000, // Limit each IP to 100 requests per 15m
