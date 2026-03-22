@@ -30,8 +30,8 @@ export default defineConfig({
         branches: 90,
         statements: 90,
       },
-      include: ['src/store/api.js', 'src/store/configureStore.js'],
-      exclude: ['src/__tests__/**', 'src/main.jsx', 'src/index.jsx'],
+      include: ['src/store/api.ts', 'src/store/configureStore.ts'],
+      exclude: ['src/__tests__/**', 'src/main.tsx', 'src/index.tsx'],
     },
   },
 });
