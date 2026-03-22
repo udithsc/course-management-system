@@ -46,6 +46,11 @@ function App() {
           <Route path=":courseId" element={<CourseDetail />} />
         </Route>
 
+        {/* Student + All Users: My Learning */}
+        <Route path="/my-learning" element={<ProtectedRoute />}>
+          <Route index element={<MyLearning />} />
+        </Route>
+
         {/* Video player (full-screen, all roles) */}
         <Route path="/learn" element={<ProtectedRoute />}>
           <Route path=":courseId" element={<LearnPage />} />
@@ -68,7 +73,6 @@ function App() {
             <Route index element={<Home />} />
             <Route path="users" element={<User />} />
             <Route path="account" element={<Account />} />
-            <Route path="my-learning" element={<MyLearning />} />
             <Route path="courses" element={<CourseIndex />}>
               <Route path="courses" element={<Course />} />
               <Route path="courses/:courseId" element={<CourseManager />} />
@@ -78,7 +82,7 @@ function App() {
           </Route>
         </Route>
 
-        <Route path="/*" element={<NotFound />} />
+        <Route path="*" element={<RootRedirect />} />
       </Routes>
     </div>
   );

@@ -257,7 +257,7 @@ function DonutChart({ data, colors, size = 120 }) {
 function KpiCard({ title, value, icon, color, trend, trendLabel, spark, delay }) {
   const pos = trend >= 0;
   return (
-    <Grid item xs={12} sm={6} lg={3}>
+    <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
       <MotionPaper
         initial={{ opacity: 0, y: 28, scale: 0.97 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -410,10 +410,10 @@ export default function Home() {
   const me = useSelector(selectUser);
 
   useEffect(() => {
-    dispatch(loadAuthors());
-    dispatch(loadCategories());
-    dispatch(loadUsers());
-    dispatch(loadCourses());
+    dispatch(loadAuthors(0, 100, ''));
+    dispatch(loadCategories(0, 100, ''));
+    dispatch(loadUsers(0, 100, ''));
+    dispatch(loadCourses(0, 100, ''));
   }, [dispatch]);
 
   const greeting = useMemo(() => {
@@ -525,7 +525,7 @@ export default function Home() {
   });
 
   return (
-    <Box sx={{ pb: 6 }}>
+    <Box sx={{ pb: 6, maxWidth: 1440, mx: 'auto', width: '100%' }}>
       {/* Hero Banner */}
       <MotionBox
         initial={{ opacity: 0, y: 24 }}
@@ -752,7 +752,7 @@ export default function Home() {
       {/* Charts Row */}
       <Grid container spacing={2.5} sx={{ mb: 4 }}>
         {/* Area Chart */}
-        <Grid item xs={12} lg={8}>
+        <Grid size={{ xs: 12, lg: 8 }}>
           <Paper {...fadUp(0.25)} elevation={0} sx={cardSx}>
             <Box
               sx={{
@@ -796,7 +796,7 @@ export default function Home() {
                 { label: 'Peak month', value: Math.max(...enrollSeries[0].data), color: ACCENT[1] },
                 { label: 'Growth rate', value: '↑ 12%', color: ACCENT[2] },
               ].map((s) => (
-                <Grid item xs={4} key={s.label} sx={{ textAlign: 'center' }}>
+                <Grid size={4} key={s.label} sx={{ textAlign: 'center' }}>
                   <Typography variant="h5" fontWeight={800} sx={{ color: s.color }}>
                     {s.value}
                   </Typography>
@@ -810,7 +810,7 @@ export default function Home() {
         </Grid>
 
         {/* Category Donut */}
-        <Grid item xs={12} lg={4}>
+        <Grid size={{ xs: 12, lg: 4 }}>
           <Paper
             {...fadUp(0.3)}
             elevation={0}
@@ -911,7 +911,7 @@ export default function Home() {
       {/* Bottom Row */}
       <Grid container spacing={2.5}>
         {/* Recent Courses Table */}
-        <Grid item xs={12} xl={8}>
+        <Grid size={{ xs: 12, lg: 8 }}>
           <Paper
             {...fadUp(0.35)}
             elevation={0}
@@ -1119,7 +1119,7 @@ export default function Home() {
         </Grid>
 
         {/* Right column */}
-        <Grid item xs={12} xl={4}>
+        <Grid size={{ xs: 12, lg: 4 }}>
           <Stack spacing={2.5}>
             {/* Quick Actions */}
             <Paper {...fadUp(0.38)} elevation={0} sx={cardSx}>

@@ -10,39 +10,46 @@ import { selectUser } from '../../store/auth';
 
 const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
   ({ theme, open }) => ({
+    width: open ? configData.DRAWER_WIDTH : theme.spacing(9),
+    flexShrink: 0,
+    whiteSpace: 'nowrap',
+    boxSizing: 'border-box',
+    display: 'flex',
     '& .MuiDrawer-paper': {
-      position: 'relative',
-      whiteSpace: 'nowrap',
-      width: configData.DRAWER_WIDTH,
-      transition: theme.transitions.create('width', {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.enteringScreen,
-      }),
+      width: open ? configData.DRAWER_WIDTH : theme.spacing(9),
+      height: '100vh',   // Fix height to 100% viewport
+      position: 'fixed', // Anchor perfectly
+      left: 0,
+      top: 0,
+      display: 'flex',
+      flexDirection: 'column',
       boxSizing: 'border-box',
       border: 'none',
-      background:
-        theme.palette.mode === 'dark'
-          ? 'linear-gradient(180deg, #161B27 0%, #1A2035 100%)'
-          : 'linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%)',
-      borderRight:
-        theme.palette.mode === 'dark'
-          ? '1px solid rgba(255,255,255,0.05)'
-          : '1px solid rgba(15,23,42,0.07)',
-      boxShadow:
-        theme.palette.mode === 'dark'
-          ? '4px 0 24px rgba(0,0,0,0.4)'
-          : '4px 0 24px rgba(15,23,42,0.05)',
-      ...(!open && {
-        overflowX: 'hidden',
-        transition: theme.transitions.create('width', {
-          easing: theme.transitions.easing.sharp,
-          duration: theme.transitions.duration.leavingScreen,
-        }),
-        width: theme.spacing(8),
-        [theme.breakpoints.up('sm')]: { width: theme.spacing(9) },
+      overflowX: 'hidden',
+      borderRight: theme.palette.mode === 'dark'
+        ? '1px solid rgba(255,255,255,0.08)'
+        : '1px solid rgba(15,23,42,0.06)',
+      background: theme.palette.mode === 'dark'
+        ? 'linear-gradient(180deg, #0B0F19 0%, #111827 100%)'
+        : 'linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%)',
+      boxShadow: theme.palette.mode === 'dark'
+        ? '4px 0 24px rgba(0,0,0,0.6)'
+        : '4px 0 24px rgba(15,23,42,0.03)',
+      transition: theme.transitions.create('width', {
+        easing: theme.transitions.easing.sharp,
+        duration: open
+          ? theme.transitions.duration.enteringScreen
+          : theme.transitions.duration.leavingScreen,
       }),
     },
-  }),
+    // The following transition is applied to the spacer element so that Main Container slides properly:
+    transition: theme.transitions.create('width', {
+      easing: theme.transitions.easing.sharp,
+      duration: open
+        ? theme.transitions.duration.enteringScreen
+        : theme.transitions.duration.leavingScreen,
+    }),
+  })
 );
 
 function SideBar({ open }) {
@@ -50,66 +57,82 @@ function SideBar({ open }) {
 
   return (
     <Drawer variant="permanent" open={open}>
-      {/* Logo Area */}
+      {/* Brand Logo Header */}
       <Box
         sx={{
-          px: open ? 3 : 1.5,
-          py: 2.5,
+          px: open ? 3 : 2,
+          py: 3,
           display: 'flex',
           alignItems: 'center',
-          gap: 1.5,
+          gap: 2,
           borderBottom: '1px solid',
           borderColor: 'divider',
-          minHeight: 64,
+          minHeight: 76, // deeper header for modern look
+          maxHeight: 76,
           transition: 'all 0.3s',
         }}
       >
         <Box
           sx={{
-            minWidth: 36,
-            height: 36,
-            borderRadius: '10px',
-            background: 'linear-gradient(135deg, #6366F1 0%, #10B981 100%)',
+            minWidth: 42,
+            height: 42,
+            borderRadius: '12px',
+            background: 'linear-gradient(135deg, #4F46E5 0%, #10B981 100%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             color: 'white',
             fontWeight: 900,
-            fontSize: '1rem',
-            boxShadow: '0 4px 14px rgba(99,102,241,0.4)',
+            fontSize: '1.2rem',
+            boxShadow: '0 8px 16px rgba(79, 70, 229, 0.35)',
             flexShrink: 0,
+            transition: 'transform 0.2s',
+            '&:hover': { transform: 'scale(1.05) rotate(-5deg)' },
+            cursor: 'pointer'
           }}
         >
           U
         </Box>
         {open && (
-          <Box>
+          <Box sx={{ animation: 'fadeIn 0.3s', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <Typography
               variant="subtitle1"
               fontWeight={800}
-              sx={{ lineHeight: 1.2, letterSpacing: '-0.3px', color: 'text.primary' }}
+              sx={{ lineHeight: 1.1, letterSpacing: '-0.5px', color: 'text.primary', fontSize: '1.15rem' }}
             >
-              UDT Manager
+              UDT Core
             </Typography>
-            <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.68rem' }}>
-              Course Management
+            <Typography variant="caption" fontWeight={700} color="primary.main" sx={{ letterSpacing: '0.05em' }}>
+              MANAGEMENT
             </Typography>
           </Box>
         )}
       </Box>
 
-      {/* Nav Menu */}
-      <Box sx={{ flexGrow: 1, overflowY: 'auto', overflowX: 'hidden', py: 2, px: open ? 1.5 : 1 }}>
+      {/* Primary Navigation */}
+      <Box 
+        sx={{ 
+          flexGrow: 1, 
+          overflowY: 'auto', 
+          overflowX: 'hidden', 
+          py: 2.5, 
+          px: open ? 1.5 : 1,
+          '&::-webkit-scrollbar': { width: '4px' },
+          '&::-webkit-scrollbar-thumb': { borderRadius: '10px', backgroundColor: 'rgba(0,0,0,0.1)' }
+        }}
+      >
         <ListItems open={open} />
       </Box>
 
       {/* User Profile Footer */}
       <Box
         sx={{
-          p: open ? 2 : 1,
+          p: open ? 2 : 1.5,
           borderTop: '1px solid',
           borderColor: 'divider',
           transition: 'all 0.3s',
+          background: (theme) => 
+            theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.01)',
         }}
       >
         <Box
@@ -120,48 +143,71 @@ function SideBar({ open }) {
             p: open ? 1.5 : 1,
             borderRadius: 3,
             bgcolor: (theme) =>
-              theme.palette.mode === 'dark' ? 'rgba(99,102,241,0.08)' : 'rgba(99,102,241,0.06)',
+              theme.palette.mode === 'dark' ? 'rgba(99,102,241,0.08)' : 'rgba(99,102,241,0.05)',
             border: '1px solid',
             borderColor: (theme) =>
-              theme.palette.mode === 'dark' ? 'rgba(99,102,241,0.15)' : 'rgba(99,102,241,0.12)',
+              theme.palette.mode === 'dark' ? 'rgba(99,102,241,0.15)' : 'rgba(99,102,241,0.1)',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            overflow: 'hidden',
+            '&:hover': {
+              bgcolor: (theme) =>
+                theme.palette.mode === 'dark' ? 'rgba(99,102,241,0.12)' : 'rgba(99,102,241,0.08)',
+              transform: 'translateY(-2px)'
+            }
           }}
         >
-          <Avatar
-            sx={{
-              width: 34,
-              height: 34,
-              bgcolor: 'primary.main',
-              fontSize: '0.8rem',
-              fontWeight: 700,
-              flexShrink: 0,
-              boxShadow: '0 0 0 2px rgba(99,102,241,0.3)',
-            }}
-          >
-            {user?.name?.charAt(0)?.toUpperCase() || 'A'}
-          </Avatar>
+          <Box sx={{ position: 'relative' }}>
+            <Avatar
+              src={user?.avatar ? `${import.meta.env.VITE_API_URL}/files/${user.avatar}` : undefined}
+              sx={{
+                width: open ? 38 : 34,
+                height: open ? 38 : 34,
+                bgcolor: 'primary.main',
+                fontSize: '0.9rem',
+                fontWeight: 800,
+                flexShrink: 0,
+                boxShadow: '0 4px 12px rgba(99,102,241,0.3)',
+                transition: 'all 0.3s'
+              }}
+            >
+              {user?.name?.charAt(0)?.toUpperCase() || 'A'}
+            </Avatar>
+            {!open && (
+              <Box 
+                sx={{ 
+                  position: 'absolute', bottom: -2, right: -2, 
+                  width: 10, height: 10, borderRadius: '50%', 
+                  bgcolor: '#10B981', border: '2px solid white' 
+                }} 
+              />
+            )}
+          </Box>
+          
           {open && (
-            <Box sx={{ overflow: 'hidden' }}>
+            <Box sx={{ overflow: 'hidden', minWidth: 0, flex: 1 }}>
               <Typography
-                variant="caption"
+                variant="subtitle2"
                 fontWeight={700}
                 noWrap
-                sx={{ display: 'block', color: 'text.primary', lineHeight: 1.3 }}
+                sx={{ display: 'block', color: 'text.primary', lineHeight: 1.2 }}
               >
-                {user?.name || 'Admin'}
+                {user?.name || 'Administrator'}
               </Typography>
-              <Chip
-                label={user?.role || 'Administrator'}
-                size="small"
-                sx={{
-                  height: 16,
-                  fontSize: '0.58rem',
-                  fontWeight: 700,
-                  bgcolor: 'rgba(99,102,241,0.15)',
-                  color: 'primary.light',
-                  border: 'none',
-                  '& .MuiChip-label': { px: 0.75 },
+              <Typography
+                variant="caption"
+                fontWeight={600}
+                sx={{ 
+                  color: 'text.secondary',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 0.5,
+                  mt: 0.25
                 }}
-              />
+              >
+                <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: '#10B981', boxShadow: '0 0 4px #10B981' }} />
+                Online
+              </Typography>
             </Box>
           )}
         </Box>

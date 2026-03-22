@@ -134,7 +134,7 @@ function Header({ open, toggleDrawer }) {
           <Button
             size="small"
             startIcon={<PlayCircleOutlineIcon fontSize="small" />}
-            onClick={() => navigate('/dashboard/my-learning')}
+            onClick={() => navigate('/my-learning')}
             sx={{
               borderRadius: '8px',
               fontWeight: 700,

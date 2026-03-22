@@ -13,14 +13,7 @@
       "breadcrumbs": ["/dashboard"],
       "roles": ["ADMIN"]
     },
-    {
-      "path": "/dashboard/my-learning",
-      "icon": "PlayCircle",
-      "title": "My Learning",
-      "subMenu": [],
-      "breadcrumbs": ["/dashboard/my-learning"],
-      "roles": ["ADMIN"]
-    },
+
     {
       "path": "/dashboard/users",
       "icon": "Group",

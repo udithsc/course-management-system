@@ -346,8 +346,8 @@ export default function InstructorDashboard() {
               color: '#3B82F6',
               delay: 0.21,
             },
-          ].map((s) => (
-            <Grid item xs={6} md={3} key={s.label}>
+          ].map((s, i) => (
+            <Grid item xs={12} md={3} key={s.label}>
               <StatCard {...s} />
             </Grid>
           ))}
@@ -519,7 +519,7 @@ export default function InstructorDashboard() {
                 {
                   label: 'My Learning',
                   icon: <PlayCircleIcon />,
-                  action: () => navigate('/dashboard/my-learning'),
+                  action: () => navigate('/my-learning'),
                   color: '#F59E0B',
                 },
               ].map((a) => (
