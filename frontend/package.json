@@ -13,9 +13,6 @@
     "@mui/material": "^7.3.9",
     "@mui/x-data-grid": "^8.27.5",
     "@reduxjs/toolkit": "^2.11.2",
-    "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/react": "^16.3.2",
-    "@testing-library/user-event": "^14.6.1",
     "@types/jest": "^30.0.0",
     "@types/node": "^25.5.0",
     "@types/react": "^19.2.14",
@@ -42,11 +39,9 @@
     "start": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "react-scripts test || echo 'tests disabled'",
-    "eject": "react-scripts eject",
-    "e2e-test": "cypress open",
-    "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config .prettierrc.json ",
-    "coverage": "echo 'tests disabled'"
+    "test": "vitest",
+    "test:unit": "vitest run",
+    "test:coverage": "vitest run --coverage"
   },
   "browserslist": {
     "production": [
@@ -61,11 +56,17 @@
     ]
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@vitejs/plugin-react": "^6.0.1",
+    "@vitest/coverage-v8": "^4.1.0",
     "axios-mock-adapter": "^2.1.0",
     "cypress": "^15.12.0",
+    "jsdom": "^29.0.1",
     "prettier": "^3.8.1",
     "react-test-renderer": "^19.2.4",
-    "vite": "^8.0.0"
+    "vite": "^8.0.0",
+    "vitest": "^4.1.0"
   }
 }

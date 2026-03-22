@@ -127,6 +127,45 @@ The system comes pre-seeded with a Super Admin account for initial setup and ver
 
 ---
 
+## 🧪 Testing Guide
+
+This project features comprehensive unit and integration testing across both frontend and backend using **Jest**, **Supertest**, and **Vitest**.
+
+### Backend Tests (Jest & Supertest)
+The backend test suite is configured to test isolated units (middlewares, utility classes) as well as full API workflows hitting a real interconnected database using Supertest.
+
+```bash
+cd backend
+
+# Run all tests (Unit + Integration)
+npm run test
+
+# Run only unit tests
+npm run test:unit
+
+# Run only integration tests 
+# (Requires database access as defined in .env.test or .env)
+npm run test:integration
+
+# Generate coverage report
+npm run test:coverage
+```
+
+### Frontend Tests (Vitest & Testing Library)
+The frontend utilizes Vitest to execute headless lightning-fast unit tests, verifying logic slices (Redux) and React components isolated from DOM interactions securely.
+
+```bash
+cd frontend
+
+# Run unit tests
+npm run test:unit
+
+# Generate coverage report
+npm run test:coverage
+```
+
+---
+
 ## 🔍 Troubleshooting
 
 | Issue | Likely Cause | Solution |

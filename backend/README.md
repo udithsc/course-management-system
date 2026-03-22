@@ -47,3 +47,26 @@ Prisma is configured via `prisma.config.ts`. Ensure your `.env` file contains a 
 // Example .env
 DATABASE_URL="postgresql://user:password@host:port/dbname"
 ```
+
+---
+
+## 🧪 Testing
+
+The backend is fully tested using **Jest** and **Supertest** for End-to-End integration route tests.
+The test environment will automatically load `.env.test` if present, ensuring tests safely interact with test databases.
+
+### Available Test Scripts:
+
+```bash
+# Execute all tests (Unit & Integration)
+npm run test
+
+# Execute localized unit tests (Middlewares, Utils, Validation)
+npm run test:unit
+
+# Execute integration tests (Routes, Controllers, Auth)
+npm run test:integration
+
+# Generate code coverage report
+npm run test:coverage
+```

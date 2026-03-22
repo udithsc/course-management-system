@@ -45,3 +45,19 @@ To generate a production bundle:
 npm build
 ```
 The optimized files will be generated in the `dist` directory.
+
+---
+
+## 🧪 Testing
+
+The frontend incorporates blazing fast headless unit testing initialized via **Vitest** and **React Testing Library**. Tests are structured alongside Redux slices and components under the `src/__tests__` directory.
+
+### Available Test Scripts:
+
+```bash
+# Execute unit tests
+npm run test:unit
+
+# Generate code coverage report
+npm run test:coverage
+```

@@ -2,7 +2,7 @@ const router = require('express').Router();
 const moment = require('moment');
 const randomstring = require('randomstring');
 const fs = require('fs');
-const { v4: uuid } = require('uuid');
+const { randomUUID } = require('crypto');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
 const instructor = require('../middleware/instructor');
@@ -311,7 +311,7 @@ router.patch(
         date: moment().format('ll'),
         contents: [
           {
-            id: uuid(),
+            id: randomUUID(),
             image: getFileUrl(req, `courses/${req.params.id}/addons`, req.file.filename),
           },
         ],
