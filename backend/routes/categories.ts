@@ -7,11 +7,12 @@ const { success, created, paginated, message } = require('../utils/response');
 const { validateModel } = require('../models/category.model');
 const { createUpload, getFileUrl } = require('../utils/upload');
 const prisma = require('../db');
+const { routeCache } = require('../middleware/cache');
 
 const upload = createUpload('categories');
 
 // ─── List Categories (paginated) ────────────────────────
-router.get('/', [auth], async (req, res) => {
+router.get('/', [auth, routeCache(60)], async (req, res) => {
   const pageNo = parseInt(req.query.pageNo, 10) || 0;
   const pageSize = parseInt(req.query.pageSize, 10) || 100;
   const name = req.query.name || '';
