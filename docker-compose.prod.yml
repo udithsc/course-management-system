@@ -16,8 +16,6 @@ services:
     ports:
       - 3001:3001
     env_file: .env
-    environment:
-      DATABASE_URL: postgresql://postgres:eC*vtL*DJ7pLw-p@db.ppcubyilaktvllezdzkw.supabase.co:5432/postgres
     command: ./docker-entrypoint.sh
     volumes:
       - uploads:/app/data/uploads

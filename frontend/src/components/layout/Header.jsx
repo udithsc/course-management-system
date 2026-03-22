@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '@mui/material/styles';
 import MuiAppBar from '@mui/material/AppBar';
-import { Typography, IconButton, Menu, MenuItem, Toolbar, Button, Box } from '@mui/material';
+import { Typography, IconButton, Menu, MenuItem, Toolbar, Button, Box, Divider } from '@mui/material';
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';

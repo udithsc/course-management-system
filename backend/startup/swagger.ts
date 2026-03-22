@@ -12,7 +12,7 @@ module.exports = (app) => {
       },
       servers: [
         {
-          url: 'http://localhost:3001/'
+          url: process.env.BACKEND_URL || 'http://localhost:3001'
         }
       ]
     },
