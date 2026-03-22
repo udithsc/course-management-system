@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "types": ["jest", "node"],
+    "esModuleInterop": true,
+    "allowJs": true
+  },
+  "include": ["__tests__/**/*", "routes/**/*", "middleware/**/*", "models/**/*", "utils/**/*", "startup/**/*", "db.ts", "index.ts"]
+}

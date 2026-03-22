@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import _ from 'lodash';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { apiCallBegan } from './api';
 
 const initialState = {
@@ -96,7 +96,7 @@ export default authorSlice.reducer;
 // Selectors
 export const selectAuthors = (state) => state.authors.list;
 export const selectAuthorsNames = (state) =>
-  state.authors.list.map((a) => ({ id: a._id, title: a.name }));
+  state.authors.list.map((a) => ({ id: a.id, title: a.name }));
 export const selectDataStatus = (state) => state.authors.loading;
 export const selectRefreshStatus = (state) => state.authors.refresh;
 export const selectNotification = (state) => state.authors.notification;
@@ -106,7 +106,7 @@ export const loadAuthors =
   (page, rowsPerPage, searchText = '') =>
   (dispatch, getState) => {
     const { lastFetch } = getState().authors;
-    const diffInSeconds = moment().diff(moment(lastFetch), 'seconds');
+    const diffInSeconds = dayjs().diff(dayjs(lastFetch), 'seconds');
     // if (diffInSeconds < 120) return; // move values to config file
 
     return dispatch(

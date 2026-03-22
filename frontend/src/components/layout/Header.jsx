@@ -1,117 +1,258 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '@mui/material/styles';
 import MuiAppBar from '@mui/material/AppBar';
-import { Typography, IconButton, Menu, MenuItem, Toolbar, Button, Box } from '@mui/material';
+import {
+  Typography, IconButton, Menu, MenuItem,
+  Toolbar, Box, Divider, Tooltip, Avatar, Badge, Button,
+} from '@mui/material';
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
-import Avatar from '@mui/material/Avatar';
-import Tooltip from '@mui/material/Tooltip';
 import MenuIcon from '@mui/icons-material/Menu';
+import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
+import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined';
+import LightModeOutlinedIcon from '@mui/icons-material/LightModeOutlined';
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
+import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import ExploreOutlinedIcon from '@mui/icons-material/ExploreOutlined';
+import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import PropTypes from 'prop-types';
+import axios from 'axios';
 import configData from '../../data.json';
-import { selectUser } from '../../store/auth';
+import { selectUser, loggedOut } from '../../store/auth';
+import { useColorMode } from '../../ColorModeProvider';
 
 const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== 'open'
+  shouldForwardProp: (prop) => prop !== 'open',
 })(({ theme, open }) => ({
   zIndex: theme.zIndex.drawer + 1,
+  backgroundImage: 'none',
+  backgroundColor: theme.palette.mode === 'dark'
+    ? 'rgba(22, 27, 39, 0.85)'
+    : 'rgba(255, 255, 255, 0.85)',
+  backdropFilter: 'blur(16px)',
+  WebkitBackdropFilter: 'blur(16px)',
+  boxShadow: 'none',
+  borderBottom: `1px solid ${
+    theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(15,23,42,0.07)'
+  }`,
+  color: theme.palette.text.primary,
   transition: theme.transitions.create(['width', 'margin'], {
     easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen
+    duration: theme.transitions.duration.leavingScreen,
   }),
   ...(open && {
     marginLeft: configData.DRAWER_WIDTH,
     width: `calc(100% - ${configData.DRAWER_WIDTH}px)`,
     transition: theme.transitions.create(['width', 'margin'], {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen
-    })
-  })
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  }),
 }));
 
 function Header({ open, toggleDrawer }) {
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [anchorEl, setAnchorEl] = React.useState(null);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const user = useSelector(selectUser);
-
-  const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
+  const { mode, toggleColorMode } = useColorMode();
 
   const handleLogout = () => {
     sessionStorage.clear();
+    delete axios.defaults.headers.common['x-auth-token'];
+    dispatch(loggedOut());
     navigate('/login');
   };
 
   return (
-    <AppBar position="absolute" open={open}>
-      <Toolbar
-        sx={{
-          pr: '24px', // keep right padding when drawer closed
-          '&.MuiToolbar-root': {
-            color: 'white'
-          }
-        }}
-      >
-        <IconButton
-          edge="start"
-          color="inherit"
-          aria-label="open drawer"
-          onClick={toggleDrawer}
-          sx={{
-            marginRight: '30px'
-          }}
-        >
-          {open ? <MenuOpenIcon /> : <MenuIcon />}
-        </IconButton>
-        <Typography component="h1" variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
-          {configData.APP_NAME}
-        </Typography>
-        <Box sx={{ flexGrow: 0 }}>
-          <Tooltip title="Open settings">
-            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0, mr: 1 }}>
-              <Avatar sx={{ bgcolor: 'white', color: 'green' }} aria-label="recipe">
-                {/* {user.name.charAt(0).toUpperCase()} */}U
-              </Avatar>
+    <AppBar position="fixed" open={open} elevation={0}>
+      <Toolbar sx={{ px: { xs: 2, sm: 3 }, gap: 1, minHeight: '64px !important' }}>
+        {/* Hamburger */}
+        <Tooltip title={open ? 'Collapse sidebar' : 'Expand sidebar'}>
+          <IconButton
+            onClick={toggleDrawer}
+            size="small"
+            sx={{
+              color: 'text.secondary',
+              bgcolor: (t) => t.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(15,23,42,0.05)',
+              borderRadius: 2,
+              mr: 1,
+              '&:hover': {
+                color: 'primary.main',
+                bgcolor: (t) => t.palette.mode === 'dark' ? 'rgba(99,102,241,0.12)' : 'rgba(99,102,241,0.08)',
+              },
+            }}
+          >
+            {open ? <MenuOpenIcon fontSize="small" /> : <MenuIcon fontSize="small" />}
+          </IconButton>
+        </Tooltip>
+
+        <Box sx={{ flexGrow: 1 }}>
+          <Typography
+            variant="subtitle1"
+            fontWeight={700}
+            sx={{
+              color: 'text.primary',
+              background: 'linear-gradient(90deg, #6366F1, #10B981)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              display: { xs: 'none', sm: 'block' },
+            }}
+          >
+            {configData.APP_NAME}
+          </Typography>
+        </Box>
+
+        {/* Quick nav — Explore + My Learning */}
+        <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 0.5 }}>
+          <Button
+            size="small"
+            startIcon={<ExploreOutlinedIcon fontSize="small" />}
+            onClick={() => navigate('/explore')}
+            sx={{ borderRadius: '8px', fontWeight: 700, fontSize: '0.78rem', color: 'text.secondary',
+              '&:hover': { bgcolor: 'rgba(99,102,241,0.08)', color: 'primary.main' } }}
+          >Explore</Button>
+          <Button
+            size="small"
+            startIcon={<PlayCircleOutlineIcon fontSize="small" />}
+            onClick={() => navigate('/dashboard/my-learning')}
+            sx={{ borderRadius: '8px', fontWeight: 700, fontSize: '0.78rem', color: 'text.secondary',
+              '&:hover': { bgcolor: 'rgba(16,185,129,0.08)', color: 'success.main' } }}
+          >My Learning</Button>
+        </Box>
+
+        {/* Right icons */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+          {/* Dark mode toggle */}
+          <Tooltip title={mode === 'dark' ? 'Light mode' : 'Dark mode'}>
+            <IconButton
+              onClick={toggleColorMode}
+              size="small"
+              sx={{
+                color: 'text.secondary',
+                '&:hover': { color: 'primary.main', bgcolor: 'rgba(99,102,241,0.08)' },
+                borderRadius: 2,
+              }}
+            >
+              {mode === 'dark' ? <LightModeOutlinedIcon fontSize="small" /> : <DarkModeOutlinedIcon fontSize="small" />}
             </IconButton>
           </Tooltip>
-          <Menu
-            sx={{ mt: '45px' }}
-            id="menu-appbar"
-            anchorEl={anchorElUser}
-            anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'right'
-            }}
-            keepMounted
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right'
-            }}
-            open={Boolean(anchorElUser)}
-            onClose={handleCloseUserMenu}
-          >
-            <MenuItem>
-              <Typography textAlign="center">Account</Typography>
-            </MenuItem>
-            <MenuItem onClick={handleLogout}>
-              <Typography textAlign="center">Logout</Typography>
-            </MenuItem>
-          </Menu>
+
+          {/* Notifications */}
+          <Tooltip title="Notifications">
+            <IconButton
+              size="small"
+              sx={{
+                color: 'text.secondary',
+                '&:hover': { color: 'primary.main', bgcolor: 'rgba(99,102,241,0.08)' },
+                borderRadius: 2,
+              }}
+            >
+              <Badge badgeContent={3} color="error" sx={{ '& .MuiBadge-badge': { fontSize: '0.6rem', height: 16, minWidth: 16 } }}>
+                <NotificationsNoneIcon fontSize="small" />
+              </Badge>
+            </IconButton>
+          </Tooltip>
+
+          {/* Divider */}
+          <Divider orientation="vertical" flexItem sx={{ mx: 0.5, height: 24, alignSelf: 'center' }} />
+
+          {/* User avatar */}
+          <Tooltip title="Account">
+            <Box
+              onClick={(e) => setAnchorEl(e.currentTarget)}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1.25,
+                cursor: 'pointer',
+                pl: 0.5,
+                pr: 1,
+                py: 0.5,
+                borderRadius: 2.5,
+                transition: 'all 0.2s',
+                '&:hover': {
+                  bgcolor: (t) => t.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(15,23,42,0.05)',
+                },
+              }}
+            >
+              <Avatar
+                sx={{
+                  width: 33,
+                  height: 33,
+                  background: 'linear-gradient(135deg, #6366F1, #10B981)',
+                  fontSize: '0.8rem',
+                  fontWeight: 700,
+                  boxShadow: '0 0 0 2px rgba(99,102,241,0.3)',
+                }}
+              >
+                {user?.name?.charAt(0)?.toUpperCase() || 'A'}
+              </Avatar>
+              <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+                <Typography variant="caption" fontWeight={700} sx={{ display: 'block', lineHeight: 1.3, color: 'text.primary' }}>
+                  {user?.name || 'Admin'}
+                </Typography>
+                <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.67rem' }}>
+                  {user?.role || 'Administrator'}
+                </Typography>
+              </Box>
+            </Box>
+          </Tooltip>
         </Box>
-        <Box>
-          <Typography variant="subtitle2" gutterBottom component="div" sx={{ mb: -0.5 }}>
-            {user.name}
-          </Typography>
-          <Typography variant="body2" gutterBottom>
-            {user.role}
-          </Typography>
-        </Box>
+
+        {/* Dropdown Menu */}
+        <Menu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={() => setAnchorEl(null)}
+          transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+          anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+          PaperProps={{
+            elevation: 0,
+            sx: {
+              mt: 1.5,
+              minWidth: 200,
+              borderRadius: 3,
+              border: '1px solid',
+              borderColor: 'divider',
+              boxShadow: (t) => t.palette.mode === 'dark'
+                ? '0 20px 40px rgba(0,0,0,0.5)'
+                : '0 20px 40px rgba(15,23,42,0.12)',
+              bgcolor: 'background.paper',
+              overflow: 'visible',
+              '& .MuiMenuItem-root': {
+                px: 2, py: 1.25, borderRadius: 2, mx: 0.75, my: 0.25,
+                fontSize: '0.875rem', fontWeight: 500,
+                '&:hover': { bgcolor: 'rgba(99,102,241,0.08)', color: 'primary.main' },
+              },
+            },
+          }}
+        >
+          <Box sx={{ px: 2, pt: 1.5, pb: 1 }}>
+            <Typography variant="caption" fontWeight={700} color="text.secondary" sx={{ textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: '0.68rem' }}>
+              Signed in as
+            </Typography>
+            <Typography variant="body2" fontWeight={700} color="text.primary" noWrap>
+              {user?.email || user?.name || 'Admin'}
+            </Typography>
+          </Box>
+          <Divider sx={{ my: 0.5 }} />
+          <MenuItem onClick={() => { setAnchorEl(null); navigate('/dashboard/account'); }}>
+            <PersonOutlineIcon sx={{ fontSize: 17, mr: 1.5, color: 'text.secondary' }} />
+            Account Settings
+          </MenuItem>
+          <MenuItem onClick={() => { setAnchorEl(null); }}>
+            <SettingsOutlinedIcon sx={{ fontSize: 17, mr: 1.5, color: 'text.secondary' }} />
+            Preferences
+          </MenuItem>
+          <Divider sx={{ my: 0.5 }} />
+          <MenuItem onClick={handleLogout} sx={{ color: 'error.main !important', '&:hover': { bgcolor: 'rgba(244,63,94,0.08) !important', color: 'error.main !important' } }}>
+            <LogoutOutlinedIcon sx={{ fontSize: 17, mr: 1.5 }} />
+            Sign out
+          </MenuItem>
+        </Menu>
       </Toolbar>
     </AppBar>
   );
@@ -119,7 +260,7 @@ function Header({ open, toggleDrawer }) {
 
 Header.propTypes = {
   open: PropTypes.bool.isRequired,
-  toggleDrawer: PropTypes.func.isRequired
+  toggleDrawer: PropTypes.func.isRequired,
 };
 
 export default Header;

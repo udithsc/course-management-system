@@ -46,7 +46,7 @@ export default function Videos({ recordForEdit }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append('id', course._id);
+    formData.append('id', course.id);
     formData.append('videoId', data.id);
     formData.append('file', video.data);
     formData.append('title', data.title);
@@ -64,7 +64,7 @@ export default function Videos({ recordForEdit }) {
   };
 
   useEffect(() => {
-    const match = courses.find((e) => e._id === recordForEdit._id);
+    const match = courses.find((e) => e.id === recordForEdit.id);
     if (match) setCourse({ ...match });
   }, [courses]);
 
@@ -126,7 +126,7 @@ export default function Videos({ recordForEdit }) {
                     <MenuItem
                       onClick={() => {
                         handleCardClose();
-                        dispatch(removeVideo(course._id, item.id));
+                        dispatch(removeVideo(course.id, item.id));
                         dispatch(loadCourses());
                       }}
                     >
@@ -209,6 +209,6 @@ export default function Videos({ recordForEdit }) {
 
 Videos.propTypes = {
   recordForEdit: PropTypes.shape({
-    _id: PropTypes.string.isRequired
+    id: PropTypes.string.isRequired
   }).isRequired
 };

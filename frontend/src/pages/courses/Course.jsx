@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Paper, TableBody, TableRow, TableCell, Toolbar, InputAdornment } from '@mui/material';
+import { Paper, TableBody, TableRow, TableCell, Toolbar, InputAdornment, Box, Typography, Chip } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Outlet } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
+import SchoolOutlinedIcon from '@mui/icons-material/SchoolOutlined';
 import useTable from '../../hooks/useTable';
 import Controls from '../../components/controls/Controls';
 import Popup from '../../components/ui/Popup';
@@ -23,6 +24,7 @@ import {
   selectTotalElements
 } from '../../store/courses';
 import Breadcrumbs from '../../components/layout/Breadcrumbs';
+import { motion } from 'framer-motion';
 
 const headCells = [
   { id: 'name', label: 'Name', width: '20%' },
@@ -75,8 +77,22 @@ export default function Course() {
 
   return (
     <>
-      <Breadcrumbs />
-      <Paper sx={{ mt: 2, p: 2 }}>
+      <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+        <Box>
+          <Typography variant="h4" fontWeight={800} gutterBottom sx={{ color: 'text.primary' }}>
+            Course Catalog
+          </Typography>
+          <Breadcrumbs />
+        </Box>
+      </Box>
+      <Paper 
+        component={motion.div}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        elevation={0}
+        sx={{ p: 3, borderRadius: 4, border: '1px solid', borderColor: 'divider' }}
+      >
         <Toolbar
           sx={{
             p: 1,
@@ -116,17 +132,19 @@ export default function Course() {
           <TableBody>
             {records.length <= rowsPerPage &&
               recordsAfterPagingAndSorting().map((item) => (
-                <TableRow key={item._id}>
-                  <TableCell>{item.name}</TableCell>
+                <TableRow key={item.id}>
+                  <TableCell sx={{ fontWeight: 600 }}>{item.name}</TableCell>
                   <TableCell>{item.description}</TableCell>
-                  <TableCell>{item.fee}</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', color: 'primary.main' }}>$ {item.fee}</TableCell>
                   <TableCell>{item.subscriptions}</TableCell>
-                  <TableCell>{item.category.name}</TableCell>
+                  <TableCell>
+                    <Chip label={item.category.name} size="small" variant="filled" color="primary" sx={{ borderRadius: 2 }} />
+                  </TableCell>
                   <TableCell align="center">
                     <Controls.ActionButton
                       color="primary.light"
                       onClick={() => {
-                        navigate(`/courses/courses/${item._id}`, { state: item });
+                        navigate(`/courses/courses/${item.id}`, { state: item });
                       }}
                     >
                       <EditIcon fontSize="small" />
@@ -138,7 +156,7 @@ export default function Course() {
                           isOpen: true,
                           title: 'Are you sure to delete this record?',
                           subTitle: "You can't undo this operation",
-                          onConfirm: () => onDelete(item._id)
+                          onConfirm: () => onDelete(item.id)
                         });
                       }}
                     >
@@ -151,11 +169,16 @@ export default function Course() {
         </TblContainer>
         {records && <TblPagination />}
       </Paper>
-      {openPopup && (
-        <Popup title="Setup Courses" openPopup={openPopup} setOpenPopup={setOpenPopup}>
-          <CourseForm recordForEdit={recordForEdit} addOrEdit={addOrEdit} />
-        </Popup>
-      )}
+      <Popup
+        title={recordForEdit ? 'Edit Course' : 'New Course'}
+        subtitle="Fill in the details below to publish a new course"
+        icon={<SchoolOutlinedIcon fontSize="small" />}
+        maxWidth="md"
+        openPopup={openPopup}
+        setOpenPopup={setOpenPopup}
+      >
+        <CourseForm recordForEdit={recordForEdit} addOrEdit={addOrEdit} />
+      </Popup>
       {notify.isOpen && <Notification notify={notify} closeNotification={closeNotification} />}
       {confirmDialog.isOpen && (
         <ConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog} />

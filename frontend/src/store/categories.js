@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import _ from 'lodash';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { apiCallBegan } from './api';
 
 const initialState = {
@@ -95,7 +95,7 @@ export default categorySlice.reducer;
 // Selectors
 export const selectCategories = (state) => state.categories.list;
 export const selectCategoryNames = (state) =>
-  state.categories.list.map((a) => ({ id: a._id, title: a.name }));
+  state.categories.list.map((a) => ({ id: a.id, title: a.name }));
 export const selectDataStatus = (state) => state.categories.loading;
 export const selectRefreshStatus = (state) => state.categories.refresh;
 export const selectNotification = (state) => state.categories.notification;
@@ -105,7 +105,7 @@ export const loadCategories =
   (page, rowsPerPage, searchText = '') =>
   (dispatch, getState) => {
     const { lastFetch } = getState().categories;
-    const diffInSeconds = moment().diff(moment(lastFetch), 'seconds');
+    const diffInSeconds = dayjs().diff(dayjs(lastFetch), 'seconds');
     // if (diffInSeconds < 120) return; // move values to config file
 
     return dispatch(

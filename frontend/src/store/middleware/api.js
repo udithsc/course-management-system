@@ -16,7 +16,7 @@ const api =
     if (data && data.id === 0) delete data.id;
     try {
       const response = await axios.request({
-        baseURL: 'http://localhost:3001/api',
+        baseURL: `${import.meta.env.VITE_API_URL}/api`,
         url,
         method,
         data

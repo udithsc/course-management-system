@@ -1,16 +1,17 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import { createRoot } from 'react-dom/client';
 import CssBaseline from '@mui/material/CssBaseline';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
-import { ThemeProvider } from '@mui/material/styles';
 import { ToastContainer } from 'react-toastify';
 import App from './App';
-import theme from './styles/theme';
+import { ColorModeProvider } from './ColorModeProvider';
 import configureStore from './store/configureStore';
+import GlobalErrorBoundary from './components/layout/GlobalErrorBoundary';
 import './index.css';
 import 'react-toastify/dist/ReactToastify.css';
+import '@fontsource/inter';
+import '@fontsource/outfit';
 
 const container = document.getElementById('root');
 const root = createRoot(container);
@@ -20,11 +21,13 @@ root.render(
   <React.StrictMode>
     <Provider store={store}>
       <BrowserRouter>
-        <ThemeProvider theme={theme}>
+        <ColorModeProvider>
           <CssBaseline />
-          <App />
+          <GlobalErrorBoundary>
+            <App />
+          </GlobalErrorBoundary>
           <ToastContainer />
-        </ThemeProvider>
+        </ColorModeProvider>
       </BrowserRouter>
     </Provider>
   </React.StrictMode>

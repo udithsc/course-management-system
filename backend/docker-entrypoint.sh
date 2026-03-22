@@ -1,10 +1,10 @@
 #!/bin/sh
 
-echo "Waiting for MongoDB to start..."
-./wait-for db:27017 
+echo "Generating Prisma client..."
+npx prisma generate
 
-echo "Migrating the databse..."
-npm run db:up 
+echo "Pushing DB schema..."
+npx prisma db push --accept-data-loss
 
 echo "Starting the server..."
-npm start 
+npm start
