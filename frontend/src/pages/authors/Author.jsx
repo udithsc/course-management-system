@@ -5,6 +5,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
+import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
 import useTable from '../../hooks/useTable';
 import Controls from '../../components/controls/Controls';
 import Popup from '../../components/ui/Popup';
@@ -150,11 +151,15 @@ export default function Author() {
         </TblContainer>
         {records && <TblPagination />}
       </Paper>
-      {openPopup && (
-        <Popup title="Setup Charges" openPopup={openPopup} setOpenPopup={setOpenPopup}>
-          <AuthorForm recordForEdit={recordForEdit} addOrEdit={addOrEdit} />
-        </Popup>
-      )}
+      <Popup
+        title={recordForEdit ? 'Edit Instructor' : 'New Instructor'}
+        subtitle="Add a new course instructor to the platform"
+        icon={<PersonOutlinedIcon fontSize="small" />}
+        openPopup={openPopup}
+        setOpenPopup={setOpenPopup}
+      >
+        <AuthorForm recordForEdit={recordForEdit} addOrEdit={addOrEdit} />
+      </Popup>
       {notify.isOpen && <Notification notify={notify} closeNotification={closeNotification} />}
       {confirmDialog.isOpen && (
         <ConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog} />

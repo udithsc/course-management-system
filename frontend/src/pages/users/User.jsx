@@ -5,6 +5,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
+import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined';
 import useTable from '../../hooks/useTable';
 import Controls from '../../components/controls/Controls';
 import Popup from '../../components/ui/Popup';
@@ -169,11 +170,15 @@ export default function User() {
         </TblContainer>
         {records && <TblPagination />}
       </Paper>
-      {openPopup && (
-        <Popup title="Setup Charges" openPopup={openPopup} setOpenPopup={setOpenPopup}>
-          <UserForm recordForEdit={recordForEdit} addOrEdit={addOrEdit} />
-        </Popup>
-      )}
+      <Popup
+        title={recordForEdit ? 'Edit User' : 'New User'}
+        subtitle="Add a new user account to the platform"
+        icon={<GroupOutlinedIcon fontSize="small" />}
+        openPopup={openPopup}
+        setOpenPopup={setOpenPopup}
+      >
+        <UserForm recordForEdit={recordForEdit} addOrEdit={addOrEdit} />
+      </Popup>
       {notify.isOpen && <Notification notify={notify} closeNotification={closeNotification} />}
       {confirmDialog.isOpen && (
         <ConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog} />

@@ -5,6 +5,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
+import CategoryOutlinedIcon from '@mui/icons-material/CategoryOutlined';
 import useTable from '../../hooks/useTable';
 import Controls from '../../components/controls/Controls';
 import Popup from '../../components/ui/Popup';
@@ -148,11 +149,15 @@ export default function Category() {
         </TblContainer>
         {records && <TblPagination />}
       </Paper>
-      {openPopup && (
-        <Popup title="Setup Charges" openPopup={openPopup} setOpenPopup={setOpenPopup}>
-          <CategoryForm recordForEdit={recordForEdit} addOrEdit={addOrEdit} />
-        </Popup>
-      )}
+      <Popup
+        title={recordForEdit ? 'Edit Category' : 'New Category'}
+        subtitle="Organise your courses into structured topics"
+        icon={<CategoryOutlinedIcon fontSize="small" />}
+        openPopup={openPopup}
+        setOpenPopup={setOpenPopup}
+      >
+        <CategoryForm recordForEdit={recordForEdit} addOrEdit={addOrEdit} />
+      </Popup>
       {notify.isOpen && <Notification notify={notify} closeNotification={closeNotification} />}
       {confirmDialog.isOpen && (
         <ConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog} />

@@ -6,6 +6,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
+import SchoolOutlinedIcon from '@mui/icons-material/SchoolOutlined';
 import useTable from '../../hooks/useTable';
 import Controls from '../../components/controls/Controls';
 import Popup from '../../components/ui/Popup';
@@ -168,11 +169,16 @@ export default function Course() {
         </TblContainer>
         {records && <TblPagination />}
       </Paper>
-      {openPopup && (
-        <Popup title="Setup Courses" openPopup={openPopup} setOpenPopup={setOpenPopup}>
-          <CourseForm recordForEdit={recordForEdit} addOrEdit={addOrEdit} />
-        </Popup>
-      )}
+      <Popup
+        title={recordForEdit ? 'Edit Course' : 'New Course'}
+        subtitle="Fill in the details below to publish a new course"
+        icon={<SchoolOutlinedIcon fontSize="small" />}
+        maxWidth="md"
+        openPopup={openPopup}
+        setOpenPopup={setOpenPopup}
+      >
+        <CourseForm recordForEdit={recordForEdit} addOrEdit={addOrEdit} />
+      </Popup>
       {notify.isOpen && <Notification notify={notify} closeNotification={closeNotification} />}
       {confirmDialog.isOpen && (
         <ConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog} />
