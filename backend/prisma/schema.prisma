@@ -6,6 +6,8 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// role values: "ADMIN" | "INSTRUCTOR" | "STUDENT"
+
 model User {
   id             String         @id @default(uuid())
   username       String         @unique
@@ -14,10 +16,11 @@ model User {
   lastName       String
   mobile         String
   password       String?
+  role           String         @default("STUDENT")  // ADMIN | INSTRUCTOR | STUDENT
   dob            DateTime?
   image          String?
   token          String?
-  bookmarks      String[]       @default([]) // list of course IDs
+  bookmarks      String[]       @default([])
   isVerified     Boolean?       @default(false)
   isAdmin        Boolean?       @default(false)
   createdAt      DateTime       @default(now())
@@ -25,6 +28,7 @@ model User {
   tokens         Token[]
   subscriptions  Subscription[]
   reviews        Review[]
+  authorProfile  Author?        // if INSTRUCTOR, links to their Author record
 }
 
 model Token {
@@ -42,7 +46,7 @@ model Subscription {
   userId         String
   user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   courseId       String
-  watchedVideoId String[] @default([]) 
+  watchedVideoId String[] @default([])
 }
 
 model Course {
@@ -59,7 +63,7 @@ model Course {
   subscriptions  Int           @default(0)
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
-  
+
   courseTokens   CourseToken[]
   addons         Addon[]
   lessons        Lesson[]
@@ -112,6 +116,8 @@ model Author {
   email          String?
   mobile         String?
   image          String?
+  userId         String?  @unique   // linked User account (INSTRUCTOR role)
+  user           User?    @relation(fields: [userId], references: [id])
   courses        Course[]
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt

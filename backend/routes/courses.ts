@@ -5,6 +5,7 @@ const fs = require('fs');
 const { v4: uuid } = require('uuid');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
+const instructor = require('../middleware/instructor');
 const validate = require('../middleware/validate');
 const AppError = require('../utils/AppError');
 const { success, created, paginated, message } = require('../utils/response');
@@ -330,6 +331,174 @@ router.delete('/addons/:courseId/:addonId', [auth, admin], async (req, res) => {
     },
   });
   return message(res, 'Addon deleted.');
+});
+
+// ─── Subscribe to Course (direct / free) ────────────────────────────────────
+router.post('/subscribe/:id', [auth], async (req, res) => {
+  const courseId = req.params.id;
+  const userId   = req.user.id;
+
+  const course = await prisma.course.findUnique({ where: { id: courseId } });
+  if (!course) throw new AppError('Course not found.', 404);
+
+  const existing = await prisma.subscription.findFirst({ where: { userId, courseId } });
+  if (existing) return success(res, existing);
+
+  const sub = await prisma.subscription.create({
+    data: { userId, courseId, watchedVideoId: [] },
+  });
+
+  await prisma.course.update({
+    where: { id: courseId },
+    data:  { subscriptions: { increment: 1 } },
+  });
+
+  return created(res, sub);
+});
+
+// ─── Get My Subscriptions ────────────────────────────────────────────────────
+router.get('/subscriptions/me', [auth], async (req, res) => {
+  const subs = await prisma.subscription.findMany({
+    where: { userId: req.user.id },
+  });
+
+  const courseIds = subs.map((s) => s.courseId);
+  const courses   = await prisma.course.findMany({
+    where: { id: { in: courseIds } },
+    include: { author: true, category: true, lessons: true },
+  });
+
+  const result = courses.map((c) => {
+    const sub = subs.find((s) => s.courseId === c.id);
+    return {
+      ...c,
+      watchedVideoId: sub?.watchedVideoId ?? [],
+      subscriptionId: sub?.id,
+    };
+  });
+
+  return success(res, result);
+});
+
+// ─── Mark Video Watched (progress) ──────────────────────────────────────────
+router.patch('/progress/:courseId', [auth], async (req, res) => {
+  const { lessonId } = req.body;
+  if (!lessonId) throw new AppError('lessonId is required.', 400);
+
+  const sub = await prisma.subscription.findFirst({
+    where: { userId: req.user.id, courseId: req.params.courseId },
+  });
+  if (!sub) throw new AppError('Not subscribed to this course.', 403);
+
+  const updated = await prisma.subscription.update({
+    where: { id: sub.id },
+    data: {
+      watchedVideoId: { set: [...new Set([...sub.watchedVideoId, lessonId])] },
+    },
+  });
+
+  return success(res, updated);
+});
+
+// ─── Check Subscription Status ───────────────────────────────────────────────
+router.get('/subscribe/:courseId/status', [auth], async (req, res) => {
+  const sub = await prisma.subscription.findFirst({
+    where: { userId: req.user.id, courseId: req.params.courseId },
+  });
+  return success(res, { subscribed: !!sub, subscription: sub || null });
+});
+
+// ─── Instructor: My Courses Overview ─────────────────────────────────────────
+router.get('/instructor/my-courses', [auth, instructor], async (req, res) => {
+  // Find the instructor's author profile
+  const author = await prisma.author.findUnique({
+    where: { userId: req.user.id },
+  });
+
+  if (!author && req.user.role !== 'ADMIN') {
+    return success(res, []);
+  }
+
+  const whereClause = author ? { authorId: author.id } : {};
+
+  const courses = await prisma.course.findMany({
+    where: whereClause,
+    include: {
+      lessons:  { select: { id: true } },
+      reviews:  { select: { rating: true } },
+      category: true,
+    },
+    orderBy: { createdAt: 'desc' },
+  });
+
+  // Enrich with subscription count per course
+  const enriched = await Promise.all(courses.map(async (c) => {
+    const subCount = await prisma.subscription.count({ where: { courseId: c.id } });
+    const avgRating = c.reviews.length
+      ? c.reviews.reduce((s, r) => s + r.rating, 0) / c.reviews.length
+      : 0;
+    return {
+      ...c,
+      studentCount: subCount,
+      avgRating:    parseFloat(avgRating.toFixed(1)),
+    };
+  }));
+
+  return success(res, enriched);
+});
+
+// ─── Instructor: Course Analytics (detailed) ─────────────────────────────────
+router.get('/instructor/analytics/:courseId', [auth, instructor], async (req, res) => {
+  const courseId = req.params.courseId;
+
+  const course = await prisma.course.findUnique({
+    where: { id: courseId },
+    include: { lessons: true, reviews: { include: { user: { select: { username: true, email: true } } } }, author: true },
+  });
+  if (!course) throw new AppError('Course not found.', 404);
+
+  // Verify ownership (instructors can only see their own courses; admin can see all)
+  if (req.user.role === 'INSTRUCTOR') {
+    const author = await prisma.author.findUnique({ where: { userId: req.user.id } });
+    if (!author || course.authorId !== author.id) {
+      throw new AppError('Access denied. You do not own this course.', 403);
+    }
+  }
+
+  const subscriptions = await prisma.subscription.findMany({ where: { courseId } });
+  const totalStudents = subscriptions.length;
+  const lessonCount   = course.lessons.length;
+
+  // Per-lesson completion rate
+  const lessonStats = course.lessons.map((lesson) => {
+    const watched = subscriptions.filter((s) => s.watchedVideoId.includes(lesson.id)).length;
+    return {
+      lessonId:       lesson.id,
+      title:          lesson.title,
+      watchedByCount: watched,
+      completionRate: totalStudents > 0 ? parseFloat(((watched / totalStudents) * 100).toFixed(1)) : 0,
+    };
+  });
+
+  // Students with full completion
+  const completedStudents = subscriptions.filter(
+    (s) => lessonCount > 0 && s.watchedVideoId.length >= lessonCount
+  ).length;
+
+  const avgRating = course.reviews.length
+    ? course.reviews.reduce((s, r) => s + r.rating, 0) / course.reviews.length
+    : 0;
+
+  return success(res, {
+    course:           { id: course.id, name: course.name, fee: course.fee },
+    totalStudents,
+    completedStudents,
+    completionRate:   totalStudents > 0 ? parseFloat(((completedStudents / totalStudents) * 100).toFixed(1)) : 0,
+    avgRating:        parseFloat(avgRating.toFixed(1)),
+    reviewCount:      course.reviews.length,
+    lessonStats,
+    recentReviews:    course.reviews.slice(-5).reverse(),
+  });
 });
 
 module.exports = router;

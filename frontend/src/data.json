@@ -5,22 +5,39 @@
   "BRAND_WEBSITE": "https://udith.cc",
   "DRAWER_WIDTH": 240,
   "ROUTES": [
-    { "path": "/dashboard", "icon": "Dashboard", "title": "Dashboard", "subMenu": [], "breadcrumbs": ["/dashboard"] },
+    {
+      "path": "/dashboard",
+      "icon": "Dashboard",
+      "title": "Dashboard",
+      "subMenu": [],
+      "breadcrumbs": ["/dashboard"],
+      "roles": ["ADMIN"]
+    },
+    {
+      "path": "/dashboard/my-learning",
+      "icon": "PlayCircle",
+      "title": "My Learning",
+      "subMenu": [],
+      "breadcrumbs": ["/dashboard/my-learning"],
+      "roles": ["ADMIN"]
+    },
     {
       "path": "/dashboard/users",
       "icon": "Group",
       "title": "Users",
       "subMenu": [],
-      "breadcrumbs": ["/dashboard/users"]
+      "breadcrumbs": ["/dashboard/users"],
+      "roles": ["ADMIN"]
     },
     {
       "path": "/dashboard/courses/courses",
-      "icon": "Group",
+      "icon": "School",
       "title": "Courses",
+      "roles": ["ADMIN"],
       "subMenu": [
-        { "path": "/dashboard/courses/courses", "icon": "School", "title": "Courses" },
-        { "path": "/dashboard/courses/authors", "icon": "Person", "title": "Authors" },
-        { "path": "/dashboard/courses/categories", "icon": "Category", "title": "Categories" }
+        { "path": "/dashboard/courses/courses",    "icon": "School",   "title": "Courses",    "roles": ["ADMIN"] },
+        { "path": "/dashboard/courses/authors",    "icon": "Person",   "title": "Authors",    "roles": ["ADMIN"] },
+        { "path": "/dashboard/courses/categories", "icon": "Category", "title": "Categories", "roles": ["ADMIN"] }
       ],
       "breadcrumbs": ["/dashboard/courses/courses", "/dashboard/courses/authors", "/dashboard/courses/categories"]
     }

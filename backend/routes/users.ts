@@ -18,6 +18,7 @@ const USER_SELECT = {
   firstName: true,
   lastName: true,
   mobile: true,
+  role: true,
   dob: true,
   image: true,
   bookmarks: true,
@@ -94,6 +95,26 @@ router.delete('/:id', [auth, admin], async (req, res) => {
   } catch (e) {
     throw new AppError('User not found.', 404);
   }
+});
+
+// ─── Change User Role ───────────────────────────────────
+router.patch('/:id/role', [auth, admin], async (req, res) => {
+  const { role } = req.body;
+  const VALID_ROLES = ['ADMIN', 'INSTRUCTOR', 'STUDENT'];
+  if (!VALID_ROLES.includes(role)) {
+    throw new AppError(`Invalid role. Must be one of: ${VALID_ROLES.join(', ')}`, 400);
+  }
+
+  const user = await prisma.user.update({
+    where: { id: req.params.id },
+    data: {
+      role,
+      isAdmin: role === 'ADMIN',
+    },
+    select: USER_SELECT,
+  });
+
+  return success(res, user);
 });
 
 // ─── Get Current User ───────────────────────────────────

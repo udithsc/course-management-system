@@ -12,27 +12,32 @@ import {
   signup,
   login,
   selectAccessToken,
-  selectSignUpStatus
+  selectSignUpStatus,
+  selectUserRole,
 } from '../../store/auth';
 
 export default function Auth() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const notify = useSelector(selectNotification);
-  const token = useSelector(selectAccessToken);
+  const notify   = useSelector(selectNotification);
+  const token    = useSelector(selectAccessToken);
+  const role     = useSelector(selectUserRole);
   const isSignupSuccess = useSelector(selectSignUpStatus);
 
   useEffect(() => {
     if (token) {
       sessionStorage.setItem('access-token', token);
       axios.defaults.headers.common['x-auth-token'] = token;
-      navigate('/dashboard');
+      // Role-based redirect
+      if (role === 'ADMIN') return navigate('/dashboard');
+      if (role === 'INSTRUCTOR') return navigate('/instructor');
+      return navigate('/explore');      // STUDENT default
     }
-    if (isSignupSuccess) setIsSignUp(false); // smoothly go back to login instead of navigating via router forcefully
-  }, [token, isSignupSuccess, navigate]);
+    if (isSignupSuccess) setIsSignUp(false);
+  }, [token, role, isSignupSuccess, navigate]);
 
   const handleSubmit = (event) => {
     event.preventDefault();

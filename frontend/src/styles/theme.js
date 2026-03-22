@@ -39,7 +39,7 @@ const getTheme = (mode) =>
       h6: { fontWeight: 700 },
       button: { textTransform: 'none', fontWeight: 600 },
     },
-    shape: { borderRadius: 14 },
+    shape: { borderRadius: 8 },
     components: {
       MuiCssBaseline: {
         styleOverrides: {
@@ -60,7 +60,7 @@ const getTheme = (mode) =>
       MuiButton: {
         styleOverrides: {
           root: {
-            borderRadius: '10px',
+            borderRadius: '8px',
             boxShadow: 'none',
             padding: '9px 22px',
             fontWeight: 600,
@@ -74,7 +74,7 @@ const getTheme = (mode) =>
       MuiCard: {
         styleOverrides: {
           root: {
-            borderRadius: '18px',
+            borderRadius: '10px',
             border: mode === 'light' ? '1px solid rgba(15,23,42,0.07)' : '1px solid rgba(255,255,255,0.05)',
             boxShadow: mode === 'light'
               ? '0 4px 24px rgba(15,23,42,0.06)'

@@ -41,11 +41,13 @@ function extractRefreshToken(payload) {
 function decodeUser(token) {
   try {
     const decoded = jwtDecode(token);
+    // Use explicit role field from JWT; fall back to isAdmin for legacy tokens
+    const role = decoded.role || (decoded.isAdmin ? 'ADMIN' : 'STUDENT');
     return {
-      id: decoded.id,
-      name: decoded.name,
-      email: decoded.email,
-      role: decoded.isAdmin ? 'Administrator' : 'User',
+      id:      decoded.id,
+      name:    decoded.name,
+      email:   decoded.email,
+      role,                           // 'ADMIN' | 'INSTRUCTOR' | 'STUDENT'
       isAdmin: !!decoded.isAdmin,
     };
   } catch {
@@ -145,9 +147,14 @@ export const signup = (data) =>
   });
 
 // Selectors
-export const selectUser = (state) => state.auth.user;
-export const selectAccessToken = (state) => state.auth.accessToken;
-export const selectDataStatus = (state) => state.auth.loading;
-export const selectSignUpStatus = (state) => state.auth.isSignUp;
-export const selectNotification = (state) => state.auth.notification;
-export const selectPermissions = (state) => state.auth.permissions;
+export const selectUser           = (state) => state.auth.user;
+export const selectAccessToken    = (state) => state.auth.accessToken;
+export const selectDataStatus     = (state) => state.auth.loading;
+export const selectSignUpStatus   = (state) => state.auth.isSignUp;
+export const selectNotification   = (state) => state.auth.notification;
+export const selectPermissions    = (state) => state.auth.permissions;
+export const selectUserRole       = (state) => state.auth.user?.role ?? 'STUDENT';
+export const selectIsAdmin        = (state) => state.auth.user?.role === 'ADMIN';
+export const selectIsInstructor   = (state) =>
+  state.auth.user?.role === 'INSTRUCTOR' || state.auth.user?.role === 'ADMIN';
+export const selectIsStudent      = (state) => state.auth.user?.role === 'STUDENT';

@@ -5,7 +5,7 @@ import { styled } from '@mui/material/styles';
 import MuiAppBar from '@mui/material/AppBar';
 import {
   Typography, IconButton, Menu, MenuItem,
-  Toolbar, Box, Divider, Tooltip, Avatar, Badge,
+  Toolbar, Box, Divider, Tooltip, Avatar, Badge, Button,
 } from '@mui/material';
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -15,6 +15,8 @@ import LightModeOutlinedIcon from '@mui/icons-material/LightModeOutlined';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import ExploreOutlinedIcon from '@mui/icons-material/ExploreOutlined';
+import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import configData from '../../data.json';
@@ -87,7 +89,6 @@ function Header({ open, toggleDrawer }) {
           </IconButton>
         </Tooltip>
 
-        {/* Page Title */}
         <Box sx={{ flexGrow: 1 }}>
           <Typography
             variant="subtitle1"
@@ -102,6 +103,24 @@ function Header({ open, toggleDrawer }) {
           >
             {configData.APP_NAME}
           </Typography>
+        </Box>
+
+        {/* Quick nav — Explore + My Learning */}
+        <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 0.5 }}>
+          <Button
+            size="small"
+            startIcon={<ExploreOutlinedIcon fontSize="small" />}
+            onClick={() => navigate('/explore')}
+            sx={{ borderRadius: '8px', fontWeight: 700, fontSize: '0.78rem', color: 'text.secondary',
+              '&:hover': { bgcolor: 'rgba(99,102,241,0.08)', color: 'primary.main' } }}
+          >Explore</Button>
+          <Button
+            size="small"
+            startIcon={<PlayCircleOutlineIcon fontSize="small" />}
+            onClick={() => navigate('/dashboard/my-learning')}
+            sx={{ borderRadius: '8px', fontWeight: 700, fontSize: '0.78rem', color: 'text.secondary',
+              '&:hover': { bgcolor: 'rgba(16,185,129,0.08)', color: 'success.main' } }}
+          >My Learning</Button>
         </Box>
 
         {/* Right icons */}
