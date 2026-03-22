@@ -34,12 +34,10 @@ afterAll(async () => {
   await prisma.$disconnect();
 });
 
-// ─── GET /api/users ───────────────────────────────────────────────────────────
+// GET /api/users
 describe('GET /api/users', () => {
   it('returns paginated user list for authenticated user', async () => {
-    const res = await request(app)
-      .get('/api/users')
-      .set('x-auth-token', adminToken);
+    const res = await request(app).get('/api/users').set('x-auth-token', adminToken);
 
     expect(res.status).toBe(200);
     expect(res.body.data).toBeInstanceOf(Array);
@@ -60,12 +58,10 @@ describe('GET /api/users', () => {
   });
 });
 
-// ─── GET /api/users/me ────────────────────────────────────────────────────────
+// GET /api/users/me
 describe('GET /api/users/me', () => {
   it('returns current user profile', async () => {
-    const res = await request(app)
-      .get('/api/users/me')
-      .set('x-auth-token', studentToken);
+    const res = await request(app).get('/api/users/me').set('x-auth-token', studentToken);
 
     expect(res.status).toBe(200);
     expect(res.body.data.email).toBe('student@test.com');
@@ -77,7 +73,7 @@ describe('GET /api/users/me', () => {
   });
 });
 
-// ─── POST /api/users (Create) ─────────────────────────────────────────────────
+// POST /api/users (Create)
 describe('POST /api/users', () => {
   it('admin can create a new user', async () => {
     const res = await request(app)
@@ -89,7 +85,7 @@ describe('POST /api/users', () => {
         firstName: 'Unit',
         lastName: 'Test',
         password: 'password123',
-        mobile: '1234567890'
+        mobile: '1234567890',
       });
 
     expect(res.status).toBe(201);
@@ -98,33 +94,27 @@ describe('POST /api/users', () => {
   });
 
   it('returns 403 when student tries to create user', async () => {
-    const res = await request(app)
-      .post('/api/users')
-      .set('x-auth-token', studentToken)
-      .send({
-        username: 'hacker',
-        email: 'hacker@evil.com',
-        firstName: 'Bad',
-        lastName: 'Actor',
-      });
+    const res = await request(app).post('/api/users').set('x-auth-token', studentToken).send({
+      username: 'hacker',
+      email: 'hacker@evil.com',
+      firstName: 'Bad',
+      lastName: 'Actor',
+    });
     expect(res.status).toBe(403);
   });
 
   it('returns 400 for duplicate email', async () => {
-    const res = await request(app)
-      .post('/api/users')
-      .set('x-auth-token', adminToken)
-      .send({
-        username: 'admin_dup',
-        email: 'admin@test.com', // already exists
-        firstName: 'Admin',
-        lastName: 'Dup',
-      });
+    const res = await request(app).post('/api/users').set('x-auth-token', adminToken).send({
+      username: 'admin_dup',
+      email: 'admin@test.com', // already exists
+      firstName: 'Admin',
+      lastName: 'Dup',
+    });
     expect([400, 409, 500]).toContain(res.status);
   });
 });
 
-// ─── PATCH /api/users/:id/role ────────────────────────────────────────────────
+// PATCH /api/users/:id/role
 describe('PATCH /api/users/:id/role', () => {
   let targetId: string;
 

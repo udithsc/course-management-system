@@ -23,8 +23,6 @@ app.use('/files', express.static(`${appDir}/data/uploads`));
 
 // Start server
 const port = process.env.PORT || 3001;
-const server = app.listen(port, () =>
-  logger.info(`Listening on port ${port}...`)
-);
+const server = app.listen(port, () => logger.info(`Listening on port ${port}...`));
 
 module.exports = server;

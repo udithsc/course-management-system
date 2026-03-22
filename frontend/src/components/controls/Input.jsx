@@ -46,7 +46,9 @@ export default function Input({ name, label, value, error, onChange, ...other })
           py: 1.1,
         },
         '& .MuiFormHelperText-root': {
-          mt: 0.5, ml: 0.25, fontSize: '0.75rem',
+          mt: 0.5,
+          ml: 0.25,
+          fontSize: '0.75rem',
         },
         ...other.sx,
       }}
@@ -55,17 +57,17 @@ export default function Input({ name, label, value, error, onChange, ...other })
 }
 
 Input.propTypes = {
-  name:     PropTypes.string,
-  label:    PropTypes.string,
-  value:    PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  name: PropTypes.string,
+  label: PropTypes.string,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   onChange: PropTypes.func,
-  error:    PropTypes.string,
+  error: PropTypes.string,
 };
 
 Input.defaultProps = {
-  name:     '',
-  label:    '',
-  value:    '',
-  error:    '',
+  name: '',
+  label: '',
+  value: '',
+  error: '',
   onChange: () => {},
 };

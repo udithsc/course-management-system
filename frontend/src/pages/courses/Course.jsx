@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Paper, TableBody, TableRow, TableCell, Toolbar, InputAdornment, Box, Typography, Chip } from '@mui/material';
+import {
+  Paper,
+  TableBody,
+  TableRow,
+  TableCell,
+  Toolbar,
+  InputAdornment,
+  Box,
+  Typography,
+  Chip,
+} from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Outlet } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
@@ -21,7 +31,7 @@ import {
   updateCourse,
   deleteCourse,
   closeNotification,
-  selectTotalElements
+  selectTotalElements,
 } from '../../store/courses';
 import Breadcrumbs from '../../components/layout/Breadcrumbs';
 import { motion } from 'framer-motion';
@@ -32,7 +42,7 @@ const headCells = [
   { id: 'fee', label: 'Fee', width: '10%' },
   { id: 'subscriptions', label: 'subscriptions', width: '10%' },
   { id: 'category', label: 'Category', width: '10%' },
-  { id: 'actions', label: 'Actions', disableSorting: true, align: 'center', width: '10%' }
+  { id: 'actions', label: 'Actions', disableSorting: true, align: 'center', width: '10%' },
 ];
 
 export default function Course() {
@@ -47,7 +57,7 @@ export default function Course() {
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
     title: '',
-    subTitle: ''
+    subTitle: '',
   });
 
   const { TblContainer, TblHead, TblPagination, recordsAfterPagingAndSorting, page, rowsPerPage } =
@@ -85,7 +95,7 @@ export default function Course() {
           <Breadcrumbs />
         </Box>
       </Box>
-      <Paper 
+      <Paper
         component={motion.div}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -97,20 +107,20 @@ export default function Course() {
           sx={{
             p: 1,
             display: 'flex',
-            justifyContent: 'space-between'
+            justifyContent: 'space-between',
           }}
         >
           <Controls.Input
             sx={{
               width: 320,
-              '& .Mui-focused': { width: 350 }
+              '& .Mui-focused': { width: 350 },
             }}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
                   <SearchIcon />
                 </InputAdornment>
-              )
+              ),
             }}
             value={searchText}
             placeholder="Search..."
@@ -135,10 +145,18 @@ export default function Course() {
                 <TableRow key={item.id}>
                   <TableCell sx={{ fontWeight: 600 }}>{item.name}</TableCell>
                   <TableCell>{item.description}</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold', color: 'primary.main' }}>$ {item.fee}</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+                    $ {item.fee}
+                  </TableCell>
                   <TableCell>{item.subscriptions}</TableCell>
                   <TableCell>
-                    <Chip label={item.category.name} size="small" variant="filled" color="primary" sx={{ borderRadius: 2 }} />
+                    <Chip
+                      label={item.category.name}
+                      size="small"
+                      variant="filled"
+                      color="primary"
+                      sx={{ borderRadius: 2 }}
+                    />
                   </TableCell>
                   <TableCell align="center">
                     <Controls.ActionButton
@@ -156,7 +174,7 @@ export default function Course() {
                           isOpen: true,
                           title: 'Are you sure to delete this record?',
                           subTitle: "You can't undo this operation",
-                          onConfirm: () => onDelete(item.id)
+                          onConfirm: () => onDelete(item.id),
                         });
                       }}
                     >

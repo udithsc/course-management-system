@@ -37,13 +37,13 @@ function TabPanel(props) {
 
 TabPanel.propTypes = {
   index: PropTypes.number.isRequired,
-  value: PropTypes.number.isRequired
+  value: PropTypes.number.isRequired,
 };
 
 function a11yProps(index) {
   return {
     id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`
+    'aria-controls': `simple-tabpanel-${index}`,
   };
 }
 
@@ -73,7 +73,7 @@ function CourseManager() {
           </Typography>
         </Box>
       </Box>
-      <Paper 
+      <Paper
         component={motion.div}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -81,30 +81,30 @@ function CourseManager() {
         elevation={0}
         sx={{ borderRadius: 4, border: '1px solid', borderColor: 'divider', overflow: 'hidden' }}
       >
-      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-          <Tab label="Course Details" {...a11yProps(0)} />
-          <Tab label="Videos" {...a11yProps(1)} />
-          <Tab label="Images" {...a11yProps(2)} />
-          <Tab label="Reviews" {...a11yProps(3)} />
-          <Tab label="Subscribers" {...a11yProps(4)} />
-        </Tabs>
-      </Box>
-      <TabPanel value={value} index={0}>
-        <CourseForm recordForEdit={recordForEdit} addOrEdit={addOrEdit} />
-      </TabPanel>
-      <TabPanel value={value} index={1}>
-        <Videos recordForEdit={recordForEdit} />
-      </TabPanel>
-      <TabPanel value={value} index={2}>
-        <Images recordForEdit={recordForEdit} />
-      </TabPanel>
-      <TabPanel value={value} index={3}>
-        <Reviews recordForEdit={recordForEdit} />
-      </TabPanel>
-      <TabPanel value={value} index={4}>
-        <Subscribers recordForEdit={recordForEdit} />
-      </TabPanel>
+        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+          <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+            <Tab label="Course Details" {...a11yProps(0)} />
+            <Tab label="Videos" {...a11yProps(1)} />
+            <Tab label="Images" {...a11yProps(2)} />
+            <Tab label="Reviews" {...a11yProps(3)} />
+            <Tab label="Subscribers" {...a11yProps(4)} />
+          </Tabs>
+        </Box>
+        <TabPanel value={value} index={0}>
+          <CourseForm recordForEdit={recordForEdit} addOrEdit={addOrEdit} />
+        </TabPanel>
+        <TabPanel value={value} index={1}>
+          <Videos recordForEdit={recordForEdit} />
+        </TabPanel>
+        <TabPanel value={value} index={2}>
+          <Images recordForEdit={recordForEdit} />
+        </TabPanel>
+        <TabPanel value={value} index={3}>
+          <Reviews recordForEdit={recordForEdit} />
+        </TabPanel>
+        <TabPanel value={value} index={4}>
+          <Subscribers recordForEdit={recordForEdit} />
+        </TabPanel>
       </Paper>
     </>
   );

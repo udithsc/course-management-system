@@ -10,10 +10,10 @@ const initialState = {
   notification: {
     isOpen: false,
     message: '',
-    type: ''
+    type: '',
   },
   totalElements: 0,
-  refresh: false
+  refresh: false,
 };
 
 const url = '/authors';
@@ -45,7 +45,7 @@ export const authorSlice = createSlice({
       state.notification = {
         isOpen: true,
         message: 'Author Added',
-        type: 'info'
+        type: 'info',
       };
     },
 
@@ -54,7 +54,7 @@ export const authorSlice = createSlice({
       state.notification = {
         isOpen: true,
         message: 'Author Updated',
-        type: 'info'
+        type: 'info',
       };
     },
 
@@ -63,7 +63,7 @@ export const authorSlice = createSlice({
       state.notification = {
         isOpen: true,
         message: 'Deleted Successfully',
-        type: 'error'
+        type: 'error',
       };
     },
 
@@ -71,14 +71,14 @@ export const authorSlice = createSlice({
       state.notification = {
         isOpen: true,
         message: action.payload.message,
-        type: action.payload.type
+        type: action.payload.type,
       };
     },
 
     closeNotification: (state, action) => {
       state.notification = initialState.notification;
-    }
-  }
+    },
+  },
 });
 
 export const {
@@ -88,7 +88,7 @@ export const {
   authorAdded,
   authorUpdated,
   authorDeleted,
-  closeNotification
+  closeNotification,
 } = authorSlice.actions;
 
 export default authorSlice.reducer;
@@ -114,8 +114,8 @@ export const loadAuthors =
         url: page >= 0 ? `${url}?name=${searchText}&pageNo=${page}&pageSize=${rowsPerPage}` : url,
         onStart: authorRequested.type,
         onSuccess: authorReceived.type,
-        onError: authorReceiveFailed.type
-      })
+        onError: authorReceiveFailed.type,
+      }),
     );
   };
 
@@ -125,7 +125,7 @@ export const addAuthor = (data) =>
     method: 'post',
     data,
     onSuccess: authorAdded.type,
-    onSuccessOther: loadAuthors
+    onSuccessOther: loadAuthors,
   });
 
 export const updateAuthor = (data) =>
@@ -134,7 +134,7 @@ export const updateAuthor = (data) =>
     method: 'put',
     data,
     onSuccess: authorUpdated.type,
-    onSuccessOther: loadAuthors
+    onSuccessOther: loadAuthors,
   });
 
 export const deleteAuthor = (id) =>
@@ -143,5 +143,5 @@ export const deleteAuthor = (id) =>
     method: 'delete',
     data: id,
     onSuccess: authorDeleted.type,
-    onSuccessOther: loadAuthors
+    onSuccessOther: loadAuthors,
   });

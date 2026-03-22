@@ -11,7 +11,7 @@ const Controls = {
   Select,
   Checkbox,
   Button,
-  ActionButton
+  ActionButton,
 };
 
 export default Controls;

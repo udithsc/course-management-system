@@ -16,13 +16,13 @@ const chargeTypes = {
           lower: null,
           operator: null,
           upper: null,
-          value: 'SIM_BANKING'
-        }
-      ]
-    }
+          value: 'SIM_BANKING',
+        },
+      ],
+    },
   ],
   pageSize: null,
-  totalPages: null
+  totalPages: null,
 };
 
 describe('chargeTypesSlice', () => {
@@ -38,8 +38,8 @@ describe('chargeTypesSlice', () => {
 
   const createState = () => ({
     chargeTypes: {
-      list: []
-    }
+      list: [],
+    },
   });
 
   describe('loading chargeTypes', () => {

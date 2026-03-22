@@ -10,9 +10,9 @@ const initialState = {
   notification: {
     isOpen: false,
     message: '',
-    type: ''
+    type: '',
   },
-  totalElements: 0
+  totalElements: 0,
 };
 
 const url = '/courses';
@@ -42,7 +42,7 @@ export const courseSlice = createSlice({
       state.notification = {
         isOpen: true,
         message: 'Course Added',
-        type: 'info'
+        type: 'info',
       };
     },
 
@@ -50,7 +50,7 @@ export const courseSlice = createSlice({
       state.notification = {
         isOpen: true,
         message: 'Course Updated',
-        type: 'info'
+        type: 'info',
       };
     },
 
@@ -58,7 +58,7 @@ export const courseSlice = createSlice({
       state.notification = {
         isOpen: true,
         message: 'Deleted Successfully',
-        type: 'error'
+        type: 'error',
       };
     },
 
@@ -66,14 +66,14 @@ export const courseSlice = createSlice({
       state.notification = {
         isOpen: true,
         message: action.payload.message,
-        type: action.payload.type
+        type: action.payload.type,
       };
     },
 
     closeNotification: (state, action) => {
       state.notification = initialState.notification;
-    }
-  }
+    },
+  },
 });
 
 export const {
@@ -83,7 +83,7 @@ export const {
   courseAdded,
   courseUpdated,
   courseDeleted,
-  closeNotification
+  closeNotification,
 } = courseSlice.actions;
 
 export default courseSlice.reducer;
@@ -106,8 +106,8 @@ export const loadCourses =
         url: page >= 0 ? `${url}?name=${searchText}&pageNo=${page}&pageSize=${rowsPerPage}` : url,
         onStart: courseRequested.type,
         onSuccess: courseReceived.type,
-        onError: courseReceiveFailed.type
-      })
+        onError: courseReceiveFailed.type,
+      }),
     );
   };
 
@@ -117,7 +117,7 @@ export const addCourse = (data) =>
     method: 'post',
     data,
     onSuccess: courseAdded.type,
-    onSuccessOther: loadCourses
+    onSuccessOther: loadCourses,
   });
 
 export const updateCourse = (data) =>
@@ -126,7 +126,7 @@ export const updateCourse = (data) =>
     method: 'put',
     data,
     onSuccess: courseUpdated.type,
-    onSuccessOther: loadCourses
+    onSuccessOther: loadCourses,
   });
 
 export const deleteCourse = (id) =>
@@ -135,7 +135,7 @@ export const deleteCourse = (id) =>
     method: 'delete',
     data: id,
     onSuccess: courseDeleted.type,
-    onSuccessOther: loadCourses
+    onSuccessOther: loadCourses,
   });
 
 export const createAddon = (data) =>
@@ -144,7 +144,7 @@ export const createAddon = (data) =>
     method: 'patch',
     data,
     onSuccess: courseUpdated.type,
-    onSuccessOther: loadCourses
+    onSuccessOther: loadCourses,
   });
 
 export const removeAddon = (courseId, addonId) =>
@@ -152,7 +152,7 @@ export const removeAddon = (courseId, addonId) =>
     url: `${url}/addons/${courseId}/${addonId}`,
     method: 'delete',
     onSuccess: courseUpdated.type,
-    onSuccessOther: loadCourses
+    onSuccessOther: loadCourses,
   });
 
 export const uploadVideo = (data) =>
@@ -161,7 +161,7 @@ export const uploadVideo = (data) =>
     method: 'patch',
     data,
     onSuccess: courseUpdated.type,
-    onSuccessOther: loadCourses
+    onSuccessOther: loadCourses,
   });
 
 export const removeVideo = (courseId, videoNo) =>
@@ -169,5 +169,5 @@ export const removeVideo = (courseId, videoNo) =>
     url: `${url}/video/${courseId}/${videoNo}`,
     method: 'delete',
     onSuccess: courseUpdated.type,
-    onSuccessOther: loadCourses
+    onSuccessOther: loadCourses,
   });

@@ -35,11 +35,30 @@
       "title": "Courses",
       "roles": ["ADMIN"],
       "subMenu": [
-        { "path": "/dashboard/courses/courses",    "icon": "School",   "title": "Courses",    "roles": ["ADMIN"] },
-        { "path": "/dashboard/courses/authors",    "icon": "Person",   "title": "Authors",    "roles": ["ADMIN"] },
-        { "path": "/dashboard/courses/categories", "icon": "Category", "title": "Categories", "roles": ["ADMIN"] }
+        {
+          "path": "/dashboard/courses/courses",
+          "icon": "School",
+          "title": "Courses",
+          "roles": ["ADMIN"]
+        },
+        {
+          "path": "/dashboard/courses/authors",
+          "icon": "Person",
+          "title": "Authors",
+          "roles": ["ADMIN"]
+        },
+        {
+          "path": "/dashboard/courses/categories",
+          "icon": "Category",
+          "title": "Categories",
+          "roles": ["ADMIN"]
+        }
       ],
-      "breadcrumbs": ["/dashboard/courses/courses", "/dashboard/courses/authors", "/dashboard/courses/categories"]
+      "breadcrumbs": [
+        "/dashboard/courses/courses",
+        "/dashboard/courses/authors",
+        "/dashboard/courses/categories"
+      ]
     }
   ]
 }

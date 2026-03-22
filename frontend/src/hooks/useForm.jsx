@@ -41,7 +41,7 @@ export function useForm(initialFormValues, schema) {
 
     setValues({
       ...values,
-      [name]: value
+      [name]: value,
     });
     setErrors({ ...inputErrors });
   };
@@ -58,7 +58,7 @@ export function useForm(initialFormValues, schema) {
     setErrors,
     handleInputChange,
     resetForm,
-    validate
+    validate,
   };
 }
 
@@ -72,5 +72,5 @@ export function Form(props) {
 }
 
 Form.propTypes = {
-  children: PropTypes.element.isRequired
+  children: PropTypes.element.isRequired,
 };

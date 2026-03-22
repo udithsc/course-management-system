@@ -29,7 +29,7 @@ Notification.propTypes = {
   notify: PropTypes.shape({
     isOpen: PropTypes.bool.isRequired,
     type: PropTypes.string.isRequired,
-    message: PropTypes.string.isRequired
+    message: PropTypes.string.isRequired,
   }).isRequired,
-  closeNotification: PropTypes.func.isRequired
+  closeNotification: PropTypes.func.isRequired,
 };

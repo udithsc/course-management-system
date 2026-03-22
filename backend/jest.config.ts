@@ -23,7 +23,7 @@ const config: Config = {
     'models/author.model.ts',
     'models/category.model.ts',
     'utils/AppError.ts',
-    'utils/response.ts'
+    'utils/response.ts',
   ],
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html'],
@@ -32,8 +32,8 @@ const config: Config = {
       branches: 85,
       functions: 90,
       lines: 90,
-      statements: 90
-    }
+      statements: 90,
+    },
   },
   // Silence server logs during tests
   setupFiles: ['<rootDir>/__tests__/setup.ts'],

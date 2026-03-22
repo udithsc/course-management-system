@@ -15,7 +15,7 @@ function generateAccessToken(user) {
       isAdmin: user.isAdmin,
     },
     process.env.ACCESS_TOKEN_SECRET,
-    { expiresIn: ACCESS_TOKEN_EXPIRY }
+    { expiresIn: ACCESS_TOKEN_EXPIRY },
   );
 }
 
@@ -29,7 +29,7 @@ function generateRefreshToken(user) {
       isAdmin: user.isAdmin,
     },
     process.env.REFRESH_TOKEN_SECRET,
-    { expiresIn: REFRESH_TOKEN_EXPIRY }
+    { expiresIn: REFRESH_TOKEN_EXPIRY },
   );
 }
 

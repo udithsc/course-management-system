@@ -7,7 +7,7 @@ function validateCourse(course) {
     fee: Joi.number().min(0).max(100000).required(),
     author: Joi.string().required(),
     category: Joi.string().required(),
-    language: Joi.string().min(3).max(10)
+    language: Joi.string().min(3).max(10),
   };
 
   return Joi.object().keys(schema).unknown(true).validate(course);

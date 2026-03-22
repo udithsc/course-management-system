@@ -21,14 +21,14 @@ import {
   addCategory,
   updateCategory,
   selectTotalElements,
-  selectRefreshStatus
+  selectRefreshStatus,
 } from '../../store/categories';
 import Breadcrumbs from '../../components/layout/Breadcrumbs';
 
 const headCells = [
   { id: 'name', label: 'Name', width: '30%' },
   { id: 'createdAt', label: 'Date Created', width: '50%' },
-  { id: 'actions', label: 'Actions', disableSorting: true, align: 'center', width: '10%' }
+  { id: 'actions', label: 'Actions', disableSorting: true, align: 'center', width: '10%' },
 ];
 
 export default function Category() {
@@ -43,7 +43,7 @@ export default function Category() {
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
     title: '',
-    subTitle: ''
+    subTitle: '',
   });
 
   const { TblContainer, TblHead, TblPagination, recordsAfterPagingAndSorting, page, rowsPerPage } =
@@ -80,20 +80,20 @@ export default function Category() {
           sx={{
             p: 1,
             display: 'flex',
-            justifyContent: 'space-between'
+            justifyContent: 'space-between',
           }}
         >
           <Controls.Input
             sx={{
               width: 320,
-              '& .Mui-focused': { width: 350 }
+              '& .Mui-focused': { width: 350 },
             }}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
                   <SearchIcon />
                 </InputAdornment>
-              )
+              ),
             }}
             value={searchText}
             placeholder="Search..."
@@ -136,7 +136,7 @@ export default function Category() {
                           subTitle: "You can't undo this operation",
                           onConfirm: () => {
                             onDelete(item.id);
-                          }
+                          },
                         });
                       }}
                     >

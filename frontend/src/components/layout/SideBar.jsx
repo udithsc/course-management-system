@@ -20,15 +20,18 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
       }),
       boxSizing: 'border-box',
       border: 'none',
-      background: theme.palette.mode === 'dark'
-        ? 'linear-gradient(180deg, #161B27 0%, #1A2035 100%)'
-        : 'linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%)',
-      borderRight: theme.palette.mode === 'dark'
-        ? '1px solid rgba(255,255,255,0.05)'
-        : '1px solid rgba(15,23,42,0.07)',
-      boxShadow: theme.palette.mode === 'dark'
-        ? '4px 0 24px rgba(0,0,0,0.4)'
-        : '4px 0 24px rgba(15,23,42,0.05)',
+      background:
+        theme.palette.mode === 'dark'
+          ? 'linear-gradient(180deg, #161B27 0%, #1A2035 100%)'
+          : 'linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%)',
+      borderRight:
+        theme.palette.mode === 'dark'
+          ? '1px solid rgba(255,255,255,0.05)'
+          : '1px solid rgba(15,23,42,0.07)',
+      boxShadow:
+        theme.palette.mode === 'dark'
+          ? '4px 0 24px rgba(0,0,0,0.4)'
+          : '4px 0 24px rgba(15,23,42,0.05)',
       ...(!open && {
         overflowX: 'hidden',
         transition: theme.transitions.create('width', {
@@ -39,7 +42,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
         [theme.breakpoints.up('sm')]: { width: theme.spacing(9) },
       }),
     },
-  })
+  }),
 );
 
 function SideBar({ open }) {
@@ -138,7 +141,12 @@ function SideBar({ open }) {
           </Avatar>
           {open && (
             <Box sx={{ overflow: 'hidden' }}>
-              <Typography variant="caption" fontWeight={700} noWrap sx={{ display: 'block', color: 'text.primary', lineHeight: 1.3 }}>
+              <Typography
+                variant="caption"
+                fontWeight={700}
+                noWrap
+                sx={{ display: 'block', color: 'text.primary', lineHeight: 1.3 }}
+              >
                 {user?.name || 'Admin'}
               </Typography>
               <Chip

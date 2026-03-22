@@ -42,8 +42,8 @@ module.exports = (app) => {
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 1000, // Limit each IP to 100 requests per 15m
     message: 'Too many requests from this IP, please try again after 15 minutes',
-    standardHeaders: true, 
-    legacyHeaders: false, 
+    standardHeaders: true,
+    legacyHeaders: false,
   });
   app.use('/api/', apiLimiter);
 

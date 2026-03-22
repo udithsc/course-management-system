@@ -10,7 +10,7 @@ const prisma = require('../db');
 
 const upload = createUpload('authors');
 
-// ─── List Authors (paginated) ───────────────────────────
+// List Authors (paginated)
 router.get('/', [auth], async (req, res) => {
   const pageNo = parseInt(req.query.pageNo, 10) || 0;
   const pageSize = parseInt(req.query.pageSize, 10) || 10;
@@ -33,7 +33,7 @@ router.get('/', [auth], async (req, res) => {
   return paginated(res, { data, totalElements, pageNo, totalPages });
 });
 
-// ─── Get Single Author ──────────────────────────────────
+// Get Single Author
 router.get('/:id', [auth], async (req, res) => {
   const author = await prisma.author.findUnique({
     where: { id: req.params.id },
@@ -42,7 +42,7 @@ router.get('/:id', [auth], async (req, res) => {
   return success(res, author);
 });
 
-// ─── Create Author ──────────────────────────────────────
+// Create Author
 router.post(
   '/',
   [auth, admin, upload.single('file'), validate(validateModel)],
@@ -55,17 +55,15 @@ router.post(
         profession,
         email: email || null,
         mobile: mobile ? mobile.toString() : null,
-        image: req.file?.filename
-          ? getFileUrl(req, 'authors', req.file.filename)
-          : null,
+        image: req.file?.filename ? getFileUrl(req, 'authors', req.file.filename) : null,
       },
     });
 
     return created(res, author);
-  }
+  },
 );
 
-// ─── Update Author ──────────────────────────────────────
+// Update Author
 router.put(
   '/:id',
   [auth, admin, upload.single('file'), validate(validateModel)],
@@ -80,19 +78,17 @@ router.put(
           profession,
           email: email || null,
           mobile: mobile ? mobile.toString() : null,
-          image: req.file?.filename
-            ? getFileUrl(req, 'authors', req.file.filename)
-            : req.body.file,
+          image: req.file?.filename ? getFileUrl(req, 'authors', req.file.filename) : req.body.file,
         },
       });
       return success(res, author);
     } catch (e) {
       throw new AppError('Author not found.', 404);
     }
-  }
+  },
 );
 
-// ─── Delete Author ──────────────────────────────────────
+// Delete Author
 router.delete('/:id', [auth, admin], async (req, res) => {
   try {
     await prisma.author.delete({ where: { id: req.params.id } });

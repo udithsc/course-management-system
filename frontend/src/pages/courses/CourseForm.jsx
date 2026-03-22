@@ -24,22 +24,22 @@ const initialFormValues = {
 };
 
 const schema = {
-  name:        Joi.string().required(),
+  name: Joi.string().required(),
   description: Joi.string().required(),
-  fee:         Joi.number().required(),
+  fee: Joi.number().required(),
 };
 
 export default function CourseForm({ recordForEdit, addOrEdit }) {
   const dispatch = useDispatch();
   const categories = useSelector(selectCategoryNames);
-  const authors    = useSelector(selectAuthorsNames);
+  const authors = useSelector(selectAuthorsNames);
   const [image, setImage] = useState({ preview: '', data: '' });
-  const theme  = useTheme();
+  const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
 
   const { values, setValues, errors, setErrors, handleInputChange, resetForm, validate } = useForm(
     initialFormValues,
-    schema
+    schema,
   );
 
   const handleSubmit = (e) => {
@@ -48,12 +48,12 @@ export default function CourseForm({ recordForEdit, addOrEdit }) {
     setErrors({ ...errs });
 
     const formData = new FormData();
-    formData.append('file',        image.data);
-    formData.append('name',        values.name);
+    formData.append('file', image.data);
+    formData.append('name', values.name);
     formData.append('description', values.description);
-    formData.append('author',      values.author.id);
-    formData.append('category',    values.category.id);
-    formData.append('fee',         values.fee);
+    formData.append('author', values.author.id);
+    formData.append('category', values.category.id);
+    formData.append('fee', values.fee);
     if (values.id !== 0) formData.append('id', values.id);
     if (!errs) addOrEdit(formData, resetForm);
   };
@@ -71,14 +71,15 @@ export default function CourseForm({ recordForEdit, addOrEdit }) {
     if (recordForEdit) setValues({ ...recordForEdit });
   }, [recordForEdit]);
 
-  const previewSrc = image.preview || values.image
-    ? (image.preview || `${import.meta.env.VITE_API_URL}/files/${values.image}`)
-    : null;
+  const previewSrc =
+    image.preview || values.image
+      ? image.preview || `${import.meta.env.VITE_API_URL}/files/${values.image}`
+      : null;
 
   return (
     <Form onSubmit={handleSubmit}>
       <Grid container spacing={3}>
-        {/* ── Left column: fields ─────────────────────────────── */}
+        {/* Left column: fields */}
         <Grid item xs={12} md={7}>
           <Controls.Input
             name="name"
@@ -102,7 +103,15 @@ export default function CourseForm({ recordForEdit, addOrEdit }) {
             rows={3}
             InputProps={{
               startAdornment: (
-                <DescriptionOutlinedIcon sx={{ mr: 1, mt: 0.5, fontSize: 18, color: 'text.disabled', alignSelf: 'flex-start' }} />
+                <DescriptionOutlinedIcon
+                  sx={{
+                    mr: 1,
+                    mt: 0.5,
+                    fontSize: 18,
+                    color: 'text.disabled',
+                    alignSelf: 'flex-start',
+                  }}
+                />
               ),
             }}
           />
@@ -137,9 +146,20 @@ export default function CourseForm({ recordForEdit, addOrEdit }) {
           />
         </Grid>
 
-        {/* ── Right column: image upload ───────────────────────── */}
+        {/* Right column: image upload */}
         <Grid item xs={12} md={5}>
-          <Typography variant="caption" fontWeight={700} color="text.secondary" sx={{ textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: '0.68rem', display: 'block', mb: 1.5 }}>
+          <Typography
+            variant="caption"
+            fontWeight={700}
+            color="text.secondary"
+            sx={{
+              textTransform: 'uppercase',
+              letterSpacing: '0.08em',
+              fontSize: '0.68rem',
+              display: 'block',
+              mb: 1.5,
+            }}
+          >
             Cover Image
           </Typography>
 
@@ -155,11 +175,21 @@ export default function CourseForm({ recordForEdit, addOrEdit }) {
             />
             <Box
               sx={{
-                position: 'relative', borderRadius: '14px', overflow: 'hidden',
-                height: 180, cursor: 'pointer',
+                position: 'relative',
+                borderRadius: '14px',
+                overflow: 'hidden',
+                height: 180,
+                cursor: 'pointer',
                 border: '2px dashed',
-                borderColor: image.preview ? 'primary.main' : isDark ? 'rgba(255,255,255,0.12)' : 'rgba(15,23,42,0.14)',
-                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                borderColor: image.preview
+                  ? 'primary.main'
+                  : isDark
+                    ? 'rgba(255,255,255,0.12)'
+                    : 'rgba(15,23,42,0.14)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
                 bgcolor: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(15,23,42,0.02)',
                 transition: 'all 0.25s',
                 '&:hover': {
@@ -179,28 +209,43 @@ export default function CourseForm({ recordForEdit, addOrEdit }) {
                 <>
                   <Box
                     sx={{
-                      mb: 1.5, p: 1.5, borderRadius: '50%',
+                      mb: 1.5,
+                      p: 1.5,
+                      borderRadius: '50%',
                       bgcolor: isDark ? 'rgba(99,102,241,0.12)' : 'rgba(99,102,241,0.08)',
                     }}
                   >
                     <CloudUploadOutlinedIcon sx={{ fontSize: 28, color: 'primary.main' }} />
                   </Box>
-                  <Typography variant="body2" fontWeight={700} color="primary.main">Click to upload</Typography>
-                  <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>PNG, JPG up to 5MB</Typography>
+                  <Typography variant="body2" fontWeight={700} color="primary.main">
+                    Click to upload
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
+                    PNG, JPG up to 5MB
+                  </Typography>
                 </>
               )}
 
               {/* Hover overlay if image exists */}
               {previewSrc && (
-                <Box sx={{
-                  position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
-                  alignItems: 'center', justifyContent: 'center',
-                  bgcolor: 'rgba(0,0,0,0.5)', opacity: 0,
-                  transition: 'opacity 0.2s',
-                  '&:hover': { opacity: 1 },
-                }}>
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    inset: 0,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    bgcolor: 'rgba(0,0,0,0.5)',
+                    opacity: 0,
+                    transition: 'opacity 0.2s',
+                    '&:hover': { opacity: 1 },
+                  }}
+                >
                   <CloudUploadOutlinedIcon sx={{ color: 'white', fontSize: 28, mb: 0.5 }} />
-                  <Typography variant="caption" sx={{ color: 'white', fontWeight: 700 }}>Change image</Typography>
+                  <Typography variant="caption" sx={{ color: 'white', fontWeight: 700 }}>
+                    Change image
+                  </Typography>
                 </Box>
               )}
             </Box>
@@ -208,18 +253,28 @@ export default function CourseForm({ recordForEdit, addOrEdit }) {
         </Grid>
       </Grid>
 
-      {/* ── Footer actions ───────────────────────────────────── */}
-      <Box sx={{
-        display: 'flex', justifyContent: 'flex-end', gap: 1.5, mt: 1,
-        pt: 3, borderTop: '1px solid', borderColor: 'divider',
-      }}>
+      {/* Footer actions */}
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          gap: 1.5,
+          mt: 1,
+          pt: 3,
+          borderTop: '1px solid',
+          borderColor: 'divider',
+        }}
+      >
         <Controls.Button
           text="Reset"
           onClick={resetForm}
           variant="outlined"
           sx={{
-            borderRadius: '10px', fontWeight: 700, px: 3,
-            borderColor: 'divider', color: 'text.secondary',
+            borderRadius: '10px',
+            fontWeight: 700,
+            px: 3,
+            borderColor: 'divider',
+            color: 'text.secondary',
             '&:hover': { borderColor: 'text.secondary' },
           }}
         />
@@ -227,7 +282,9 @@ export default function CourseForm({ recordForEdit, addOrEdit }) {
           type="submit"
           text={recordForEdit?.id ? 'Save Changes' : 'Create Course'}
           sx={{
-            borderRadius: '10px', fontWeight: 700, px: 3,
+            borderRadius: '10px',
+            fontWeight: 700,
+            px: 3,
             background: 'linear-gradient(135deg, #6366F1, #4F46E5)',
             boxShadow: '0 4px 14px rgba(99,102,241,0.4)',
             '&:hover': { boxShadow: '0 6px 20px rgba(99,102,241,0.5)' },
@@ -239,11 +296,11 @@ export default function CourseForm({ recordForEdit, addOrEdit }) {
 }
 
 CourseForm.propTypes = {
-  addOrEdit:     PropTypes.func.isRequired,
+  addOrEdit: PropTypes.func.isRequired,
   recordForEdit: PropTypes.shape({
-    id:   PropTypes.string,
+    id: PropTypes.string,
     name: PropTypes.string,
-    fee:  PropTypes.number,
+    fee: PropTypes.number,
   }),
 };
 

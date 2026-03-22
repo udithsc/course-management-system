@@ -9,7 +9,7 @@ export function useErrorToast() {
       closeOnClick: true,
       pauseOnHover: true,
       draggable: true,
-      progress: undefined
+      progress: undefined,
     });
   };
 }
@@ -23,7 +23,7 @@ export function useInfoToast() {
       closeOnClick: true,
       pauseOnHover: true,
       draggable: true,
-      progress: undefined
+      progress: undefined,
     });
   };
 }

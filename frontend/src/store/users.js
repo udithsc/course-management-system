@@ -10,10 +10,10 @@ const initialState = {
   notification: {
     isOpen: false,
     message: '',
-    type: ''
+    type: '',
   },
   totalElements: 0,
-  refresh: false
+  refresh: false,
 };
 
 const url = '/users';
@@ -45,7 +45,7 @@ export const userSlice = createSlice({
       state.notification = {
         isOpen: true,
         message: 'User Added',
-        type: 'success'
+        type: 'success',
       };
     },
 
@@ -54,7 +54,7 @@ export const userSlice = createSlice({
       state.notification = {
         isOpen: true,
         message: 'User Updated',
-        type: 'success'
+        type: 'success',
       };
     },
 
@@ -63,7 +63,7 @@ export const userSlice = createSlice({
       state.notification = {
         isOpen: true,
         message: 'User Deleted ',
-        type: 'error'
+        type: 'error',
       };
     },
 
@@ -71,14 +71,14 @@ export const userSlice = createSlice({
       state.notification = {
         isOpen: true,
         message: action.payload.message,
-        type: action.payload.type
+        type: action.payload.type,
       };
     },
 
     closeNotification: (state, action) => {
       state.notification = initialState.notification;
-    }
-  }
+    },
+  },
 });
 
 export const {
@@ -88,7 +88,7 @@ export const {
   userAdded,
   userUpdated,
   userDeleted,
-  closeNotification
+  closeNotification,
 } = userSlice.actions;
 
 export default userSlice.reducer;
@@ -111,9 +111,9 @@ export const loadUsers =
       apiCallBegan({
         url: page >= 0 ? `${url}?name=${searchText}&pageNo=${page}&pageSize=${rowsPerPage}` : url,
         onStart: usersRequested.type,
-        onSuccess: usersReceived.type
+        onSuccess: usersReceived.type,
         // onError: usersRequestFailed.type
-      })
+      }),
     );
   };
 
@@ -123,7 +123,7 @@ export const addUser = (data) =>
     method: 'post',
     data,
     onSuccess: userAdded.type,
-    onSuccessOther: loadUsers
+    onSuccessOther: loadUsers,
   });
 
 export const updateUser = (data) =>
@@ -132,7 +132,7 @@ export const updateUser = (data) =>
     method: 'put',
     data,
     onSuccess: userUpdated.type,
-    onSuccessOther: loadUsers
+    onSuccessOther: loadUsers,
   });
 
 export const deleteUser = (id) =>
@@ -141,5 +141,5 @@ export const deleteUser = (id) =>
     method: 'delete',
     data: id,
     onSuccess: userDeleted.type,
-    onSuccessOther: loadUsers
+    onSuccessOther: loadUsers,
   });

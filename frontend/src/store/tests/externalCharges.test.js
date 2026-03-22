@@ -16,13 +16,13 @@ const externalCharges = {
           lower: null,
           operator: null,
           upper: null,
-          value: 'SIM_BANKING'
-        }
-      ]
-    }
+          value: 'SIM_BANKING',
+        },
+      ],
+    },
   ],
   pageSize: null,
-  totalPages: null
+  totalPages: null,
 };
 
 describe('externalChargesSlice', () => {
@@ -38,8 +38,8 @@ describe('externalChargesSlice', () => {
 
   const createState = () => ({
     externalCharges: {
-      list: []
-    }
+      list: [],
+    },
   });
 
   describe('loading externalCharges', () => {

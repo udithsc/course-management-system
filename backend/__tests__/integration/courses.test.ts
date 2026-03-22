@@ -15,12 +15,16 @@ let seededCourseId: string;
 
 beforeAll(async () => {
   const [aR, sR, iR] = await Promise.all([
-    request(app).post('/api/auth/login').send({ email: 'admin@test.com',      password: 'admin123' }),
-    request(app).post('/api/auth/login').send({ email: 'student@test.com',    password: 'student123' }),
-    request(app).post('/api/auth/login').send({ email: 'instructor@test.com', password: 'instructor123' }),
+    request(app).post('/api/auth/login').send({ email: 'admin@test.com', password: 'admin123' }),
+    request(app)
+      .post('/api/auth/login')
+      .send({ email: 'student@test.com', password: 'student123' }),
+    request(app)
+      .post('/api/auth/login')
+      .send({ email: 'instructor@test.com', password: 'instructor123' }),
   ]);
-  adminToken      = aR.body.data.accessToken;
-  studentToken    = sR.body.data.accessToken;
+  adminToken = aR.body.data.accessToken;
+  studentToken = sR.body.data.accessToken;
   instructorToken = iR.body.data.accessToken;
 
   // Get the seeded course ID
@@ -32,7 +36,7 @@ afterAll(async () => {
   await prisma.$disconnect();
 });
 
-// ─── GET /api/courses ─────────────────────────────────────────────────────────
+// GET /api/courses
 describe('GET /api/courses', () => {
   it('returns paginated course list without auth', async () => {
     // Public endpoint
@@ -41,9 +45,7 @@ describe('GET /api/courses', () => {
   });
 
   it('returns courses when authenticated', async () => {
-    const res = await request(app)
-      .get('/api/courses')
-      .set('x-auth-token', studentToken);
+    const res = await request(app).get('/api/courses').set('x-auth-token', studentToken);
     expect(res.status).toBe(200);
     expect(res.body.data).toBeInstanceOf(Array);
     expect(res.body.meta.totalElements).toBeDefined();
@@ -58,7 +60,7 @@ describe('GET /api/courses', () => {
   });
 });
 
-// ─── GET /api/courses/:id ─────────────────────────────────────────────────────
+// GET /api/courses/:id
 describe('GET /api/courses/:id', () => {
   it('returns course detail with lessons', async () => {
     if (!seededCourseId) return;
@@ -80,7 +82,7 @@ describe('GET /api/courses/:id', () => {
   });
 });
 
-// ─── POST /api/courses/subscribe/:courseId ────────────────────────────────────
+// POST /api/courses/subscribe/:courseId
 describe('POST /api/courses/subscribe/:courseId', () => {
   it('student can subscribe to a course', async () => {
     if (!seededCourseId) return;
@@ -105,7 +107,7 @@ describe('POST /api/courses/subscribe/:courseId', () => {
   });
 });
 
-// ─── GET /api/courses/subscriptions/me ───────────────────────────────────────
+// GET /api/courses/subscriptions/me
 describe('GET /api/courses/subscriptions/me', () => {
   it('returns enrolled courses for logged-in student', async () => {
     const res = await request(app)
@@ -121,7 +123,7 @@ describe('GET /api/courses/subscriptions/me', () => {
   });
 });
 
-// ─── PATCH /api/courses/progress/:courseId ────────────────────────────────────
+// PATCH /api/courses/progress/:courseId
 describe('PATCH /api/courses/progress/:courseId', () => {
   it('marks a lesson as watched for subscribed student', async () => {
     if (!seededCourseId) return;
@@ -151,7 +153,7 @@ describe('PATCH /api/courses/progress/:courseId', () => {
   });
 });
 
-// ─── GET /api/courses/instructor/my-courses ───────────────────────────────────
+// GET /api/courses/instructor/my-courses
 describe('GET /api/courses/instructor/my-courses', () => {
   it('instructor can fetch their courses', async () => {
     const res = await request(app)
@@ -176,7 +178,7 @@ describe('GET /api/courses/instructor/my-courses', () => {
   });
 });
 
-// ─── GET /api/courses/instructor/analytics/:courseId ─────────────────────────
+// GET /api/courses/instructor/analytics/:courseId
 describe('GET /api/courses/instructor/analytics/:courseId', () => {
   it('instructor can fetch analytics for their course', async () => {
     if (!seededCourseId) return;
@@ -186,8 +188,8 @@ describe('GET /api/courses/instructor/analytics/:courseId', () => {
     expect(res.status).toBe(200);
     expect(res.body.data).toMatchObject({
       totalStudents: expect.any(Number),
-      avgRating:     expect.any(Number),
-      lessonStats:   expect.any(Array),
+      avgRating: expect.any(Number),
+      lessonStats: expect.any(Array),
     });
   });
 

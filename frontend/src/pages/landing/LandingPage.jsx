@@ -17,7 +17,7 @@ import {
   alpha,
   Accordion,
   AccordionSummary,
-  AccordionDetails
+  AccordionDetails,
 } from '@mui/material';
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from 'framer-motion';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
@@ -51,7 +51,7 @@ const MotionBox = motion(Box);
 const MotionTypography = motion(Typography);
 const MotionPaper = motion(Paper);
 
-/* ──────────────────────────────────────────── Animated Background ──── */
+/* Animated Background */
 const AnimatedBackground = ({ isDark }) => (
   <Box
     sx={{
@@ -140,7 +140,7 @@ const AnimatedBackground = ({ isDark }) => (
   </Box>
 );
 
-/* ──────────────────────────────────────────── Stat Card ──── */
+/* Stat Card */
 const StatCard = ({ icon, value, label, delay, isDark }) => (
   <MotionBox
     initial={{ opacity: 0, y: 40 }}
@@ -155,15 +155,11 @@ const StatCard = ({ icon, value, label, delay, isDark }) => (
         ? 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)'
         : 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.6) 100%)',
       backdropFilter: 'blur(20px)',
-      border: isDark
-        ? '1px solid rgba(255,255,255,0.08)'
-        : '1px solid rgba(0,0,0,0.06)',
+      border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.06)',
       cursor: 'default',
       transition: 'box-shadow 0.3s',
       '&:hover': {
-        boxShadow: isDark
-          ? '0 20px 40px rgba(0,0,0,0.3)'
-          : '0 20px 40px rgba(0,0,0,0.08)',
+        boxShadow: isDark ? '0 20px 40px rgba(0,0,0,0.3)' : '0 20px 40px rgba(0,0,0,0.08)',
       },
     }}
   >
@@ -182,10 +178,24 @@ const StatCard = ({ icon, value, label, delay, isDark }) => (
         {icon}
       </Box>
       <Box>
-        <Typography sx={{ fontWeight: 900, fontSize: { xs: '1.3rem', md: '1.5rem' }, color: 'text.primary', lineHeight: 1.2 }}>
+        <Typography
+          sx={{
+            fontWeight: 900,
+            fontSize: { xs: '1.3rem', md: '1.5rem' },
+            color: 'text.primary',
+            lineHeight: 1.2,
+          }}
+        >
           {value}
         </Typography>
-        <Typography sx={{ fontSize: '0.8rem', color: 'text.secondary', fontWeight: 600, letterSpacing: '0.5px' }}>
+        <Typography
+          sx={{
+            fontSize: '0.8rem',
+            color: 'text.secondary',
+            fontWeight: 600,
+            letterSpacing: '0.5px',
+          }}
+        >
           {label}
         </Typography>
       </Box>
@@ -193,7 +203,7 @@ const StatCard = ({ icon, value, label, delay, isDark }) => (
   </MotionBox>
 );
 
-/* ──────────────────────────────────────────── Feature Card ──── */
+/* Feature Card */
 const FeatureCard = ({ icon, title, description, gradient, index, isDark }) => (
   <MotionBox
     initial={{ opacity: 0, y: 30 }}
@@ -209,9 +219,7 @@ const FeatureCard = ({ icon, title, description, gradient, index, isDark }) => (
         ? 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)'
         : 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.7) 100%)',
       backdropFilter: 'blur(20px)',
-      border: isDark
-        ? '1px solid rgba(255,255,255,0.08)'
-        : '1px solid rgba(79,70,229,0.08)',
+      border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(79,70,229,0.08)',
       display: 'flex',
       flexDirection: 'column',
       position: 'relative',
@@ -220,9 +228,7 @@ const FeatureCard = ({ icon, title, description, gradient, index, isDark }) => (
       transition: 'all 0.3s ease-in-out',
       '&:hover': {
         border: isDark ? '1px solid rgba(79,70,229,0.4)' : '1px solid rgba(79,70,229,0.3)',
-        boxShadow: isDark
-          ? '0 20px 50px rgba(79,70,229,0.15)'
-          : '0 20px 50px rgba(79,70,229,0.12)',
+        boxShadow: isDark ? '0 20px 50px rgba(79,70,229,0.15)' : '0 20px 50px rgba(79,70,229,0.12)',
         '& .feature-icon-bg': {
           transform: 'scale(1.1) rotate(5deg)',
           boxShadow: '0 10px 20px -5px rgba(0,0,0,0.2)',
@@ -260,16 +266,30 @@ const FeatureCard = ({ icon, title, description, gradient, index, isDark }) => (
     >
       {icon}
     </Box>
-    <Typography variant="h6" sx={{ fontWeight: 800, mb: 1.5, color: 'text.primary', fontSize: { xs: '1.05rem', md: '1.05rem', lg: '1.15rem' } }}>
+    <Typography
+      variant="h6"
+      sx={{
+        fontWeight: 800,
+        mb: 1.5,
+        color: 'text.primary',
+        fontSize: { xs: '1.05rem', md: '1.05rem', lg: '1.15rem' },
+      }}
+    >
       {title}
     </Typography>
-    <Typography sx={{ color: 'text.secondary', lineHeight: 1.6, fontSize: { xs: '0.85rem', md: '0.85rem', lg: '0.9rem' } }}>
+    <Typography
+      sx={{
+        color: 'text.secondary',
+        lineHeight: 1.6,
+        fontSize: { xs: '0.85rem', md: '0.85rem', lg: '0.9rem' },
+      }}
+    >
       {description}
     </Typography>
   </MotionBox>
 );
 
-/* ──────────────────────────────────────────── Team Card ──── */
+/* Team Card */
 const TeamCard = ({ name, role, image, bio, index, isDark }) => {
   const theme = useTheme();
   return (
@@ -287,9 +307,7 @@ const TeamCard = ({ name, role, image, bio, index, isDark }) => {
           ? 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)'
           : 'linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(248,250,252,0.8) 100%)',
         backdropFilter: 'blur(24px)',
-        border: isDark
-          ? '1px solid rgba(255,255,255,0.1)'
-          : '1px solid rgba(79,70,229,0.08)',
+        border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(79,70,229,0.08)',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -304,7 +322,7 @@ const TeamCard = ({ name, role, image, bio, index, isDark }) => {
             : '0 30px 60px -12px rgba(0,0,0,0.12), 0 18px 36px -18px rgba(79,70,229,0.2)',
           '& .team-avatar-bg': {
             transform: 'scale(1.1) rotate(5deg)',
-          }
+          },
         },
       }}
     >
@@ -337,23 +355,42 @@ const TeamCard = ({ name, role, image, bio, index, isDark }) => {
         />
       </Box>
 
-      <Typography variant="h5" sx={{ fontWeight: 900, color: 'text.primary', mb: 1, letterSpacing: '-0.5px', fontSize: { xs: '1.2rem', md: '1.4rem' } }}>
+      <Typography
+        variant="h5"
+        sx={{
+          fontWeight: 900,
+          color: 'text.primary',
+          mb: 1,
+          letterSpacing: '-0.5px',
+          fontSize: { xs: '1.2rem', md: '1.4rem' },
+        }}
+      >
         {name}
       </Typography>
-      <Typography sx={{
-        color: 'primary.main',
-        fontWeight: 800,
-        fontSize: '0.85rem',
-        mb: 3,
-        letterSpacing: '1.5px',
-        textTransform: 'uppercase',
-        background: 'linear-gradient(90deg, #4F46E5, #0EA5E9)',
-        WebkitBackgroundClip: 'text',
-        WebkitTextFillColor: 'transparent',
-      }}>
+      <Typography
+        sx={{
+          color: 'primary.main',
+          fontWeight: 800,
+          fontSize: '0.85rem',
+          mb: 3,
+          letterSpacing: '1.5px',
+          textTransform: 'uppercase',
+          background: 'linear-gradient(90deg, #4F46E5, #0EA5E9)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+        }}
+      >
         {role}
       </Typography>
-      <Typography sx={{ color: 'text.secondary', fontSize: { xs: '0.9rem', md: '0.95rem' }, lineHeight: 1.7, mb: 4, fontWeight: 500 }}>
+      <Typography
+        sx={{
+          color: 'text.secondary',
+          fontSize: { xs: '0.9rem', md: '0.95rem' },
+          lineHeight: 1.7,
+          mb: 4,
+          fontWeight: 500,
+        }}
+      >
         {bio}
       </Typography>
 
@@ -381,7 +418,7 @@ const TeamCard = ({ name, role, image, bio, index, isDark }) => {
   );
 };
 
-/* ──────────────────────────────────────────── Testimonial Card ──── */
+/* Testimonial Card */
 const TestimonialCard = ({ name, role, quote, image, index, isDark }) => {
   const theme = useTheme();
   return (
@@ -407,20 +444,57 @@ const TestimonialCard = ({ name, role, quote, image, index, isDark }) => {
         '&:hover': {
           borderColor: 'primary.main',
           boxShadow: isDark ? '0 20px 40px rgba(0,0,0,0.3)' : '0 15px 30px rgba(79,70,229,0.15)',
-        }
+        },
       }}
     >
       <Box>
-        <Box sx={{ color: 'primary.main', mb: 2, fontSize: '2.5rem', opacity: 0.4, lineHeight: 1, fontFamily: 'serif' }}>“</Box>
-        <Typography sx={{ fontSize: '1.05rem', lineHeight: 1.8, color: 'text.primary', mb: 3, fontWeight: 500 }}>
+        <Box
+          sx={{
+            color: 'primary.main',
+            mb: 2,
+            fontSize: '2.5rem',
+            opacity: 0.4,
+            lineHeight: 1,
+            fontFamily: 'serif',
+          }}
+        >
+          “
+        </Box>
+        <Typography
+          sx={{
+            fontSize: '1.05rem',
+            lineHeight: 1.8,
+            color: 'text.primary',
+            mb: 3,
+            fontWeight: 500,
+          }}
+        >
           {quote}
         </Typography>
       </Box>
       <Stack direction="row" spacing={2} alignItems="center">
-        <Avatar src={image} sx={{ width: 56, height: 56, border: '2px solid white', boxShadow: '0 4px 12px rgba(0,0,0,0.12)' }} />
+        <Avatar
+          src={image}
+          sx={{
+            width: 56,
+            height: 56,
+            border: '2px solid white',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
+          }}
+        />
         <Box>
-          <Typography sx={{ fontWeight: 900, fontSize: '1rem', color: 'text.primary' }}>{name}</Typography>
-          <Typography sx={{ fontSize: '0.8rem', fontWeight: 700, color: 'primary.main', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+          <Typography sx={{ fontWeight: 900, fontSize: '1rem', color: 'text.primary' }}>
+            {name}
+          </Typography>
+          <Typography
+            sx={{
+              fontSize: '0.8rem',
+              fontWeight: 700,
+              color: 'primary.main',
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px',
+            }}
+          >
             {role}
           </Typography>
         </Box>
@@ -429,7 +503,7 @@ const TestimonialCard = ({ name, role, quote, image, index, isDark }) => {
   );
 };
 
-/* ──────────────────────────────────────────── Interactive BG ──── */
+/* Interactive BG */
 const FloatingBackground = ({ isDark }) => {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -451,7 +525,9 @@ const FloatingBackground = ({ isDark }) => {
   }, [mouseX, mouseY]);
 
   return (
-    <Box sx={{ position: 'absolute', inset: 0, overflow: 'hidden', zIndex: 0, pointerEvents: 'none' }}>
+    <Box
+      sx={{ position: 'absolute', inset: 0, overflow: 'hidden', zIndex: 0, pointerEvents: 'none' }}
+    >
       {/* Primary Glows */}
       <MotionBox
         style={{ x, y }}
@@ -497,7 +573,7 @@ const FloatingBackground = ({ isDark }) => {
             duration: 15 + i * 5,
             repeat: Infinity,
             delay: b.d,
-            ease: "easeInOut",
+            ease: 'easeInOut',
           }}
           sx={{
             position: 'absolute',
@@ -527,10 +603,14 @@ const FloatingBackground = ({ isDark }) => {
   );
 };
 
-/* ──────────────────────────────────────────── Section Header ──── */
+/* Section Header */
 const SectionHeader = ({ badge, title, subtitle }) => (
   <Stack spacing={2} alignItems="center" textAlign="center" sx={{ mb: { xs: 6, md: 10 } }}>
-    <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+    >
       <Chip
         label={badge}
         size="small"
@@ -568,7 +648,12 @@ const SectionHeader = ({ badge, title, subtitle }) => (
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ delay: 0.2 }}
-        sx={{ color: 'text.secondary', maxWidth: 550, fontSize: { xs: '1rem', md: '1.1rem' }, lineHeight: 1.7 }}
+        sx={{
+          color: 'text.secondary',
+          maxWidth: 550,
+          fontSize: { xs: '1rem', md: '1.1rem' },
+          lineHeight: 1.7,
+        }}
       >
         {subtitle}
       </MotionTypography>
@@ -576,9 +661,7 @@ const SectionHeader = ({ badge, title, subtitle }) => (
   </Stack>
 );
 
-/* ──────────────────────────────────────────────────────────────────── */
 /*                           MAIN COMPONENT                           */
-/* ──────────────────────────────────────────────────────────────────── */
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -592,8 +675,10 @@ const LandingPage = () => {
   const headerBg = useTransform(
     scrollY,
     [0, 80],
-    [isDark ? 'rgba(15, 23, 42, 0)' : 'rgba(248, 250, 252, 0)',
-    isDark ? 'rgba(15, 23, 42, 0.85)' : 'rgba(248, 250, 252, 0.85)']
+    [
+      isDark ? 'rgba(15, 23, 42, 0)' : 'rgba(248, 250, 252, 0)',
+      isDark ? 'rgba(15, 23, 42, 0.85)' : 'rgba(248, 250, 252, 0.85)',
+    ],
   );
 
   const headerBlur = useTransform(scrollY, [0, 80], ['blur(0px)', 'blur(16px)']);
@@ -609,7 +694,7 @@ const LandingPage = () => {
 
       window.scrollTo({
         top: offsetPosition,
-        behavior: "smooth"
+        behavior: 'smooth',
       });
     }
     setMobileOpen(false);
@@ -619,37 +704,43 @@ const LandingPage = () => {
     {
       icon: <AutoGraphIcon />,
       title: 'Student Success AI',
-      description: 'Stop dropout rates before they happen. Our predictive engine identifies "at-risk" students with 94% accuracy.',
+      description:
+        'Stop dropout rates before they happen. Our predictive engine identifies "at-risk" students with 94% accuracy.',
       gradient: 'linear-gradient(135deg, #4F46E5, #7C3AED)',
     },
     {
       icon: <SpeedIcon />,
       title: 'Admin-Zero Workflow',
-      description: 'Saves institutional staff 15+ hours weekly by automating grading pipelines, scheduling, and notifications.',
+      description:
+        'Saves institutional staff 15+ hours weekly by automating grading pipelines, scheduling, and notifications.',
       gradient: 'linear-gradient(135deg, #0EA5E9, #38BDF8)',
     },
     {
       icon: <GroupIcon />,
       title: 'Unified Faculty Intelligence',
-      description: 'Eliminate departmental silos. A centralized Command Center for faculty to collaborate across colleges.',
+      description:
+        'Eliminate departmental silos. A centralized Command Center for faculty to collaborate across colleges.',
       gradient: 'linear-gradient(135deg, #10B981, #34D399)',
     },
     {
       icon: <SecurityIcon />,
       title: 'Military-Grade Compliance',
-      description: 'Exceeding FERPA & GDPR standards. SOC 2 Type II certified infrastructure for total data peace-of-mind.',
+      description:
+        'Exceeding FERPA & GDPR standards. SOC 2 Type II certified infrastructure for total data peace-of-mind.',
       gradient: 'linear-gradient(135deg, #F59E0B, #FBBF24)',
     },
     {
       icon: <IntegrationInstructionsIcon />,
       title: 'Deep API Ecosystem',
-      description: 'Connect with Canvas, Moodle, or custom legacy systems in minutes, not months. 100% interoperable.',
+      description:
+        'Connect with Canvas, Moodle, or custom legacy systems in minutes, not months. 100% interoperable.',
       gradient: 'linear-gradient(135deg, #EC4899, #F472B6)',
     },
     {
       icon: <RocketLaunchIcon />,
       title: 'Scale-On-Demand',
-      description: 'Go from 1,000 to 1,000,000 students overnight without a single second of latency or downtime.',
+      description:
+        'Go from 1,000 to 1,000,000 students overnight without a single second of latency or downtime.',
       gradient: 'linear-gradient(135deg, #8B5CF6, #A78BFA)',
     },
   ];
@@ -680,27 +771,42 @@ const LandingPage = () => {
       name: 'Dr. Robert Harrison',
       role: 'Dean of Sciences, Stanford Tech',
       image: '/images/testimonials/t1.png',
-      quote: "UDT didn't just provide a tool; they transformed how our faculty connects. Student engagement is up 40% in our first semester."
+      quote:
+        "UDT didn't just provide a tool; they transformed how our faculty connects. Student engagement is up 40% in our first semester.",
     },
     {
       name: 'Dr. Linda Kessler',
       role: 'Head of Operations, Global Uni',
       image: '/images/testimonials/t2.png',
-      quote: "The predictive AI is a game-changer. We've intervened and saved 150+ students from dropping out this year alone."
+      quote:
+        "The predictive AI is a game-changer. We've intervened and saved 150+ students from dropping out this year alone.",
     },
     {
       name: 'Prof. James Wu',
       role: 'Dir. of Digital Learning, EduCorp',
       image: '/images/testimonials/t3.png',
-      quote: "Administrative overhead was our biggest drain. UDT automated 60% of our tasks, allowing us to focus back on teaching."
-    }
+      quote:
+        'Administrative overhead was our biggest drain. UDT automated 60% of our tasks, allowing us to focus back on teaching.',
+    },
   ];
 
   const faqs = [
-    { q: "How secure is the student data stored in UDT?", a: "We utilize AES-256 encryption at rest and TLS 1.3 for data in transit. Your data is isolated in secure VPCs with regular third-party audits." },
-    { q: "Can we integrate with existing LMS systems?", a: "Yes, UDT provides a comprehensive REST API and pre-built connectors for Canvas, Moodle, and Blackboard integrations." },
-    { q: "What kind of support do we get with the Ultimate plan?", a: "The Ultimate plan includes a dedicated Slack channel with our engineering team and a guaranteed 2-hour response time for critical issues." },
-    { q: "Is there a limit to the number of courses we can host?", a: "No. All our plans include unlimited course hosting. We scale horizontally to accommodate your growth automatically." },
+    {
+      q: 'How secure is the student data stored in UDT?',
+      a: 'We utilize AES-256 encryption at rest and TLS 1.3 for data in transit. Your data is isolated in secure VPCs with regular third-party audits.',
+    },
+    {
+      q: 'Can we integrate with existing LMS systems?',
+      a: 'Yes, UDT provides a comprehensive REST API and pre-built connectors for Canvas, Moodle, and Blackboard integrations.',
+    },
+    {
+      q: 'What kind of support do we get with the Ultimate plan?',
+      a: 'The Ultimate plan includes a dedicated Slack channel with our engineering team and a guaranteed 2-hour response time for critical issues.',
+    },
+    {
+      q: 'Is there a limit to the number of courses we can host?',
+      a: 'No. All our plans include unlimited course hosting. We scale horizontally to accommodate your growth automatically.',
+    },
   ];
 
   const pricingPlans = [
@@ -713,13 +819,25 @@ const LandingPage = () => {
     {
       title: 'Ultimate',
       price: '149',
-      features: ['All Core + AI Analytics', 'Unlimited Seats', 'Priority Support', 'White-labeling', 'Custom Integrations'],
+      features: [
+        'All Core + AI Analytics',
+        'Unlimited Seats',
+        'Priority Support',
+        'White-labeling',
+        'Custom Integrations',
+      ],
       featured: true,
     },
     {
       title: 'Enterprise',
       price: '999',
-      features: ['Custom Infrastructure', 'Dedicated Architect', 'On-premise Option', 'SLA Guarantee', '24/7 Phone Support'],
+      features: [
+        'Custom Infrastructure',
+        'Dedicated Architect',
+        'On-premise Option',
+        'SLA Guarantee',
+        '24/7 Phone Support',
+      ],
       featured: false,
     },
   ];
@@ -752,8 +870,16 @@ const LandingPage = () => {
   ];
 
   return (
-    <Box sx={{ bgcolor: 'background.default', color: 'text.primary', minHeight: '100vh', overflowX: 'hidden', transition: 'background-color 0.4s' }}>
-      {/* ═══════════════════ NAVBAR ═══════════════════ */}
+    <Box
+      sx={{
+        bgcolor: 'background.default',
+        color: 'text.primary',
+        minHeight: '100vh',
+        overflowX: 'hidden',
+        transition: 'background-color 0.4s',
+      }}
+    >
+      {/* NAVBAR */}
       <MotionBox
         component="nav"
         style={{ backgroundColor: headerBg, backdropFilter: headerBlur }}
@@ -772,7 +898,13 @@ const LandingPage = () => {
           transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
         }}
       >
-        <Stack direction="row" alignItems="center" spacing={1} onClick={() => navigate('/')} sx={{ cursor: 'pointer' }}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          spacing={1}
+          onClick={() => navigate('/')}
+          sx={{ cursor: 'pointer' }}
+        >
           <Box
             sx={{
               width: 36,
@@ -791,7 +923,9 @@ const LandingPage = () => {
             sx={{
               fontWeight: 900,
               letterSpacing: '-0.5px',
-              background: isDark ? 'linear-gradient(90deg, #38bdf8, #818cf8)' : 'linear-gradient(90deg, #4f46e5, #0ea5e9)',
+              background: isDark
+                ? 'linear-gradient(90deg, #38bdf8, #818cf8)'
+                : 'linear-gradient(90deg, #4f46e5, #0ea5e9)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               fontSize: '1.1rem',
@@ -802,25 +936,29 @@ const LandingPage = () => {
         </Stack>
 
         <Stack direction="row" spacing={1} alignItems="center">
-          {!isMobile && navItems.map((item) => (
-            <Typography
-              key={item}
-              onClick={() => scrollToSection(item)}
-              sx={{
-                fontSize: '0.85rem',
-                fontWeight: 600,
-                cursor: 'pointer',
-                color: 'text.secondary',
-                px: 1.5,
-                py: 0.5,
-                borderRadius: '8px',
-                transition: 'all 0.2s',
-                '&:hover': { color: 'text.primary', bgcolor: alpha(theme.palette.text.primary, 0.04) },
-              }}
-            >
-              {item}
-            </Typography>
-          ))}
+          {!isMobile &&
+            navItems.map((item) => (
+              <Typography
+                key={item}
+                onClick={() => scrollToSection(item)}
+                sx={{
+                  fontSize: '0.85rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  color: 'text.secondary',
+                  px: 1.5,
+                  py: 0.5,
+                  borderRadius: '8px',
+                  transition: 'all 0.2s',
+                  '&:hover': {
+                    color: 'text.primary',
+                    bgcolor: alpha(theme.palette.text.primary, 0.04),
+                  },
+                }}
+              >
+                {item}
+              </Typography>
+            ))}
 
           <IconButton
             onClick={toggleColorMode}
@@ -866,22 +1004,28 @@ const LandingPage = () => {
         </Stack>
       </MotionBox>
 
-      {/* ═══════════════════ HERO ═══════════════════ */}
-      <Box sx={{ 
-        position: 'relative', 
-        pt: { xs: 16, md: 22 }, 
-        pb: { xs: 10, md: 16 }, 
-        minHeight: { md: '100vh' }, 
-        display: 'flex', 
-        alignItems: 'center', 
-        overflow: 'hidden',
-        bgcolor: 'background.default'
-      }}>
+      {/* HERO */}
+      <Box
+        sx={{
+          position: 'relative',
+          pt: { xs: 16, md: 22 },
+          pb: { xs: 10, md: 16 },
+          minHeight: { md: '100vh' },
+          display: 'flex',
+          alignItems: 'center',
+          overflow: 'hidden',
+          bgcolor: 'background.default',
+        }}
+      >
         <FloatingBackground isDark={isDark} />
 
         <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
           <Stack spacing={5} alignItems="center" textAlign="center">
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
               <Chip
                 icon={<VerifiedIcon sx={{ fontSize: 16, color: 'primary.main !important' }} />}
                 label="Trusted by 500+ Institutions Worldwide"
@@ -912,8 +1056,7 @@ const LandingPage = () => {
                 maxWidth: 1000,
               }}
             >
-              The Operating System{' '}
-              <br />
+              The Operating System <br />
               for{' '}
               <Box
                 component="span"
@@ -946,7 +1089,8 @@ const LandingPage = () => {
                 fontWeight: 500,
               }}
             >
-              Transform your faculty productivity and student outcomes with the world's most sophisticated institutional management platform.
+              Transform your faculty productivity and student outcomes with the world's most
+              sophisticated institutional management platform.
             </MotionTypography>
 
             <MotionBox
@@ -1012,15 +1156,33 @@ const LandingPage = () => {
               spacing={{ xs: 2, sm: 3 }}
               sx={{ mt: { xs: 4, md: 6 } }}
             >
-              <StatCard icon={<PeopleAltIcon />} value="10K+" label="Students" delay={0.5} isDark={isDark} />
-              <StatCard icon={<SchoolIcon />} value="500+" label="Courses" delay={0.6} isDark={isDark} />
-              <StatCard icon={<VerifiedIcon />} value="99.9%" label="Uptime" delay={0.7} isDark={isDark} />
+              <StatCard
+                icon={<PeopleAltIcon />}
+                value="10K+"
+                label="Students"
+                delay={0.5}
+                isDark={isDark}
+              />
+              <StatCard
+                icon={<SchoolIcon />}
+                value="500+"
+                label="Courses"
+                delay={0.6}
+                isDark={isDark}
+              />
+              <StatCard
+                icon={<VerifiedIcon />}
+                value="99.9%"
+                label="Uptime"
+                delay={0.7}
+                isDark={isDark}
+              />
             </Stack>
           </Stack>
         </Container>
       </Box>
 
-      {/* ═══════════════════ FEATURES ═══════════════════ */}
+      {/* FEATURES */}
       <Box id="features" sx={{ py: { xs: 10, md: 16 }, position: 'relative' }}>
         <Container maxWidth="lg">
           <SectionHeader
@@ -1046,8 +1208,14 @@ const LandingPage = () => {
         </Container>
       </Box>
 
-      {/* ═══════════════════ SERVICES ═══════════════════ */}
-      <Box id="services" sx={{ py: { xs: 10, md: 16 }, bgcolor: alpha(theme.palette.primary.main, isDark ? 0.03 : 0.02) }}>
+      {/* SERVICES */}
+      <Box
+        id="services"
+        sx={{
+          py: { xs: 10, md: 16 },
+          bgcolor: alpha(theme.palette.primary.main, isDark ? 0.03 : 0.02),
+        }}
+      >
         <Container maxWidth="lg">
           <SectionHeader
             badge="SERVICES"
@@ -1091,7 +1259,9 @@ const LandingPage = () => {
                   transition: 'all 0.3s ease-in-out',
                   cursor: 'default',
                   '&:hover': {
-                    border: isDark ? '1px solid rgba(79,70,229,0.4)' : '1px solid rgba(79,70,229,0.3)',
+                    border: isDark
+                      ? '1px solid rgba(79,70,229,0.4)'
+                      : '1px solid rgba(79,70,229,0.3)',
                     boxShadow: isDark
                       ? '0 25px 50px rgba(0,0,0,0.3)'
                       : '0 25px 50px rgba(0,0,0,0.08)',
@@ -1119,10 +1289,24 @@ const LandingPage = () => {
                 >
                   {item.icon}
                 </Box>
-                <Typography variant="h5" sx={{ fontWeight: 800, mb: 2, fontSize: { xs: '1.1rem', md: '1.25rem', lg: '1.4rem' }, color: 'text.primary' }}>
+                <Typography
+                  variant="h5"
+                  sx={{
+                    fontWeight: 800,
+                    mb: 2,
+                    fontSize: { xs: '1.1rem', md: '1.25rem', lg: '1.4rem' },
+                    color: 'text.primary',
+                  }}
+                >
                   {item.title}
                 </Typography>
-                <Typography sx={{ color: 'text.secondary', lineHeight: 1.7, fontSize: { xs: '0.85rem', md: '0.9rem', lg: '0.95rem' } }}>
+                <Typography
+                  sx={{
+                    color: 'text.secondary',
+                    lineHeight: 1.7,
+                    fontSize: { xs: '0.85rem', md: '0.9rem', lg: '0.95rem' },
+                  }}
+                >
                   {item.desc}
                 </Typography>
               </MotionBox>
@@ -1131,7 +1315,7 @@ const LandingPage = () => {
         </Container>
       </Box>
 
-      {/* ═══════════════════ PRICING ═══════════════════ */}
+      {/* PRICING */}
       <Box id="pricing" sx={{ py: { xs: 10, md: 16 } }}>
         <Container sx={{ maxWidth: '1300px !important' }}>
           <SectionHeader
@@ -1161,15 +1345,15 @@ const LandingPage = () => {
                 sx={{
                   gridColumn: {
                     sm: i === 2 ? 'span 2' : 'auto',
-                    md: 'auto'
+                    md: 'auto',
                   },
                   justifySelf: {
                     sm: i === 2 ? 'center' : 'stretch',
-                    md: 'stretch'
+                    md: 'stretch',
                   },
                   width: {
                     sm: i === 2 ? '50%' : '100%',
-                    md: '100%'
+                    md: '100%',
                   },
                   p: { xs: 4, sm: 5 },
                   height: '100%',
@@ -1186,13 +1370,17 @@ const LandingPage = () => {
                   backdropFilter: 'blur(20px)',
                   border: plan.featured
                     ? `2px solid ${alpha(theme.palette.primary.main, 0.4)}`
-                    : isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.08)',
+                    : isDark
+                      ? '1px solid rgba(255,255,255,0.08)'
+                      : '1px solid rgba(0,0,0,0.08)',
                   transition: 'all 0.3s ease-in-out',
                   cursor: 'default',
                   '&:hover': {
                     boxShadow: plan.featured
                       ? '0 25px 60px rgba(79,70,229,0.25)'
-                      : isDark ? '0 20px 40px rgba(0,0,0,0.4)' : '0 20px 40px rgba(0,0,0,0.08)',
+                      : isDark
+                        ? '0 20px 40px rgba(0,0,0,0.4)'
+                        : '0 20px 40px rgba(0,0,0,0.08)',
                   },
                 }}
               >
@@ -1213,22 +1401,48 @@ const LandingPage = () => {
                     }}
                   />
                 )}
-                <Typography sx={{ fontWeight: 700, color: plan.featured ? 'primary.main' : 'text.secondary', mb: 3, fontSize: '0.9rem', letterSpacing: '1px' }}>
+                <Typography
+                  sx={{
+                    fontWeight: 700,
+                    color: plan.featured ? 'primary.main' : 'text.secondary',
+                    mb: 3,
+                    fontSize: '0.9rem',
+                    letterSpacing: '1px',
+                  }}
+                >
                   {plan.title.toUpperCase()}
                 </Typography>
                 <Stack direction="row" alignItems="baseline" spacing={0.5} sx={{ mb: 1 }}>
-                  <Typography sx={{ fontWeight: 900, fontSize: { xs: '2.5rem', md: '3rem' }, color: 'text.primary', lineHeight: 1 }}>
+                  <Typography
+                    sx={{
+                      fontWeight: 900,
+                      fontSize: { xs: '2.5rem', md: '3rem' },
+                      color: 'text.primary',
+                      lineHeight: 1,
+                    }}
+                  >
                     ${plan.price}
                   </Typography>
                   <Typography sx={{ color: 'text.secondary', fontSize: '0.85rem' }}>/mo</Typography>
                 </Stack>
-                <Typography sx={{ color: 'text.secondary', mb: 4, fontSize: '0.85rem' }}>billed annually</Typography>
+                <Typography sx={{ color: 'text.secondary', mb: 4, fontSize: '0.85rem' }}>
+                  billed annually
+                </Typography>
 
                 <Stack spacing={2} sx={{ mb: 5 }}>
                   {plan.features.map((f, idx) => (
                     <Stack key={idx} direction="row" spacing={1.5} alignItems="center">
-                      <CheckCircleIcon sx={{ color: plan.featured ? 'primary.main' : 'secondary.main', fontSize: 18 }} />
-                      <Typography sx={{ fontWeight: 500, color: 'text.primary', fontSize: '0.93rem' }}>{f}</Typography>
+                      <CheckCircleIcon
+                        sx={{
+                          color: plan.featured ? 'primary.main' : 'secondary.main',
+                          fontSize: 18,
+                        }}
+                      />
+                      <Typography
+                        sx={{ fontWeight: 500, color: 'text.primary', fontSize: '0.93rem' }}
+                      >
+                        {f}
+                      </Typography>
                     </Stack>
                   ))}
                 </Stack>
@@ -1243,22 +1457,22 @@ const LandingPage = () => {
                     fontSize: '0.9rem',
                     ...(plan.featured
                       ? {
-                        background: 'linear-gradient(135deg, #4F46E5, #7C3AED)',
-                        color: 'white',
-                        boxShadow: '0 8px 25px rgba(79,70,229,0.3)',
-                        '&:hover': {
-                          background: 'linear-gradient(135deg, #4338CA, #6D28D9)',
-                          boxShadow: '0 12px 35px rgba(79,70,229,0.4)',
-                        },
-                      }
+                          background: 'linear-gradient(135deg, #4F46E5, #7C3AED)',
+                          color: 'white',
+                          boxShadow: '0 8px 25px rgba(79,70,229,0.3)',
+                          '&:hover': {
+                            background: 'linear-gradient(135deg, #4338CA, #6D28D9)',
+                            boxShadow: '0 12px 35px rgba(79,70,229,0.4)',
+                          },
+                        }
                       : {
-                        borderColor: alpha(theme.palette.text.primary, 0.15),
-                        color: 'text.primary',
-                        '&:hover': {
-                          borderColor: 'primary.main',
-                          bgcolor: alpha(theme.palette.primary.main, 0.04),
-                        },
-                      }),
+                          borderColor: alpha(theme.palette.text.primary, 0.15),
+                          color: 'text.primary',
+                          '&:hover': {
+                            borderColor: 'primary.main',
+                            bgcolor: alpha(theme.palette.primary.main, 0.04),
+                          },
+                        }),
                   }}
                 >
                   {plan.featured ? 'Get Started' : 'Select Plan'}
@@ -1269,7 +1483,7 @@ const LandingPage = () => {
         </Container>
       </Box>
 
-      {/* ═══════════════════ TEAM ═══════════════════ */}
+      {/* TEAM */}
       <Box id="team" sx={{ py: { xs: 10, md: 16 } }}>
         <Container maxWidth="lg">
           <SectionHeader
@@ -1295,8 +1509,14 @@ const LandingPage = () => {
         </Container>
       </Box>
 
-      {/* ═══════════════════ TESTIMONIALS ═══════════════════ */}
-      <Box id="testimonials" sx={{ py: { xs: 10, md: 16 }, bgcolor: alpha(theme.palette.primary.main, isDark ? 0.03 : 0.02) }}>
+      {/* TESTIMONIALS */}
+      <Box
+        id="testimonials"
+        sx={{
+          py: { xs: 10, md: 16 },
+          bgcolor: alpha(theme.palette.primary.main, isDark ? 0.03 : 0.02),
+        }}
+      >
         <Container maxWidth="lg">
           <SectionHeader
             badge="TRUST"
@@ -1320,8 +1540,14 @@ const LandingPage = () => {
         </Container>
       </Box>
 
-      {/* ═══════════════════ FAQ ═══════════════════ */}
-      <Box id="faq" sx={{ py: { xs: 10, md: 16 }, bgcolor: alpha(theme.palette.primary.main, isDark ? 0.03 : 0.02) }}>
+      {/* FAQ */}
+      <Box
+        id="faq"
+        sx={{
+          py: { xs: 10, md: 16 },
+          bgcolor: alpha(theme.palette.primary.main, isDark ? 0.03 : 0.02),
+        }}
+      >
         <Container maxWidth="md">
           <SectionHeader
             badge="FAQ"
@@ -1350,7 +1576,9 @@ const LandingPage = () => {
                     expandIcon={<ExpandMoreIcon sx={{ color: 'primary.main' }} />}
                     sx={{ px: 0, '& .MuiAccordionSummary-content': { my: 2.5 } }}
                   >
-                    <Typography sx={{ fontWeight: 700, fontSize: { xs: '1rem', md: '1.15rem' } }}>{faq.q}</Typography>
+                    <Typography sx={{ fontWeight: 700, fontSize: { xs: '1rem', md: '1.15rem' } }}>
+                      {faq.q}
+                    </Typography>
                   </AccordionSummary>
                   <AccordionDetails sx={{ px: 0, pb: 3 }}>
                     <Typography sx={{ color: 'text.secondary', fontSize: '1rem', lineHeight: 1.8 }}>
@@ -1364,7 +1592,7 @@ const LandingPage = () => {
         </Container>
       </Box>
 
-      {/* ═══════════════════ CTA SECTION ═══════════════════ */}
+      {/* CTA SECTION */}
       <Box sx={{ py: { xs: 10, md: 14 } }}>
         <Container maxWidth="md">
           <MotionBox
@@ -1394,11 +1622,30 @@ const LandingPage = () => {
                 right: -100,
               }}
             />
-            <Typography variant="h3" sx={{ fontWeight: 900, mb: 2, letterSpacing: '-1.5px', color: 'text.primary', fontSize: { xs: '1.8rem', md: '2.5rem' } }}>
+            <Typography
+              variant="h3"
+              sx={{
+                fontWeight: 900,
+                mb: 2,
+                letterSpacing: '-1.5px',
+                color: 'text.primary',
+                fontSize: { xs: '1.8rem', md: '2.5rem' },
+              }}
+            >
               Ready to Transform Your Institution?
             </Typography>
-            <Typography sx={{ color: 'text.secondary', mb: 5, maxWidth: 500, mx: 'auto', fontSize: '1.05rem', lineHeight: 1.7 }}>
-              Join hundreds of leading institutions already using UDT to deliver world-class education at scale.
+            <Typography
+              sx={{
+                color: 'text.secondary',
+                mb: 5,
+                maxWidth: 500,
+                mx: 'auto',
+                fontSize: '1.05rem',
+                lineHeight: 1.7,
+              }}
+            >
+              Join hundreds of leading institutions already using UDT to deliver world-class
+              education at scale.
             </Typography>
             <Button
               variant="contained"
@@ -1427,12 +1674,14 @@ const LandingPage = () => {
         </Container>
       </Box>
 
-      {/* ═══════════════════ FOOTER ═══════════════════ */}
+      {/* FOOTER */}
       <Box
         sx={{
           py: 8,
           borderTop: `1px solid ${alpha(theme.palette.text.primary, 0.06)}`,
-          bgcolor: isDark ? alpha(theme.palette.background.paper, 0.3) : alpha(theme.palette.background.paper, 0.5),
+          bgcolor: isDark
+            ? alpha(theme.palette.background.paper, 0.3)
+            : alpha(theme.palette.background.paper, 0.5),
         }}
       >
         <Container maxWidth="lg">
@@ -1456,12 +1705,20 @@ const LandingPage = () => {
                   UDT Course Manager
                 </Typography>
               </Stack>
-              <Typography sx={{ color: 'text.secondary', maxWidth: 350, mb: 3, lineHeight: 1.7, fontSize: '0.9rem' }}>
-                A sophisticated platform for modern institutions.
-                Redefining the relationship between technology and knowledge.
+              <Typography
+                sx={{
+                  color: 'text.secondary',
+                  maxWidth: 350,
+                  mb: 3,
+                  lineHeight: 1.7,
+                  fontSize: '0.9rem',
+                }}
+              >
+                A sophisticated platform for modern institutions. Redefining the relationship
+                between technology and knowledge.
               </Typography>
               <Stack direction="row" spacing={2}>
-                {['LinkedIn', 'Twitter', 'GitHub'].map(s => (
+                {['LinkedIn', 'Twitter', 'GitHub'].map((s) => (
                   <Typography
                     key={s}
                     sx={{
@@ -1479,17 +1736,33 @@ const LandingPage = () => {
               </Stack>
             </Grid>
             <Grid item xs={12} md={7}>
-              <Stack direction="row" spacing={{ xs: 6, md: 10 }} justifyContent={{ md: 'flex-end' }} flexWrap="wrap">
+              <Stack
+                direction="row"
+                spacing={{ xs: 6, md: 10 }}
+                justifyContent={{ md: 'flex-end' }}
+                flexWrap="wrap"
+              >
                 {[
-                  { title: 'PRODUCT', items: ['Features', 'Services', 'Pricing', 'Team', 'Testimonials', 'FAQ'] },
+                  {
+                    title: 'PRODUCT',
+                    items: ['Features', 'Services', 'Pricing', 'Team', 'Testimonials', 'FAQ'],
+                  },
                   { title: 'COMPANY', items: ['About', 'Blog', 'Careers', 'Contact'] },
                   { title: 'LEGAL', items: ['Privacy', 'Terms', 'License', 'Security'] },
                 ].map((col) => (
                   <Stack key={col.title} spacing={1.5}>
-                    <Typography sx={{ fontWeight: 800, fontSize: '0.75rem', color: 'text.secondary', letterSpacing: '1.5px', mb: 0.5 }}>
+                    <Typography
+                      sx={{
+                        fontWeight: 800,
+                        fontSize: '0.75rem',
+                        color: 'text.secondary',
+                        letterSpacing: '1.5px',
+                        mb: 0.5,
+                      }}
+                    >
                       {col.title}
                     </Typography>
-                    {col.items.map(l => (
+                    {col.items.map((l) => (
                       <Typography
                         key={l}
                         onClick={() => scrollToSection(l)}
@@ -1509,15 +1782,24 @@ const LandingPage = () => {
               </Stack>
             </Grid>
           </Grid>
-          <Box sx={{ mt: 8, pt: 4, borderTop: `1px solid ${alpha(theme.palette.text.primary, 0.04)}`, textAlign: 'center' }}>
-            <Typography sx={{ color: 'text.disabled', fontSize: '0.75rem', letterSpacing: '0.5px' }}>
+          <Box
+            sx={{
+              mt: 8,
+              pt: 4,
+              borderTop: `1px solid ${alpha(theme.palette.text.primary, 0.04)}`,
+              textAlign: 'center',
+            }}
+          >
+            <Typography
+              sx={{ color: 'text.disabled', fontSize: '0.75rem', letterSpacing: '0.5px' }}
+            >
               © 2026 UDT Course Manager. Designed by Udith.cc
             </Typography>
           </Box>
         </Container>
       </Box>
 
-      {/* ═══════════════════ MOBILE DRAWER ═══════════════════ */}
+      {/* MOBILE DRAWER */}
       <Drawer
         anchor="right"
         open={mobileOpen}
@@ -1537,7 +1819,7 @@ const LandingPage = () => {
           </IconButton>
         </Stack>
         <Stack spacing={3} alignItems="center">
-          {navItems.map(item => (
+          {navItems.map((item) => (
             <Typography
               key={item}
               variant="h5"
@@ -1545,7 +1827,12 @@ const LandingPage = () => {
                 setMobileOpen(false);
                 setTimeout(() => scrollToSection(item), 300); // 300ms for drawer closure
               }}
-              sx={{ fontWeight: 800, color: 'text.primary', cursor: 'pointer', '&:hover': { color: 'primary.main' } }}
+              sx={{
+                fontWeight: 800,
+                color: 'text.primary',
+                cursor: 'pointer',
+                '&:hover': { color: 'primary.main' },
+              }}
             >
               {item}
             </Typography>
@@ -1553,7 +1840,10 @@ const LandingPage = () => {
           <Button
             fullWidth
             variant="contained"
-            onClick={() => { setMobileOpen(false); navigate('/login'); }}
+            onClick={() => {
+              setMobileOpen(false);
+              navigate('/login');
+            }}
             sx={{
               py: 2,
               borderRadius: '14px',

@@ -4,11 +4,8 @@
  */
 export {};
 
-// ─────────────────────────────────────────────────────────────
-// 1. AppError utility
-// ─────────────────────────────────────────────────────────────
-const AppError = require('../../utils/AppError');
-
+// // 1. AppError utility
+// const AppError = require('../../utils/AppError');
 describe('AppError', () => {
   it('creates an error with message and status', () => {
     const err = new AppError('Not found', 404);
@@ -24,15 +21,12 @@ describe('AppError', () => {
   });
 });
 
-// ─────────────────────────────────────────────────────────────
-// 2. Response helpers
-// ─────────────────────────────────────────────────────────────
-const { success, created, paginated, message } = require('../../utils/response');
-
+// // 2. Response helpers
+// const { success, created, paginated, message } = require('../../utils/response');
 function mockRes() {
   const res: any = {};
   res.status = jest.fn().mockReturnValue(res);
-  res.json   = jest.fn().mockReturnValue(res);
+  res.json = jest.fn().mockReturnValue(res);
   return res;
 }
 
@@ -63,15 +57,16 @@ describe('response helpers', () => {
     paginated(res, { data: [], totalElements: 10, pageNo: 0, totalPages: 2 });
     expect(res.status).toHaveBeenCalledWith(200);
     const arg = res.json.mock.calls[0][0];
-    expect(arg.meta).toMatchObject({ totalElements: 10, pageNo: 0, totalPages: 2 });
+    expect(arg.meta).toMatchObject({
+      totalElements: 10,
+      pageNo: 0,
+      totalPages: 2,
+    });
   });
 });
 
-// ─────────────────────────────────────────────────────────────
-// 3. Admin middleware
-// ─────────────────────────────────────────────────────────────
-const adminMiddleware = require('../../middleware/admin');
-
+// // 3. Admin middleware
+// const adminMiddleware = require('../../middleware/admin');
 describe('admin middleware', () => {
   it('calls next() when user.isAdmin is true', () => {
     const req: any = { user: { isAdmin: true } };
@@ -89,11 +84,8 @@ describe('admin middleware', () => {
   });
 });
 
-// ─────────────────────────────────────────────────────────────
-// 4. Instructor middleware
-// ─────────────────────────────────────────────────────────────
-const instructorMiddleware = require('../../middleware/instructor');
-
+// // 4. Instructor middleware
+// const instructorMiddleware = require('../../middleware/instructor');
 describe('instructor middleware', () => {
   it('allows INSTRUCTOR role', () => {
     const req: any = { user: { role: 'INSTRUCTOR' } };
@@ -115,11 +107,8 @@ describe('instructor middleware', () => {
   });
 });
 
-// ─────────────────────────────────────────────────────────────
-// 5. User model validation helper
-// ─────────────────────────────────────────────────────────────
-const { validateModel } = require('../../models/user.model');
-
+// // 5. User model validation helper
+// const { validateModel } = require('../../models/user.model');
 describe('user validateModel', () => {
   it('passes with valid user data', () => {
     const { error } = validateModel({

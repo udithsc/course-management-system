@@ -9,13 +9,13 @@ const initialState = {
   user: {},
   permissions: {
     admin: ['APPROVE', 'DELETE'],
-    user: ['CREATE', 'UPDATE', 'DELETE']
+    user: ['CREATE', 'UPDATE', 'DELETE'],
   },
   notification: {
     isOpen: false,
     message: '',
-    type: ''
-  }
+    type: '',
+  },
 };
 
 /**
@@ -28,8 +28,8 @@ const initialState = {
  * We detect shape (1) by checking for payload.data.
  */
 function extractToken(payload) {
-  if (payload?.data?.accessToken) return payload.data.accessToken;  // API middleware shape
-  return payload?.accessToken ?? '';                                  // manual dispatch shape
+  if (payload?.data?.accessToken) return payload.data.accessToken; // API middleware shape
+  return payload?.accessToken ?? ''; // manual dispatch shape
 }
 
 function extractRefreshToken(payload) {
@@ -44,10 +44,10 @@ function decodeUser(token) {
     // Use explicit role field from JWT; fall back to isAdmin for legacy tokens
     const role = decoded.role || (decoded.isAdmin ? 'ADMIN' : 'STUDENT');
     return {
-      id:      decoded.id,
-      name:    decoded.name,
-      email:   decoded.email,
-      role,                           // 'ADMIN' | 'INSTRUCTOR' | 'STUDENT'
+      id: decoded.id,
+      name: decoded.name,
+      email: decoded.email,
+      role, // 'ADMIN' | 'INSTRUCTOR' | 'STUDENT'
       isAdmin: !!decoded.isAdmin,
     };
   } catch {
@@ -100,14 +100,14 @@ const authSlice = createSlice({
       state.notification = {
         isOpen: true,
         message: action.payload.message,
-        type: action.payload.type
+        type: action.payload.type,
       };
     },
 
     closeNotification: (state) => {
       state.notification = initialState.notification;
-    }
-  }
+    },
+  },
 });
 
 export const {
@@ -118,7 +118,7 @@ export const {
   loginRequestFailed,
   closeNotification,
   showNotification,
-  signedUp
+  signedUp,
 } = authSlice.actions;
 
 export default authSlice.reducer;
@@ -133,7 +133,7 @@ export const login = (data) =>
     data,
     onStart: loginRequested.type,
     onSuccess: loggedIn.type,
-    onError: loginRequestFailed.type
+    onError: loginRequestFailed.type,
   });
 
 export const signup = (data) =>
@@ -143,18 +143,18 @@ export const signup = (data) =>
     data,
     onStart: loginRequested.type,
     onSuccess: signedUp.type,
-    onError: loginRequestFailed.type
+    onError: loginRequestFailed.type,
   });
 
 // Selectors
-export const selectUser           = (state) => state.auth.user;
-export const selectAccessToken    = (state) => state.auth.accessToken;
-export const selectDataStatus     = (state) => state.auth.loading;
-export const selectSignUpStatus   = (state) => state.auth.isSignUp;
-export const selectNotification   = (state) => state.auth.notification;
-export const selectPermissions    = (state) => state.auth.permissions;
-export const selectUserRole       = (state) => state.auth.user?.role ?? 'STUDENT';
-export const selectIsAdmin        = (state) => state.auth.user?.role === 'ADMIN';
-export const selectIsInstructor   = (state) =>
+export const selectUser = (state) => state.auth.user;
+export const selectAccessToken = (state) => state.auth.accessToken;
+export const selectDataStatus = (state) => state.auth.loading;
+export const selectSignUpStatus = (state) => state.auth.isSignUp;
+export const selectNotification = (state) => state.auth.notification;
+export const selectPermissions = (state) => state.auth.permissions;
+export const selectUserRole = (state) => state.auth.user?.role ?? 'STUDENT';
+export const selectIsAdmin = (state) => state.auth.user?.role === 'ADMIN';
+export const selectIsInstructor = (state) =>
   state.auth.user?.role === 'INSTRUCTOR' || state.auth.user?.role === 'ADMIN';
-export const selectIsStudent      = (state) => state.auth.user?.role === 'STUDENT';
+export const selectIsStudent = (state) => state.auth.user?.role === 'STUDENT';

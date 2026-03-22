@@ -12,7 +12,7 @@ export default function ActionButton({ color, children, onClick, style, tooltip 
           backgroundColor: color,
           color: 'white',
           '&:hover': { backgroundColor: color },
-          ...style
+          ...style,
         }}
         onClick={onClick}
         size="small"
@@ -28,11 +28,11 @@ ActionButton.propTypes = {
   children: PropTypes.element.isRequired,
   onClick: PropTypes.func.isRequired,
   style: PropTypes.object,
-  tooltip: PropTypes.string
+  tooltip: PropTypes.string,
 };
 
 ActionButton.defaultProps = {
   color: 'primary.main',
   tooltip: '',
-  style: {}
+  style: {},
 };

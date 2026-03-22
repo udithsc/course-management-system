@@ -10,9 +10,9 @@ const initialState = {
   notification: {
     isOpen: false,
     message: '',
-    type: ''
+    type: '',
   },
-  refresh: false
+  refresh: false,
 };
 
 const url = '/categories';
@@ -44,7 +44,7 @@ export const categorySlice = createSlice({
       state.notification = {
         isOpen: true,
         message: 'Category Added',
-        type: 'info'
+        type: 'info',
       };
     },
 
@@ -53,7 +53,7 @@ export const categorySlice = createSlice({
       state.notification = {
         isOpen: true,
         message: 'Category Updated',
-        type: 'info'
+        type: 'info',
       };
     },
 
@@ -62,7 +62,7 @@ export const categorySlice = createSlice({
       state.notification = {
         isOpen: true,
         message: 'Factor Deleted ',
-        type: 'error'
+        type: 'error',
       };
     },
 
@@ -70,14 +70,14 @@ export const categorySlice = createSlice({
       state.notification = {
         isOpen: true,
         message: action.payload.message,
-        type: action.payload.type
+        type: action.payload.type,
       };
     },
 
     closeNotification: (state, action) => {
       state.notification = initialState.notification;
-    }
-  }
+    },
+  },
 });
 
 export const {
@@ -87,7 +87,7 @@ export const {
   categoryAdded,
   categoryUpdated,
   categoryDeleted,
-  closeNotification
+  closeNotification,
 } = categorySlice.actions;
 
 export default categorySlice.reducer;
@@ -113,8 +113,8 @@ export const loadCategories =
         url: page >= 0 ? `${url}?name=${searchText}&pageNo=${page}&pageSize=${rowsPerPage}` : url,
         onStart: categoryRequested.type,
         onSuccess: categoryReceived.type,
-        onError: categoryReceiveFailed.type
-      })
+        onError: categoryReceiveFailed.type,
+      }),
     );
   };
 
@@ -124,7 +124,7 @@ export const addCategory = (data) =>
     method: 'post',
     data,
     onSuccess: categoryAdded.type,
-    onSuccessOther: loadCategories
+    onSuccessOther: loadCategories,
   });
 
 export const updateCategory = (data) =>
@@ -133,7 +133,7 @@ export const updateCategory = (data) =>
     method: 'put',
     data,
     onSuccess: categoryUpdated.type,
-    onSuccessOther: loadCategories
+    onSuccessOther: loadCategories,
   });
 
 export const deleteCategory = (id) =>
@@ -142,5 +142,5 @@ export const deleteCategory = (id) =>
     method: 'delete',
     data: id,
     onSuccess: categoryDeleted.type,
-    onSuccessOther: loadCategories
+    onSuccessOther: loadCategories,
   });

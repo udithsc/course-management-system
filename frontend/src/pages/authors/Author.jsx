@@ -21,7 +21,7 @@ import {
   closeNotification,
   selectNotification,
   selectTotalElements,
-  selectRefreshStatus
+  selectRefreshStatus,
 } from '../../store/authors';
 import Breadcrumbs from '../../components/layout/Breadcrumbs';
 
@@ -30,7 +30,7 @@ const headCells = [
   { id: 'profession', label: 'profession', width: '20%' },
   { id: 'email', label: 'email', width: '20%' },
   { id: 'mobile', label: 'mobile', width: '20%' },
-  { id: 'actions', label: 'Actions', disableSorting: true, align: 'center', width: '10%' }
+  { id: 'actions', label: 'Actions', disableSorting: true, align: 'center', width: '10%' },
 ];
 
 export default function Author() {
@@ -45,7 +45,7 @@ export default function Author() {
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
     title: '',
-    subTitle: ''
+    subTitle: '',
   });
 
   const { TblContainer, TblHead, TblPagination, recordsAfterPagingAndSorting, page, rowsPerPage } =
@@ -80,20 +80,20 @@ export default function Author() {
       <Paper sx={{ mt: 2, p: 2 }}>
         <Toolbar
           sx={{
-            justifyContent: 'space-between'
+            justifyContent: 'space-between',
           }}
         >
           <Controls.Input
             sx={{
               width: 320,
-              '& .Mui-focused': { width: 350 }
+              '& .Mui-focused': { width: 350 },
             }}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
                   <SearchIcon />
                 </InputAdornment>
-              )
+              ),
             }}
             value={searchText}
             placeholder="Search.."
@@ -138,7 +138,7 @@ export default function Author() {
                           subTitle: "You can't undo this operation",
                           onConfirm: () => {
                             onDelete(item.id);
-                          }
+                          },
                         });
                       }}
                     >

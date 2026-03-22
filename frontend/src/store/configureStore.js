@@ -10,11 +10,11 @@ export default function () {
       ...getDefaultMiddleware({
         serializableCheck: {
           // Ignore these action types
-          ignoredActions: ['api/callBegan']
-        }
+          ignoredActions: ['api/callBegan'],
+        },
       }),
       toast,
-      api
-    ]
+      api,
+    ],
   });
 }

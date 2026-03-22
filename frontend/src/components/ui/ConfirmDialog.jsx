@@ -1,22 +1,24 @@
 import React from 'react';
 import {
-  Dialog, DialogContent, DialogActions,
-  Typography, Box, Button, useTheme,
+  Dialog,
+  DialogContent,
+  DialogActions,
+  Typography,
+  Box,
+  Button,
+  useTheme,
 } from '@mui/material';
 import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded';
 import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const MotionPaper = motion(
-  React.forwardRef((props, ref) => <Box ref={ref} {...props} />)
-);
+const MotionPaper = motion(React.forwardRef((props, ref) => <Box ref={ref} {...props} />));
 
 export default function ConfirmDialog({ confirmDialog, setConfirmDialog }) {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
 
-  const handleClose = () =>
-    setConfirmDialog({ ...confirmDialog, isOpen: false });
+  const handleClose = () => setConfirmDialog({ ...confirmDialog, isOpen: false });
 
   return (
     <AnimatePresence>
@@ -28,9 +30,9 @@ export default function ConfirmDialog({ confirmDialog, setConfirmDialog }) {
           fullWidth
           PaperComponent={MotionPaper}
           PaperProps={{
-            initial:    { opacity: 0, scale: 0.88, y: 16 },
-            animate:    { opacity: 1, scale: 1,    y: 0 },
-            exit:       { opacity: 0, scale: 0.88, y: 16 },
+            initial: { opacity: 0, scale: 0.88, y: 16 },
+            animate: { opacity: 1, scale: 1, y: 0 },
+            exit: { opacity: 0, scale: 0.88, y: 16 },
             transition: { duration: 0.26, ease: [0.22, 1, 0.36, 1] },
             sx: {
               borderRadius: '12px',
@@ -38,9 +40,7 @@ export default function ConfirmDialog({ confirmDialog, setConfirmDialog }) {
               borderColor: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(15,23,42,0.08)',
               bgcolor: 'background.paper',
               backgroundImage: 'none',
-              boxShadow: isDark
-                ? '0 32px 80px rgba(0,0,0,0.7)'
-                : '0 32px 80px rgba(15,23,42,0.18)',
+              boxShadow: isDark ? '0 32px 80px rgba(0,0,0,0.7)' : '0 32px 80px rgba(15,23,42,0.18)',
               overflow: 'hidden',
             },
           }}
@@ -54,8 +54,12 @@ export default function ConfirmDialog({ confirmDialog, setConfirmDialog }) {
           {/* Warning icon band */}
           <Box
             sx={{
-              pt: 4, pb: 2, px: 3,
-              display: 'flex', flexDirection: 'column', alignItems: 'center',
+              pt: 4,
+              pb: 2,
+              px: 3,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
               background: isDark
                 ? 'linear-gradient(180deg, rgba(244,63,94,0.12) 0%, transparent 100%)'
                 : 'linear-gradient(180deg, rgba(244,63,94,0.07) 0%, transparent 100%)',
@@ -63,8 +67,12 @@ export default function ConfirmDialog({ confirmDialog, setConfirmDialog }) {
           >
             <Box
               sx={{
-                width: 68, height: 68, borderRadius: '50%',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                width: 68,
+                height: 68,
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
                 background: 'linear-gradient(135deg, rgba(244,63,94,0.15), rgba(244,63,94,0.08))',
                 border: '2px solid rgba(244,63,94,0.25)',
                 mb: 1,
@@ -88,7 +96,10 @@ export default function ConfirmDialog({ confirmDialog, setConfirmDialog }) {
               variant="outlined"
               onClick={handleClose}
               sx={{
-                flex: 1, borderRadius: 2, py: 1.1, fontWeight: 700,
+                flex: 1,
+                borderRadius: 2,
+                py: 1.1,
+                fontWeight: 700,
                 borderColor: 'divider',
                 color: 'text.secondary',
                 '&:hover': { borderColor: 'text.secondary', bgcolor: 'transparent' },
@@ -104,7 +115,10 @@ export default function ConfirmDialog({ confirmDialog, setConfirmDialog }) {
                 handleClose();
               }}
               sx={{
-                flex: 1, borderRadius: 2, py: 1.1, fontWeight: 700,
+                flex: 1,
+                borderRadius: 2,
+                py: 1.1,
+                fontWeight: 700,
                 background: 'linear-gradient(135deg, #F43F5E, #E11D48)',
                 boxShadow: '0 4px 14px rgba(244,63,94,0.4)',
                 '&:hover': { boxShadow: '0 6px 20px rgba(244,63,94,0.5)' },
@@ -121,8 +135,8 @@ export default function ConfirmDialog({ confirmDialog, setConfirmDialog }) {
 
 ConfirmDialog.propTypes = {
   confirmDialog: PropTypes.shape({
-    isOpen:   PropTypes.bool.isRequired,
-    title:    PropTypes.string.isRequired,
+    isOpen: PropTypes.bool.isRequired,
+    title: PropTypes.string.isRequired,
     subTitle: PropTypes.string.isRequired,
     onConfirm: PropTypes.func.isRequired,
   }).isRequired,

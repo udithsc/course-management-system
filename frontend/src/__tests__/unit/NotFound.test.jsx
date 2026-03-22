@@ -12,10 +12,9 @@ describe('NotFound component', () => {
     // 2. Query the DOM
     const title = screen.getByText('404');
     const subtitle = screen.getByText('Page Not Found');
-    
+
     // 3. Assert
     expect(title).toBeInTheDocument();
     expect(subtitle).toBeInTheDocument();
   });
 });
-

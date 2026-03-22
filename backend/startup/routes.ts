@@ -11,9 +11,7 @@ module.exports = (app) => {
   app.use(express.urlencoded({ extended: true }));
 
   // Health check
-  app.get('/health', (req, res) =>
-    res.json({ status: 'ok', timestamp: new Date().toISOString() })
-  );
+  app.get('/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
 
   // API routes
   app.use('/api/auth', auth);

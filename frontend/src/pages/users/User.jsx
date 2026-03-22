@@ -1,7 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Paper, TableBody, TableRow, TableCell, Toolbar,
-  InputAdornment, Box, Typography, Chip, Select, MenuItem, FormControl,
+  Paper,
+  TableBody,
+  TableRow,
+  TableCell,
+  Toolbar,
+  InputAdornment,
+  Box,
+  Typography,
+  Chip,
+  Select,
+  MenuItem,
+  FormControl,
 } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import EditIcon from '@mui/icons-material/Edit';
@@ -19,27 +29,37 @@ import Popup from '../../components/ui/Popup';
 import Notification from '../../components/ui/Notification';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
 import {
-  loadUsers, addUser, updateUser, deleteUser,
-  selectUsers, closeNotification, selectNotification, selectTotalElements,
+  loadUsers,
+  addUser,
+  updateUser,
+  deleteUser,
+  selectUsers,
+  closeNotification,
+  selectNotification,
+  selectTotalElements,
 } from '../../store/users';
 import UserForm from './UserForm';
 import Breadcrumbs from '../../components/layout/Breadcrumbs';
 import { motion } from 'framer-motion';
 
 const headCells = [
-  { id: 'username',  label: 'Username',   width: '13%' },
+  { id: 'username', label: 'Username', width: '13%' },
   { id: 'firstName', label: 'First Name', width: '13%' },
-  { id: 'lastName',  label: 'Last Name',  width: '13%' },
-  { id: 'mobile',    label: 'Mobile',     width: '12%' },
-  { id: 'email',     label: 'Email',      width: '19%' },
-  { id: 'role',      label: 'Role',       width: '15%', disableSorting: true },
-  { id: 'actions',   label: 'Actions',    width: '10%', disableSorting: true, align: 'center' },
+  { id: 'lastName', label: 'Last Name', width: '13%' },
+  { id: 'mobile', label: 'Mobile', width: '12%' },
+  { id: 'email', label: 'Email', width: '19%' },
+  { id: 'role', label: 'Role', width: '15%', disableSorting: true },
+  { id: 'actions', label: 'Actions', width: '10%', disableSorting: true, align: 'center' },
 ];
 
 const ROLE_CONFIG = {
-  ADMIN:      { label: 'Admin',      color: '#6366F1', icon: <AdminPanelSettingsIcon sx={{ fontSize: 14 }} /> },
+  ADMIN: {
+    label: 'Admin',
+    color: '#6366F1',
+    icon: <AdminPanelSettingsIcon sx={{ fontSize: 14 }} />,
+  },
   INSTRUCTOR: { label: 'Instructor', color: '#10B981', icon: <SchoolIcon sx={{ fontSize: 14 }} /> },
-  STUDENT:    { label: 'Student',    color: '#3B82F6', icon: <PersonIcon sx={{ fontSize: 14 }} /> },
+  STUDENT: { label: 'Student', color: '#3B82F6', icon: <PersonIcon sx={{ fontSize: 14 }} /> },
 };
 
 function RoleChip({ role }) {
@@ -85,8 +105,12 @@ function RoleSelect({ userId, currentRole, onChanged }) {
         value={val}
         onChange={handleChange}
         sx={{
-          fontSize: '0.78rem', fontWeight: 700, borderRadius: '8px',
-          '.MuiOutlinedInput-notchedOutline': { borderColor: `${(ROLE_CONFIG[val] || ROLE_CONFIG.STUDENT).color}44` },
+          fontSize: '0.78rem',
+          fontWeight: 700,
+          borderRadius: '8px',
+          '.MuiOutlinedInput-notchedOutline': {
+            borderColor: `${(ROLE_CONFIG[val] || ROLE_CONFIG.STUDENT).color}44`,
+          },
           color: (ROLE_CONFIG[val] || ROLE_CONFIG.STUDENT).color,
         }}
       >
@@ -102,13 +126,13 @@ function RoleSelect({ userId, currentRole, onChanged }) {
 
 export default function User() {
   const dispatch = useDispatch();
-  const records  = useSelector(selectUsers);
+  const records = useSelector(selectUsers);
   const totalRecords = useSelector(selectTotalElements);
-  const notify   = useSelector(selectNotification);
+  const notify = useSelector(selectNotification);
   const [recordForEdit, setRecordForEdit] = useState(null);
-  const [searchText, setSearchText]       = useState('');
-  const [openPopup, setOpenPopup]         = useState(false);
-  const [localRoles, setLocalRoles]       = useState({});
+  const [searchText, setSearchText] = useState('');
+  const [openPopup, setOpenPopup] = useState(false);
+  const [localRoles, setLocalRoles] = useState({});
   const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, title: '', subTitle: '' });
 
   const { TblContainer, TblHead, TblPagination, recordsAfterPagingAndSorting, page, rowsPerPage } =
@@ -127,7 +151,10 @@ export default function User() {
     dispatch(deleteUser(id));
   };
 
-  const openInPopup = (item) => { setRecordForEdit(item); setOpenPopup(true); };
+  const openInPopup = (item) => {
+    setRecordForEdit(item);
+    setOpenPopup(true);
+  };
 
   const handleRoleChanged = (userId, newRole) => {
     setLocalRoles((prev) => ({ ...prev, [userId]: newRole }));
@@ -149,9 +176,19 @@ export default function User() {
         {/* Role legend */}
         <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1 }}>
           {Object.values(ROLE_CONFIG).map((cfg) => (
-            <Chip key={cfg.label} icon={cfg.icon} label={cfg.label} size="small"
-              sx={{ bgcolor: `${cfg.color}12`, color: cfg.color, fontWeight: 700,
-                borderRadius: '6px', '& .MuiChip-icon': { color: cfg.color } }} />
+            <Chip
+              key={cfg.label}
+              icon={cfg.icon}
+              label={cfg.label}
+              size="small"
+              sx={{
+                bgcolor: `${cfg.color}12`,
+                color: cfg.color,
+                fontWeight: 700,
+                borderRadius: '6px',
+                '& .MuiChip-icon': { color: cfg.color },
+              }}
+            />
           ))}
         </Box>
       </Box>
@@ -168,7 +205,11 @@ export default function User() {
           <Controls.Input
             sx={{ width: 320, '& .Mui-focused': { width: 350 } }}
             InputProps={{
-              startAdornment: <InputAdornment position="start"><SearchIcon /></InputAdornment>,
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
             }}
             value={searchText}
             placeholder="Search by name..."
@@ -177,7 +218,10 @@ export default function User() {
           <Controls.Button
             text="Add New"
             startIcon={<AddIcon />}
-            onClick={() => { setOpenPopup(true); setRecordForEdit(null); }}
+            onClick={() => {
+              setOpenPopup(true);
+              setRecordForEdit(null);
+            }}
           />
         </Toolbar>
 
@@ -192,7 +236,12 @@ export default function User() {
                   <TableCell>{item.lastName}</TableCell>
                   <TableCell>{item.mobile}</TableCell>
                   <TableCell>
-                    <Chip label={item.email} size="small" variant="outlined" sx={{ borderRadius: 2 }} />
+                    <Chip
+                      label={item.email}
+                      size="small"
+                      variant="outlined"
+                      sx={{ borderRadius: 2 }}
+                    />
                   </TableCell>
                   <TableCell>
                     <RoleSelect
@@ -207,12 +256,14 @@ export default function User() {
                     </Controls.ActionButton>
                     <Controls.ActionButton
                       color="error.main"
-                      onClick={() => setConfirmDialog({
-                        isOpen: true,
-                        title: 'Are you sure to delete this record?',
-                        subTitle: "You can't undo this operation",
-                        onConfirm: () => onDelete(item.id),
-                      })}
+                      onClick={() =>
+                        setConfirmDialog({
+                          isOpen: true,
+                          title: 'Are you sure to delete this record?',
+                          subTitle: "You can't undo this operation",
+                          onConfirm: () => onDelete(item.id),
+                        })
+                      }
                     >
                       <CloseIcon fontSize="small" />
                     </Controls.ActionButton>
@@ -235,7 +286,9 @@ export default function User() {
       </Popup>
 
       {notify.isOpen && <Notification notify={notify} closeNotification={closeNotification} />}
-      {confirmDialog.isOpen && <ConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog} />}
+      {confirmDialog.isOpen && (
+        <ConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog} />
+      )}
     </>
   );
 }

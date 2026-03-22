@@ -7,7 +7,7 @@ import configureStore from '../store/configureStore';
 // Custom render function to wrap components with Redux and Router
 export function renderWithProviders(ui, { preloadedState = {}, store = null, route = '/' } = {}) {
   const finalStore = store || configureStore();
-  
+
   if (!store && Object.keys(preloadedState).length > 0) {
     // Basic preloaded state simulation
     // Since configureStore in this app creates an empty store without initial state param readily exposed
@@ -19,10 +19,8 @@ export function renderWithProviders(ui, { preloadedState = {}, store = null, rou
   return {
     ...render(
       <Provider store={finalStore}>
-        <BrowserRouter>
-          {ui}
-        </BrowserRouter>
-      </Provider>
+        <BrowserRouter>{ui}</BrowserRouter>
+      </Provider>,
     ),
     store: finalStore,
   };

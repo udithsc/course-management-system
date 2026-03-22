@@ -4,9 +4,7 @@ const { combine, timestamp, printf, colorize, simple } = format;
 const { dirname, resolve } = require('path');
 const appDir = dirname(require.main?.filename || resolve(__dirname, '../index.ts'));
 
-const logFormat = printf(
-  ({ level, message, timestamp }) => `${timestamp}|${level}|${message}`
-);
+const logFormat = printf(({ level, message, timestamp }) => `${timestamp}|${level}|${message}`);
 
 const logger = createLogger({
   level: 'info',

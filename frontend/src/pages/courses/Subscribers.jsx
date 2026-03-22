@@ -10,7 +10,7 @@ function Subscribers({ recordForEdit }) {
         columns={[
           { field: 'id', headerName: 'ID', width: 100 },
           { field: 'token', headerName: 'Token', width: 200 },
-          { field: 'user', headerName: 'User', width: 200 }
+          { field: 'user', headerName: 'User', width: 200 },
         ]}
         pageSize={5}
         rowsPerPageOptions={[5]}

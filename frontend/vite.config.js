@@ -28,7 +28,7 @@ export default defineConfig({
         lines: 90,
         functions: 90,
         branches: 90,
-        statements: 90
+        statements: 90,
       },
       include: ['src/store/api.js', 'src/store/configureStore.js'],
       exclude: ['src/__tests__/**', 'src/main.jsx', 'src/index.jsx'],

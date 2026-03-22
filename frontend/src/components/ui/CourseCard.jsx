@@ -11,12 +11,14 @@ const MotionBox = motion(Box);
 const ACCENT = ['#6366F1', '#10B981', '#F59E0B', '#F43F5E', '#3B82F6', '#8B5CF6'];
 
 export default function CourseCard({ course, progress, enrolled, index = 0 }) {
-  const navigate  = useNavigate();
-  const theme     = useTheme();
-  const isDark    = theme.palette.mode === 'dark';
-  const accent    = ACCENT[index % ACCENT.length];
-  const imageSrc  = course.image
-    ? (course.image.startsWith('http') ? course.image : `${import.meta.env.VITE_API_URL}/files/${course.image}`)
+  const navigate = useNavigate();
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
+  const accent = ACCENT[index % ACCENT.length];
+  const imageSrc = course.image
+    ? course.image.startsWith('http')
+      ? course.image
+      : `${import.meta.env.VITE_API_URL}/files/${course.image}`
     : null;
 
   const avgRating = course.reviews?.length
@@ -50,24 +52,42 @@ export default function CourseCard({ course, progress, enrolled, index = 0 }) {
     >
       {/* Thumbnail */}
       <Box sx={{ position: 'relative', height: 160, bgcolor: `${accent}15`, flexShrink: 0 }}>
-        {imageSrc
-          ? <Box component="img" src={imageSrc} alt={course.name} sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          : (
-            <Box sx={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-              background: `linear-gradient(135deg, ${accent}22, ${accent}08)` }}>
-              <PlayCircleOutlineIcon sx={{ fontSize: 48, color: accent, opacity: 0.5 }} />
-            </Box>
-          )
-        }
+        {imageSrc ? (
+          <Box
+            component="img"
+            src={imageSrc}
+            alt={course.name}
+            sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          />
+        ) : (
+          <Box
+            sx={{
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: `linear-gradient(135deg, ${accent}22, ${accent}08)`,
+            }}
+          >
+            <PlayCircleOutlineIcon sx={{ fontSize: 48, color: accent, opacity: 0.5 }} />
+          </Box>
+        )}
         {/* Category chip */}
         {course.category?.name && (
           <Chip
             label={course.category.name}
             size="small"
             sx={{
-              position: 'absolute', top: 10, left: 10,
-              bgcolor: accent, color: 'white', fontWeight: 700,
-              fontSize: '0.68rem', height: 22, borderRadius: '6px',
+              position: 'absolute',
+              top: 10,
+              left: 10,
+              bgcolor: accent,
+              color: 'white',
+              fontWeight: 700,
+              fontSize: '0.68rem',
+              height: 22,
+              borderRadius: '6px',
             }}
           />
         )}
@@ -77,9 +97,15 @@ export default function CourseCard({ course, progress, enrolled, index = 0 }) {
             label="Enrolled"
             size="small"
             sx={{
-              position: 'absolute', top: 10, right: 10,
-              bgcolor: '#10B981', color: 'white', fontWeight: 700,
-              fontSize: '0.68rem', height: 22, borderRadius: '6px',
+              position: 'absolute',
+              top: 10,
+              right: 10,
+              bgcolor: '#10B981',
+              color: 'white',
+              fontWeight: 700,
+              fontSize: '0.68rem',
+              height: 22,
+              borderRadius: '6px',
             }}
           />
         )}
@@ -91,8 +117,12 @@ export default function CourseCard({ course, progress, enrolled, index = 0 }) {
           variant="body2"
           fontWeight={700}
           sx={{
-            display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
-            overflow: 'hidden', lineHeight: 1.4, color: 'text.primary',
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+            lineHeight: 1.4,
+            color: 'text.primary',
           }}
         >
           {course.name}
@@ -100,7 +130,15 @@ export default function CourseCard({ course, progress, enrolled, index = 0 }) {
 
         {/* Instructor */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-          <Avatar sx={{ width: 18, height: 18, bgcolor: `${accent}22`, color: accent, fontSize: '0.6rem' }}>
+          <Avatar
+            sx={{
+              width: 18,
+              height: 18,
+              bgcolor: `${accent}22`,
+              color: accent,
+              fontSize: '0.6rem',
+            }}
+          >
             {course.author?.name?.charAt(0) ?? <PersonOutlinedIcon sx={{ fontSize: 12 }} />}
           </Avatar>
           <Typography variant="caption" color="text.secondary" noWrap>
@@ -112,8 +150,12 @@ export default function CourseCard({ course, progress, enrolled, index = 0 }) {
         {avgRating && (
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
             <StarIcon sx={{ fontSize: 14, color: '#F59E0B' }} />
-            <Typography variant="caption" fontWeight={700} color="#F59E0B">{avgRating}</Typography>
-            <Typography variant="caption" color="text.disabled">({course.reviews.length})</Typography>
+            <Typography variant="caption" fontWeight={700} color="#F59E0B">
+              {avgRating}
+            </Typography>
+            <Typography variant="caption" color="text.disabled">
+              ({course.reviews.length})
+            </Typography>
           </Box>
         )}
 
@@ -126,14 +168,19 @@ export default function CourseCard({ course, progress, enrolled, index = 0 }) {
         {enrolled && typeof progress === 'number' && (
           <Box sx={{ mt: 0.5 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-              <Typography variant="caption" color="text.secondary">Progress</Typography>
-              <Typography variant="caption" fontWeight={700} color={accent}>{progress}%</Typography>
+              <Typography variant="caption" color="text.secondary">
+                Progress
+              </Typography>
+              <Typography variant="caption" fontWeight={700} color={accent}>
+                {progress}%
+              </Typography>
             </Box>
             <LinearProgress
               variant="determinate"
               value={progress}
               sx={{
-                height: 5, borderRadius: 3,
+                height: 5,
+                borderRadius: 3,
                 bgcolor: `${accent}18`,
                 '& .MuiLinearProgress-bar': { bgcolor: accent, borderRadius: 3 },
               }}
@@ -142,7 +189,15 @@ export default function CourseCard({ course, progress, enrolled, index = 0 }) {
         )}
 
         {/* Footer: price */}
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 'auto', pt: 1 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            mt: 'auto',
+            pt: 1,
+          }}
+        >
           <Typography variant="subtitle2" fontWeight={800} color={accent}>
             {course.fee === 0 ? 'Free' : `$${course.fee}`}
           </Typography>
@@ -156,14 +211,14 @@ export default function CourseCard({ course, progress, enrolled, index = 0 }) {
 }
 
 CourseCard.propTypes = {
-  course:   PropTypes.object.isRequired,
+  course: PropTypes.object.isRequired,
   progress: PropTypes.number,
   enrolled: PropTypes.bool,
-  index:    PropTypes.number,
+  index: PropTypes.number,
 };
 
 CourseCard.defaultProps = {
   progress: 0,
   enrolled: false,
-  index:    0,
+  index: 0,
 };

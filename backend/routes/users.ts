@@ -28,7 +28,7 @@ const USER_SELECT = {
   updatedAt: true,
 };
 
-// ─── List Users (paginated) ─────────────────────────────
+// List Users (paginated)
 router.get('/', [auth], async (req, res) => {
   const pageNo = parseInt(req.query.pageNo, 10) || 0;
   const pageSize = parseInt(req.query.pageSize, 10) || 10;
@@ -52,7 +52,7 @@ router.get('/', [auth], async (req, res) => {
   return paginated(res, { data, totalElements, pageNo, totalPages });
 });
 
-// ─── Create User ────────────────────────────────────────
+// Create User
 router.post('/', [auth, admin, validate(validateModel)], async (req, res) => {
   const { username, email, firstName, lastName, mobile } = req.body;
 
@@ -70,7 +70,7 @@ router.post('/', [auth, admin, validate(validateModel)], async (req, res) => {
   return created(res, user);
 });
 
-// ─── Update User ────────────────────────────────────────
+// Update User
 router.put('/:id', [auth, admin, validate(validateModel)], async (req, res) => {
   // Never allow password to be set through this endpoint
   const { password, ...updateData } = req.body;
@@ -87,7 +87,7 @@ router.put('/:id', [auth, admin, validate(validateModel)], async (req, res) => {
   }
 });
 
-// ─── Delete User ────────────────────────────────────────
+// Delete User
 router.delete('/:id', [auth, admin], async (req, res) => {
   try {
     await prisma.user.delete({ where: { id: req.params.id } });
@@ -97,7 +97,7 @@ router.delete('/:id', [auth, admin], async (req, res) => {
   }
 });
 
-// ─── Change User Role ───────────────────────────────────
+// Change User Role
 router.patch('/:id/role', [auth, admin], async (req, res) => {
   const { role } = req.body;
   const VALID_ROLES = ['ADMIN', 'INSTRUCTOR', 'STUDENT'];
@@ -117,7 +117,7 @@ router.patch('/:id/role', [auth, admin], async (req, res) => {
   return success(res, user);
 });
 
-// ─── Get Current User ───────────────────────────────────
+// Get Current User
 router.get('/me', [auth], async (req, res) => {
   const user = await prisma.user.findUnique({
     where: { id: req.user.id },
@@ -127,7 +127,7 @@ router.get('/me', [auth], async (req, res) => {
   return success(res, user);
 });
 
-// ─── Close Account ──────────────────────────────────────
+// Close Account
 router.delete('/closeAccount', [auth], async (req, res) => {
   try {
     await prisma.user.delete({ where: { id: req.user.id } });
@@ -137,7 +137,7 @@ router.delete('/closeAccount', [auth], async (req, res) => {
   }
 });
 
-// ─── Dashboard Data ─────────────────────────────────────
+// Dashboard Data
 router.get('/dashboard', [auth], async (req, res) => {
   const user = await prisma.user.findUnique({
     where: { id: req.user.id },
@@ -181,7 +181,7 @@ router.get('/dashboard', [auth], async (req, res) => {
   });
 });
 
-// ─── Subscribe to Course ────────────────────────────────
+// Subscribe to Course
 router.post('/subscribe', [auth], async (req, res) => {
   const courseId = req.body.course || req.body.id;
   if (!courseId) throw new AppError('Course ID is required.', 400);
@@ -204,7 +204,7 @@ router.post('/subscribe', [auth], async (req, res) => {
   return message(res, 'Subscribed successfully.');
 });
 
-// ─── Unsubscribe from Course ────────────────────────────
+// Unsubscribe from Course
 router.post('/unsubscribe', [auth], async (req, res) => {
   const courseId = req.body.id;
   if (!courseId) throw new AppError('Course ID is required.', 400);
@@ -224,7 +224,7 @@ router.post('/unsubscribe', [auth], async (req, res) => {
   return message(res, 'Unsubscribed successfully.');
 });
 
-// ─── Bookmark Course ────────────────────────────────────
+// Bookmark Course
 router.post('/bookmark', [auth], async (req, res) => {
   const { id } = req.body;
   if (!id) throw new AppError('Course ID is required.', 400);
@@ -242,7 +242,7 @@ router.post('/bookmark', [auth], async (req, res) => {
   return message(res, 'Bookmark added.');
 });
 
-// ─── Remove Bookmark ────────────────────────────────────
+// Remove Bookmark
 router.delete('/bookmark/:id', [auth], async (req, res) => {
   const user = await prisma.user.findUnique({ where: { id: req.user.id } });
   if (!user) throw new AppError('User not found.', 404);
@@ -255,7 +255,7 @@ router.delete('/bookmark/:id', [auth], async (req, res) => {
   return message(res, 'Bookmark removed.');
 });
 
-// ─── Mark Video as Watched ──────────────────────────────
+// Mark Video as Watched
 router.post('/watch', [auth], async (req, res) => {
   const { id, video } = req.body;
   if (!id || !video) throw new AppError('Course ID and video ID are required.', 400);
@@ -275,21 +275,19 @@ router.post('/watch', [auth], async (req, res) => {
   return message(res, 'Video marked as watched.');
 });
 
-// ─── Upload Profile Image ───────────────────────────────
+// Upload Profile Image
 router.post('/image', [auth, upload.single('file')], async (req, res) => {
   const result = await prisma.user.update({
     where: { id: req.user.id },
     data: {
-      image: req.file?.filename
-        ? getFileUrl(req, 'users', req.file.filename)
-        : null,
+      image: req.file?.filename ? getFileUrl(req, 'users', req.file.filename) : null,
     },
     select: USER_SELECT,
   });
   return success(res, result);
 });
 
-// ─── Remove Profile Image ───────────────────────────────
+// Remove Profile Image
 router.delete('/image', [auth], async (req, res) => {
   const result = await prisma.user.update({
     where: { id: req.user.id },

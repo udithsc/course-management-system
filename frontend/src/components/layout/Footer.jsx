@@ -11,7 +11,7 @@ function Footer() {
         px: 2,
         backgroundColor: 'transparent',
         borderTop: '1px solid rgba(0,0,0,0.05)',
-        mt: 'auto'
+        mt: 'auto',
       }}
     >
       <Container maxWidth="sm">

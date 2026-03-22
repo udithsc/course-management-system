@@ -13,7 +13,7 @@ import {
   Typography,
   Avatar,
   Menu,
-  MenuItem
+  MenuItem,
 } from '@mui/material';
 import PropTypes from 'prop-types';
 import AddIcon from '@mui/icons-material/Add';
@@ -59,7 +59,7 @@ export default function Videos({ recordForEdit }) {
   const handleFileChange = async (e) => {
     setVideo({
       preview: URL.createObjectURL(e.target.files[0]),
-      data: e.target.files[0]
+      data: e.target.files[0],
     });
   };
 
@@ -73,7 +73,7 @@ export default function Videos({ recordForEdit }) {
       <Box
         sx={{
           overflow: 'hidden',
-          overflowY: 'scroll'
+          overflowY: 'scroll',
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
@@ -111,7 +111,7 @@ export default function Videos({ recordForEdit }) {
                     open={open}
                     onClose={() => handleCardClose()}
                     MenuListProps={{
-                      'aria-labelledby': 'basic-button'
+                      'aria-labelledby': 'basic-button',
                     }}
                   >
                     <MenuItem
@@ -209,6 +209,6 @@ export default function Videos({ recordForEdit }) {
 
 Videos.propTypes = {
   recordForEdit: PropTypes.shape({
-    id: PropTypes.string.isRequired
-  }).isRequired
+    id: PropTypes.string.isRequired,
+  }).isRequired,
 };

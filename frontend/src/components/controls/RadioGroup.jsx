@@ -4,7 +4,7 @@ import {
   FormLabel,
   RadioGroup as MuiRadioGroup,
   FormControlLabel,
-  Radio
+  Radio,
 } from '@mui/material';
 import PropTypes from 'prop-types';
 
@@ -29,7 +29,7 @@ RadioGroup.propTypes = {
   items: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
-      title: PropTypes.string.isRequired
-    })
-  ).isRequired
+      title: PropTypes.string.isRequired,
+    }),
+  ).isRequired,
 };

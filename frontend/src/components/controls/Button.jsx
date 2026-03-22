@@ -19,9 +19,9 @@ export default function Button({
         sx={{
           m: 1,
           '&.MuiButton-root': {
-            color: textColor
+            color: textColor,
           },
-          ...style
+          ...style,
         }}
         variant={variant}
         size={size}
@@ -42,7 +42,7 @@ Button.propTypes = {
   variant: PropTypes.string,
   onClick: PropTypes.func.isRequired,
   style: PropTypes.object,
-  tooltip: PropTypes.string
+  tooltip: PropTypes.string,
 };
 
 Button.defaultProps = {
@@ -51,5 +51,5 @@ Button.defaultProps = {
   color: 'primary',
   textColor: 'white',
   style: {},
-  tooltip: ''
+  tooltip: '',
 };

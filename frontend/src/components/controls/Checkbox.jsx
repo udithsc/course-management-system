@@ -8,8 +8,8 @@ export default function Checkbox(props) {
   const convertToDefEventPara = (nameField, valueField) => ({
     target: {
       nameField,
-      valueField
-    }
+      valueField,
+    },
   });
 
   return (
@@ -33,5 +33,5 @@ Checkbox.propTypes = {
   name: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
   value: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired,
 };

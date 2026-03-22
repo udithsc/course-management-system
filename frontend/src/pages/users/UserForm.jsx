@@ -20,17 +20,17 @@ const initialFormValues = {
 };
 
 const schema = {
-  username:  Joi.string().required(),
+  username: Joi.string().required(),
   firstName: Joi.string().required(),
-  lastName:  Joi.string().required(),
-  mobile:    Joi.string().required(),
-  email:     Joi.string().required(),
+  lastName: Joi.string().required(),
+  mobile: Joi.string().required(),
+  email: Joi.string().required(),
 };
 
 export default function UserForm({ recordForEdit, addOrEdit }) {
   const { values, setValues, errors, handleInputChange, resetForm, validate } = useForm(
     initialFormValues,
-    schema
+    schema,
   );
 
   const handleSubmit = (e) => {
@@ -53,7 +53,11 @@ export default function UserForm({ recordForEdit, addOrEdit }) {
             value={values.firstName}
             onChange={handleInputChange}
             error={errors.firstName}
-            InputProps={{ startAdornment: <PersonOutlinedIcon sx={{ mr: 1, fontSize: 18, color: 'text.disabled' }} /> }}
+            InputProps={{
+              startAdornment: (
+                <PersonOutlinedIcon sx={{ mr: 1, fontSize: 18, color: 'text.disabled' }} />
+              ),
+            }}
           />
         </Grid>
         <Grid item xs={12} sm={6} sx={{ pl: { sm: 1 } }}>
@@ -73,7 +77,11 @@ export default function UserForm({ recordForEdit, addOrEdit }) {
         value={values.username}
         onChange={handleInputChange}
         error={errors.username}
-        InputProps={{ startAdornment: <BadgeOutlinedIcon sx={{ mr: 1, fontSize: 18, color: 'text.disabled' }} /> }}
+        InputProps={{
+          startAdornment: (
+            <BadgeOutlinedIcon sx={{ mr: 1, fontSize: 18, color: 'text.disabled' }} />
+          ),
+        }}
       />
       <Controls.Input
         name="email"
@@ -81,7 +89,11 @@ export default function UserForm({ recordForEdit, addOrEdit }) {
         value={values.email}
         onChange={handleInputChange}
         error={errors.email}
-        InputProps={{ startAdornment: <EmailOutlinedIcon sx={{ mr: 1, fontSize: 18, color: 'text.disabled' }} /> }}
+        InputProps={{
+          startAdornment: (
+            <EmailOutlinedIcon sx={{ mr: 1, fontSize: 18, color: 'text.disabled' }} />
+          ),
+        }}
       />
       <Controls.Input
         name="mobile"
@@ -89,21 +101,43 @@ export default function UserForm({ recordForEdit, addOrEdit }) {
         value={values.mobile}
         onChange={handleInputChange}
         error={errors.mobile}
-        InputProps={{ startAdornment: <PhoneOutlinedIcon sx={{ mr: 1, fontSize: 18, color: 'text.disabled' }} /> }}
+        InputProps={{
+          startAdornment: (
+            <PhoneOutlinedIcon sx={{ mr: 1, fontSize: 18, color: 'text.disabled' }} />
+          ),
+        }}
       />
 
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1.5, mt: 1, pt: 3, borderTop: '1px solid', borderColor: 'divider' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          gap: 1.5,
+          mt: 1,
+          pt: 3,
+          borderTop: '1px solid',
+          borderColor: 'divider',
+        }}
+      >
         <Controls.Button
           text="Reset"
           onClick={resetForm}
           variant="outlined"
-          sx={{ borderRadius: '10px', fontWeight: 700, px: 3, borderColor: 'divider', color: 'text.secondary' }}
+          sx={{
+            borderRadius: '10px',
+            fontWeight: 700,
+            px: 3,
+            borderColor: 'divider',
+            color: 'text.secondary',
+          }}
         />
         <Controls.Button
           type="submit"
           text={recordForEdit?.id ? 'Save Changes' : 'Add User'}
           sx={{
-            borderRadius: '10px', fontWeight: 700, px: 3,
+            borderRadius: '10px',
+            fontWeight: 700,
+            px: 3,
             background: 'linear-gradient(135deg, #6366F1, #4F46E5)',
             boxShadow: '0 4px 14px rgba(99,102,241,0.4)',
             '&:hover': { boxShadow: '0 6px 20px rgba(99,102,241,0.5)' },
@@ -115,12 +149,12 @@ export default function UserForm({ recordForEdit, addOrEdit }) {
 }
 
 UserForm.propTypes = {
-  addOrEdit:     PropTypes.func.isRequired,
+  addOrEdit: PropTypes.func.isRequired,
   recordForEdit: PropTypes.shape({
-    id:        PropTypes.string,
+    id: PropTypes.string,
     firstName: PropTypes.string,
-    lastName:  PropTypes.string,
-    email:     PropTypes.string,
+    lastName: PropTypes.string,
+    email: PropTypes.string,
   }),
 };
 

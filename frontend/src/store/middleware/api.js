@@ -19,7 +19,7 @@ const api =
         baseURL: `${import.meta.env.VITE_API_URL}/api`,
         url,
         method,
-        data
+        data,
       });
 
       // General
@@ -38,7 +38,7 @@ const api =
       if (onError)
         dispatch({
           type: onError,
-          payload: errorMessage
+          payload: errorMessage,
         });
 
       if (error.response && error.response.status === 403) dispatch({ type: loggedOut.type });

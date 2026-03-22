@@ -7,7 +7,7 @@ import {
   TableCell,
   TablePagination,
   TableSortLabel,
-  Paper
+  Paper,
 } from '@mui/material';
 
 export default function useTable(records, headCells, totalRecords) {
@@ -66,11 +66,11 @@ export default function useTable(records, headCells, totalRecords) {
           sx={{
             '& tbody tr:hover': {
               backgroundColor: grey[50],
-              cursor: 'pointer'
+              cursor: 'pointer',
             },
             '& .MuiTableCell-root': {
-              p: 1.5
-            }
+              p: 1.5,
+            },
           }}
         >
           {children}
@@ -90,8 +90,8 @@ export default function useTable(records, headCells, totalRecords) {
       <TableHead
         sx={{
           '&.MuiTableHead-root': {
-            backgroundColor: grey[200]
-          }
+            backgroundColor: grey[200],
+          },
         }}
       >
         <TableRow>
@@ -142,6 +142,6 @@ export default function useTable(records, headCells, totalRecords) {
     TblPagination,
     recordsAfterPagingAndSorting,
     page,
-    rowsPerPage
+    rowsPerPage,
   };
 }

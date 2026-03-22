@@ -12,11 +12,11 @@ import { selectAccessToken, loggedIn, selectUserRole } from './store/auth';
  *   redirectTo    string    — where to send unauthorised users (default: /login)
  */
 function ProtectedRoute({ allowedRoles, redirectTo = '/login' }) {
-  const dispatch   = useDispatch();
-  const token      = useSelector(selectAccessToken);
-  const role       = useSelector(selectUserRole);
+  const dispatch = useDispatch();
+  const token = useSelector(selectAccessToken);
+  const role = useSelector(selectUserRole);
 
-  // ── Handle browser refresh: Redux state is lost, sessionStorage has the token
+  // Handle browser refresh: Redux state is lost, sessionStorage has the token
   let activeToken = token;
   if (!activeToken) {
     const stored = sessionStorage.getItem('access-token');
@@ -26,13 +26,13 @@ function ProtectedRoute({ allowedRoles, redirectTo = '/login' }) {
     activeToken = stored;
   }
 
-  // ── Role gate — if allowedRoles is set, enforce it
+  // Role gate — if allowedRoles is set, enforce it
   if (allowedRoles && allowedRoles.length > 0) {
     // Role might be determined after re-hydration; give it a tick via selector
     if (role && !allowedRoles.includes(role)) {
       // Redirect to the appropriate home for their actual role
-      if (role === 'ADMIN')       return <Navigate to="/dashboard" replace />;
-      if (role === 'INSTRUCTOR')  return <Navigate to="/instructor" replace />;
+      if (role === 'ADMIN') return <Navigate to="/dashboard" replace />;
+      if (role === 'INSTRUCTOR') return <Navigate to="/instructor" replace />;
       return <Navigate to="/explore" replace />;
     }
   }

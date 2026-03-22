@@ -7,10 +7,10 @@ import userReducer from './users';
 import subscriptionsReducer from './subscriptions';
 
 export default combineReducers({
-  auth:          authReducer,
-  courses:       courseReducer,
-  categories:    categoryReducer,
-  authors:       authorReducer,
-  users:         userReducer,
+  auth: authReducer,
+  courses: courseReducer,
+  categories: categoryReducer,
+  authors: authorReducer,
+  users: userReducer,
   subscriptions: subscriptionsReducer,
 });

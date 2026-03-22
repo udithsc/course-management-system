@@ -15,7 +15,7 @@ import {
   IconButton,
   Avatar,
   Menu,
-  MenuItem
+  MenuItem,
 } from '@mui/material';
 import PropTypes from 'prop-types';
 import { red } from '@mui/material/colors';
@@ -35,8 +35,8 @@ const ExpandMore = styled((props) => {
   transform: !expand ? 'rotate(0deg)' : 'rotate(180deg)',
   marginLeft: 'auto',
   transition: theme.transitions.create('transform', {
-    duration: theme.transitions.duration.shortest
-  })
+    duration: theme.transitions.duration.shortest,
+  }),
 }));
 
 export default function Images({ recordForEdit }) {
@@ -46,7 +46,7 @@ export default function Images({ recordForEdit }) {
   const [course, setCourse] = useState({});
   const [data, setData] = useState({
     title: '',
-    description: ''
+    description: '',
   });
   const [expanded, setExpanded] = useState(false);
   const [openPopup, setOpenPopup] = useState(false);
@@ -78,7 +78,7 @@ export default function Images({ recordForEdit }) {
   const handleFileChange = async (e) => {
     setImage({
       preview: URL.createObjectURL(e.target.files[0]),
-      data: e.target.files[0]
+      data: e.target.files[0],
     });
   };
 
@@ -92,7 +92,7 @@ export default function Images({ recordForEdit }) {
       <Box
         style={{
           overflow: 'hidden',
-          overflowY: 'scroll'
+          overflowY: 'scroll',
         }}
       >
         <Controls.Button
@@ -125,7 +125,7 @@ export default function Images({ recordForEdit }) {
                     open={open}
                     onClose={() => handleCardClose()}
                     MenuListProps={{
-                      'aria-labelledby': 'basic-button'
+                      'aria-labelledby': 'basic-button',
                     }}
                   >
                     <MenuItem
@@ -180,7 +180,7 @@ export default function Images({ recordForEdit }) {
                             image={item.image || '/images/preview.png'}
                             sx={{
                               mb: 1,
-                              objectFit: 'contain'
+                              objectFit: 'contain',
                             }}
                           />
                         ))}
@@ -222,7 +222,7 @@ export default function Images({ recordForEdit }) {
                     alt="Addon Image"
                     src={image.preview || '/images/preview.png'}
                     sx={{
-                      objectFit: 'contain'
+                      objectFit: 'contain',
                     }}
                   />
                 </Card>
@@ -260,6 +260,6 @@ export default function Images({ recordForEdit }) {
 
 Images.propTypes = {
   recordForEdit: PropTypes.shape({
-    id: PropTypes.string.isRequired
-  }).isRequired
+    id: PropTypes.string.isRequired,
+  }).isRequired,
 };

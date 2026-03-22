@@ -25,9 +25,9 @@ import { selectAccessToken, selectUserRole } from './store/auth';
 // Smart root redirect: logged-in users go to their role's home
 function RootRedirect() {
   const token = useSelector(selectAccessToken);
-  const role  = useSelector(selectUserRole);
+  const role = useSelector(selectUserRole);
   if (!token) return <LandingPage />;
-  if (role === 'ADMIN')      return <Navigate to="/dashboard"  replace />;
+  if (role === 'ADMIN') return <Navigate to="/dashboard" replace />;
   if (role === 'INSTRUCTOR') return <Navigate to="/instructor" replace />;
   return <Navigate to="/explore" replace />;
 }
@@ -36,40 +36,44 @@ function App() {
   return (
     <div className="App">
       <Routes>
-        {/* ── Landing / smart root ─────────────────────────────────────────── */}
+        {/* Landing / smart root */}
         <Route path="/" element={<RootRedirect />} />
         <Route path="/login" element={<Auth />} />
 
-        {/* ── Student + All Users: Explore catalog ─────────────────────────── */}
+        {/* Student + All Users: Explore catalog */}
         <Route path="/explore" element={<ProtectedRoute />}>
-          <Route index              element={<ExplorePage />} />
-          <Route path=":courseId"   element={<CourseDetail />} />
+          <Route index element={<ExplorePage />} />
+          <Route path=":courseId" element={<CourseDetail />} />
         </Route>
 
-        {/* ── Video player (full-screen, all roles) ────────────────────────── */}
+        {/* Video player (full-screen, all roles) */}
         <Route path="/learn" element={<ProtectedRoute />}>
-          <Route path=":courseId"   element={<LearnPage />} />
+          <Route path=":courseId" element={<LearnPage />} />
         </Route>
 
-        {/* ── Instructor portal (INSTRUCTOR + ADMIN) ────────────────────────── */}
-        <Route path="/instructor"
-          element={<ProtectedRoute allowedRoles={['INSTRUCTOR','ADMIN']} redirectTo="/explore" />}>
+        {/* Instructor portal (INSTRUCTOR + ADMIN) */}
+        <Route
+          path="/instructor"
+          element={<ProtectedRoute allowedRoles={['INSTRUCTOR', 'ADMIN']} redirectTo="/explore" />}
+        >
           <Route index element={<InstructorDashboard />} />
         </Route>
 
-        {/* ── Admin Dashboard (ADMIN only) ──────────────────────────────────── */}
-        <Route path="/dashboard"
-          element={<ProtectedRoute allowedRoles={['ADMIN']} redirectTo="/explore" />}>
+        {/* Admin Dashboard (ADMIN only) */}
+        <Route
+          path="/dashboard"
+          element={<ProtectedRoute allowedRoles={['ADMIN']} redirectTo="/explore" />}
+        >
           <Route element={<Dashboard />}>
-            <Route index              element={<Home />} />
-            <Route path="users"       element={<User />} />
-            <Route path="account"     element={<Account />} />
+            <Route index element={<Home />} />
+            <Route path="users" element={<User />} />
+            <Route path="account" element={<Account />} />
             <Route path="my-learning" element={<MyLearning />} />
-            <Route path="courses"     element={<CourseIndex />}>
-              <Route path="courses"              element={<Course />} />
-              <Route path="courses/:courseId"    element={<CourseManager />} />
-              <Route path="authors"              element={<Author />} />
-              <Route path="categories"           element={<Category />} />
+            <Route path="courses" element={<CourseIndex />}>
+              <Route path="courses" element={<Course />} />
+              <Route path="courses/:courseId" element={<CourseManager />} />
+              <Route path="authors" element={<Author />} />
+              <Route path="categories" element={<Category />} />
             </Route>
           </Route>
         </Route>

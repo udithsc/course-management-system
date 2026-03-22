@@ -8,7 +8,7 @@ module.exports = (validator, queryValidator = null, paramsValidator = null) => {
     if (req.body.id && !UUID_REGEX.test(req.body.id)) {
       throw new AppError('Invalid ID format in payload.', 400);
     }
-    
+
     // 2. Validate req.params if schema provided
     if (paramsValidator) {
       const { error } = paramsValidator(req.params);

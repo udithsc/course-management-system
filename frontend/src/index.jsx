@@ -30,5 +30,5 @@ root.render(
         </ColorModeProvider>
       </BrowserRouter>
     </Provider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

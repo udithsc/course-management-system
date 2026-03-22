@@ -4,20 +4,24 @@ import { apiCallBegan } from './api';
 const slice = createSlice({
   name: 'subscriptions',
   initialState: {
-    myCourses:     [],   // enrolled courses with progress
-    loading:       false,
+    myCourses: [], // enrolled courses with progress
+    loading: false,
     enrollLoading: false,
-    notification:  { isOpen: false, message: '', type: '' },
+    notification: { isOpen: false, message: '', type: '' },
   },
   reducers: {
     // Loading
-    subscriptionsRequested: (state)         => { state.loading = true; },
-    enrollRequested:        (state)         => { state.enrollLoading = true; },
+    subscriptionsRequested: (state) => {
+      state.loading = true;
+    },
+    enrollRequested: (state) => {
+      state.enrollLoading = true;
+    },
 
     // My courses loaded
     subscriptionsReceived: (state, action) => {
       state.myCourses = action.payload;
-      state.loading   = false;
+      state.loading = false;
     },
 
     // Enrolled successfully
@@ -38,9 +42,9 @@ const slice = createSlice({
 
     // Error
     subscriptionsFailed: (state, action) => {
-      state.loading       = false;
+      state.loading = false;
       state.enrollLoading = false;
-      state.notification  = { isOpen: true, message: action.payload || 'Error', type: 'error' };
+      state.notification = { isOpen: true, message: action.payload || 'Error', type: 'error' };
     },
 
     closeNotification: (state) => {
@@ -58,39 +62,38 @@ const {
   subscriptionsFailed,
 } = slice.actions;
 
-// ─── Thunks ───────────────────────────────────────────────────────────────────
-
+// Thunks
 export const loadMyCourses = () =>
   apiCallBegan({
-    url:       '/courses/subscriptions/me',
-    method:    'get',
-    onStart:   subscriptionsRequested.type,
+    url: '/courses/subscriptions/me',
+    method: 'get',
+    onStart: subscriptionsRequested.type,
     onSuccess: subscriptionsReceived.type,
-    onError:   subscriptionsFailed.type,
+    onError: subscriptionsFailed.type,
   });
 
 export const enrollCourse = (courseId) =>
   apiCallBegan({
-    url:       `/courses/subscribe/${courseId}`,
-    method:    'post',
-    onStart:   enrollRequested.type,
+    url: `/courses/subscribe/${courseId}`,
+    method: 'post',
+    onStart: enrollRequested.type,
     onSuccess: enrollSucceeded.type,
-    onError:   subscriptionsFailed.type,
+    onError: subscriptionsFailed.type,
   });
 
 export const markVideoWatched = (courseId, lessonId) =>
   apiCallBegan({
-    url:       `/courses/progress/${courseId}`,
-    method:    'patch',
-    data:      { lessonId },
+    url: `/courses/progress/${courseId}`,
+    method: 'patch',
+    data: { lessonId },
     onSuccess: progressUpdated.type,
-    onError:   subscriptionsFailed.type,
+    onError: subscriptionsFailed.type,
   });
 
-// ─── Selectors ────────────────────────────────────────────────────────────────
-export const selectMyCourses    = (state) => state.subscriptions.myCourses;
-export const selectEnrollLoading= (state) => state.subscriptions.enrollLoading;
-export const selectSubsLoading  = (state) => state.subscriptions.loading;
+// Selectors
+export const selectMyCourses = (state) => state.subscriptions.myCourses;
+export const selectEnrollLoading = (state) => state.subscriptions.enrollLoading;
+export const selectSubsLoading = (state) => state.subscriptions.loading;
 export const selectSubsNotification = (state) => state.subscriptions.notification;
 
 export const selectIsEnrolled = (courseId) => (state) =>

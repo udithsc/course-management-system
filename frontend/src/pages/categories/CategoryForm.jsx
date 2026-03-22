@@ -15,14 +15,14 @@ const schema = { name: Joi.string().min(3).max(10).required() };
 const PRESET_COLORS = ['#6366F1', '#10B981', '#F59E0B', '#F43F5E', '#3B82F6', '#8B5CF6', '#EC4899'];
 
 export default function CategoryForm({ recordForEdit, addOrEdit }) {
-  const [image, setImage]   = useState({ preview: '', data: '' });
-  const [color, setColor]   = useState(PRESET_COLORS[0]);
-  const theme  = useTheme();
+  const [image, setImage] = useState({ preview: '', data: '' });
+  const [color, setColor] = useState(PRESET_COLORS[0]);
+  const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
 
   const { values, setValues, errors, handleInputChange, resetForm, validate } = useForm(
     initialFormValues,
-    schema
+    schema,
   );
 
   const handleFileChange = (e) => {
@@ -47,9 +47,8 @@ export default function CategoryForm({ recordForEdit, addOrEdit }) {
     if (recordForEdit) setValues({ ...recordForEdit });
   }, [recordForEdit]);
 
-  const previewSrc = image.preview || (values.icon
-    ? `${import.meta.env.VITE_API_URL}/files/${values.icon}`
-    : null);
+  const previewSrc =
+    image.preview || (values.icon ? `${import.meta.env.VITE_API_URL}/files/${values.icon}` : null);
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -57,18 +56,28 @@ export default function CategoryForm({ recordForEdit, addOrEdit }) {
       <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3.5 }}>
         <Box
           sx={{
-            width: 80, height: 80, borderRadius: 3.5,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            width: 80,
+            height: 80,
+            borderRadius: 3.5,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
             background: previewSrc ? 'transparent' : `${color}22`,
             border: `2px solid ${color}44`,
             overflow: 'hidden',
             transition: 'all 0.3s',
           }}
         >
-          {previewSrc
-            ? <Box component="img" src={previewSrc} alt="Category" sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            : <CategoryOutlinedIcon sx={{ fontSize: 36, color }} />
-          }
+          {previewSrc ? (
+            <Box
+              component="img"
+              src={previewSrc}
+              alt="Category"
+              sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+          ) : (
+            <CategoryOutlinedIcon sx={{ fontSize: 36, color }} />
+          )}
         </Box>
       </Box>
 
@@ -78,12 +87,27 @@ export default function CategoryForm({ recordForEdit, addOrEdit }) {
         value={values.name}
         onChange={handleInputChange}
         error={errors.name}
-        InputProps={{ startAdornment: <CategoryOutlinedIcon sx={{ mr: 1, fontSize: 18, color: 'text.disabled' }} /> }}
+        InputProps={{
+          startAdornment: (
+            <CategoryOutlinedIcon sx={{ mr: 1, fontSize: 18, color: 'text.disabled' }} />
+          ),
+        }}
       />
 
       {/* Colour picker */}
       <Box sx={{ mb: 3 }}>
-        <Typography variant="caption" fontWeight={700} color="text.secondary" sx={{ textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: '0.68rem', display: 'block', mb: 1.25 }}>
+        <Typography
+          variant="caption"
+          fontWeight={700}
+          color="text.secondary"
+          sx={{
+            textTransform: 'uppercase',
+            letterSpacing: '0.08em',
+            fontSize: '0.68rem',
+            display: 'block',
+            mb: 1.25,
+          }}
+        >
           Accent Colour
         </Typography>
         <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
@@ -92,8 +116,11 @@ export default function CategoryForm({ recordForEdit, addOrEdit }) {
               key={c}
               onClick={() => setColor(c)}
               sx={{
-                width: 30, height: 30, borderRadius: '50%',
-                bgcolor: c, cursor: 'pointer',
+                width: 30,
+                height: 30,
+                borderRadius: '50%',
+                bgcolor: c,
+                cursor: 'pointer',
                 border: '3px solid',
                 borderColor: color === c ? 'background.paper' : 'transparent',
                 outline: color === c ? `2px solid ${c}` : 'none',
@@ -107,7 +134,18 @@ export default function CategoryForm({ recordForEdit, addOrEdit }) {
 
       {/* Icon upload */}
       <Box sx={{ mb: 2 }}>
-        <Typography variant="caption" fontWeight={700} color="text.secondary" sx={{ textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: '0.68rem', display: 'block', mb: 1.25 }}>
+        <Typography
+          variant="caption"
+          fontWeight={700}
+          color="text.secondary"
+          sx={{
+            textTransform: 'uppercase',
+            letterSpacing: '0.08em',
+            fontSize: '0.68rem',
+            display: 'block',
+            mb: 1.25,
+          }}
+        >
           Category Icon (optional)
         </Typography>
         <label htmlFor="category-icon-upload">
@@ -121,38 +159,79 @@ export default function CategoryForm({ recordForEdit, addOrEdit }) {
           />
           <Box
             sx={{
-              height: 80, borderRadius: '12px', cursor: 'pointer',
+              height: 80,
+              borderRadius: '12px',
+              cursor: 'pointer',
               border: '2px dashed',
-              borderColor: image.preview ? 'primary.main' : isDark ? 'rgba(255,255,255,0.1)' : 'rgba(15,23,42,0.12)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1.5,
+              borderColor: image.preview
+                ? 'primary.main'
+                : isDark
+                  ? 'rgba(255,255,255,0.1)'
+                  : 'rgba(15,23,42,0.12)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 1.5,
               bgcolor: isDark ? 'rgba(255,255,255,0.02)' : 'rgba(15,23,42,0.02)',
               transition: 'all 0.2s',
-              '&:hover': { borderColor: 'primary.main', bgcolor: isDark ? 'rgba(99,102,241,0.06)' : 'rgba(99,102,241,0.04)' },
+              '&:hover': {
+                borderColor: 'primary.main',
+                bgcolor: isDark ? 'rgba(99,102,241,0.06)' : 'rgba(99,102,241,0.04)',
+              },
             }}
           >
-            {image.preview
-              ? <Chip label="Image selected ✓" color="success" size="small" sx={{ fontWeight: 700 }} />
-              : <>
-                  <ImageOutlinedIcon sx={{ color: 'text.disabled', fontSize: 20 }} />
-                  <Typography variant="body2" color="text.secondary" fontWeight={600}>Upload icon</Typography>
-                </>
-            }
+            {image.preview ? (
+              <Chip
+                label="Image selected ✓"
+                color="success"
+                size="small"
+                sx={{ fontWeight: 700 }}
+              />
+            ) : (
+              <>
+                <ImageOutlinedIcon sx={{ color: 'text.disabled', fontSize: 20 }} />
+                <Typography variant="body2" color="text.secondary" fontWeight={600}>
+                  Upload icon
+                </Typography>
+              </>
+            )}
           </Box>
         </label>
       </Box>
 
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1.5, mt: 1, pt: 3, borderTop: '1px solid', borderColor: 'divider' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          gap: 1.5,
+          mt: 1,
+          pt: 3,
+          borderTop: '1px solid',
+          borderColor: 'divider',
+        }}
+      >
         <Controls.Button
           text="Reset"
-          onClick={() => { resetForm(); setImage({ preview: '', data: '' }); }}
+          onClick={() => {
+            resetForm();
+            setImage({ preview: '', data: '' });
+          }}
           variant="outlined"
-          sx={{ borderRadius: '10px', fontWeight: 700, px: 3, borderColor: 'divider', color: 'text.secondary' }}
+          sx={{
+            borderRadius: '10px',
+            fontWeight: 700,
+            px: 3,
+            borderColor: 'divider',
+            color: 'text.secondary',
+          }}
         />
         <Controls.Button
           type="submit"
           text={recordForEdit?.id ? 'Save Changes' : 'Create Category'}
           sx={{
-            borderRadius: '10px', fontWeight: 700, px: 3,
+            borderRadius: '10px',
+            fontWeight: 700,
+            px: 3,
             background: 'linear-gradient(135deg, #6366F1, #4F46E5)',
             boxShadow: '0 4px 14px rgba(99,102,241,0.4)',
             '&:hover': { boxShadow: '0 6px 20px rgba(99,102,241,0.5)' },
@@ -164,9 +243,9 @@ export default function CategoryForm({ recordForEdit, addOrEdit }) {
 }
 
 CategoryForm.propTypes = {
-  addOrEdit:     PropTypes.func.isRequired,
+  addOrEdit: PropTypes.func.isRequired,
   recordForEdit: PropTypes.shape({
-    id:   PropTypes.string,
+    id: PropTypes.string,
     name: PropTypes.string,
     icon: PropTypes.string,
   }),

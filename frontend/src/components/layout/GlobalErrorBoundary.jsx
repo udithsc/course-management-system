@@ -5,15 +5,15 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 
 function ErrorFallback({ error, resetErrorBoundary }) {
   // Call resetErrorBoundary() to reset the error boundary and retry the render.
-  
+
   return (
     <Container maxWidth="sm" sx={{ mt: 10 }}>
-      <Paper 
-        elevation={0} 
-        sx={{ 
-          p: 5, 
-          textAlign: 'center', 
-          borderRadius: 4, 
+      <Paper
+        elevation={0}
+        sx={{
+          p: 5,
+          textAlign: 'center',
+          borderRadius: 4,
           bgcolor: 'background.default',
           border: '1px solid',
           borderColor: 'divider',
@@ -24,21 +24,14 @@ function ErrorFallback({ error, resetErrorBoundary }) {
           Oops! Something went wrong.
         </Typography>
         <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-          {error.message || "An unexpected error occurred while rendering this page."}
+          {error.message || 'An unexpected error occurred while rendering this page.'}
         </Typography>
-        
+
         <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
-          <Button 
-            variant="outlined" 
-            onClick={() => window.location.href = '/'}
-          >
+          <Button variant="outlined" onClick={() => (window.location.href = '/')}>
             Go to Home
           </Button>
-          <Button 
-            variant="contained" 
-            color="primary"
-            onClick={resetErrorBoundary}
-          >
+          <Button variant="contained" color="primary" onClick={resetErrorBoundary}>
             Try Again
           </Button>
         </Box>
@@ -49,12 +42,12 @@ function ErrorFallback({ error, resetErrorBoundary }) {
 
 const logErrorToServices = (error, info) => {
   // Here, we could easily send the error to Sentry, Datadog or an API endpoint.
-  console.error("Caught by Error Boundary:", error, info);
+  console.error('Caught by Error Boundary:', error, info);
 };
 
 export default function GlobalErrorBoundary({ children }) {
   return (
-    <ErrorBoundary 
+    <ErrorBoundary
       FallbackComponent={ErrorFallback}
       onError={logErrorToServices}
       onReset={() => {

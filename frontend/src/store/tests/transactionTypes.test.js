@@ -3,7 +3,7 @@ import MockAdapter from 'axios-mock-adapter';
 import {
   addTransactionType,
   loadTransactionTypes,
-  selectTransactionTypes
+  selectTransactionTypes,
 } from '../transactionTypes';
 import configureStore from '../configureStore';
 
@@ -20,13 +20,13 @@ const transactionTypes = {
           lower: null,
           operator: null,
           upper: null,
-          value: 'SIM_BANKING'
-        }
-      ]
-    }
+          value: 'SIM_BANKING',
+        },
+      ],
+    },
   ],
   pageSize: null,
-  totalPages: null
+  totalPages: null,
 };
 
 describe('transactionTypesSlice', () => {
@@ -42,8 +42,8 @@ describe('transactionTypesSlice', () => {
 
   const createState = () => ({
     transactionTypes: {
-      list: []
-    }
+      list: [],
+    },
   });
 
   describe('loading transactionTypes', () => {

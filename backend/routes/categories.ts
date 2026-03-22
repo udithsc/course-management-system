@@ -11,7 +11,7 @@ const { routeCache } = require('../middleware/cache');
 
 const upload = createUpload('categories');
 
-// ─── List Categories (paginated) ────────────────────────
+// List Categories (paginated)
 router.get('/', [auth, routeCache(60)], async (req, res) => {
   const pageNo = parseInt(req.query.pageNo, 10) || 0;
   const pageSize = parseInt(req.query.pageSize, 10) || 100;
@@ -34,7 +34,7 @@ router.get('/', [auth, routeCache(60)], async (req, res) => {
   return paginated(res, { data, totalElements, pageNo, totalPages });
 });
 
-// ─── Get Single Category ────────────────────────────────
+// Get Single Category
 router.get('/:id', [auth], async (req, res) => {
   const category = await prisma.category.findUnique({
     where: { id: req.params.id },
@@ -43,7 +43,7 @@ router.get('/:id', [auth], async (req, res) => {
   return success(res, category);
 });
 
-// ─── Create Category ────────────────────────────────────
+// Create Category
 router.post(
   '/',
   [auth, admin, upload.single('file'), validate(validateModel)],
@@ -60,10 +60,10 @@ router.post(
     });
 
     return created(res, category);
-  }
+  },
 );
 
-// ─── Update Category ────────────────────────────────────
+// Update Category
 router.put(
   '/:id',
   [auth, admin, upload.single('file'), validate(validateModel)],
@@ -84,10 +84,10 @@ router.put(
     } catch (e) {
       throw new AppError('Category not found.', 404);
     }
-  }
+  },
 );
 
-// ─── Delete Category ────────────────────────────────────
+// Delete Category
 router.delete('/:id', [auth, admin], async (req, res) => {
   try {
     await prisma.category.delete({ where: { id: req.params.id } });

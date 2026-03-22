@@ -46,9 +46,7 @@ describe('POST /api/auth/login', () => {
   });
 
   it('returns 400 for missing email', async () => {
-    const res = await request(app)
-      .post('/api/auth/login')
-      .send({ password: 'admin123' });
+    const res = await request(app).post('/api/auth/login').send({ password: 'admin123' });
 
     expect(res.status).toBe(400);
   });
@@ -69,4 +67,3 @@ describe('POST /api/auth/login', () => {
     expect(res.status).toBe(401);
   });
 });
-

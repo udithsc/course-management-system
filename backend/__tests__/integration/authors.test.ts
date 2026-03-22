@@ -14,7 +14,9 @@ let seededAuthorId: string;
 beforeAll(async () => {
   const [aR, sR] = await Promise.all([
     request(app).post('/api/auth/login').send({ email: 'admin@test.com', password: 'admin123' }),
-    request(app).post('/api/auth/login').send({ email: 'student@test.com', password: 'student123' }),
+    request(app)
+      .post('/api/auth/login')
+      .send({ email: 'student@test.com', password: 'student123' }),
   ]);
   adminToken = aR.body.data.accessToken;
   studentToken = sR.body.data.accessToken;
@@ -34,10 +36,12 @@ describe('GET /api/authors', () => {
 
 describe('POST /api/authors', () => {
   it('allows admin to create author', async () => {
-    const res = await request(app)
-      .post('/api/authors')
-      .set('x-auth-token', adminToken)
-      .send({ name: 'Test Author', profession: 'Tester', email: 'tester@test.com', mobile: '123456789' });
+    const res = await request(app).post('/api/authors').set('x-auth-token', adminToken).send({
+      name: 'Test Author',
+      profession: 'Tester',
+      email: 'tester@test.com',
+      mobile: '123456789',
+    });
     expect(res.status).toBe(201);
     seededAuthorId = res.body.data.id;
   });
@@ -46,7 +50,11 @@ describe('POST /api/authors', () => {
     const res = await request(app)
       .post('/api/authors')
       .set('x-auth-token', adminToken)
-      .send({ name: `MinAuthor${Date.now()}`, profession: 'Tester', file: 'icon.png' });
+      .send({
+        name: `MinAuthor${Date.now()}`,
+        profession: 'Tester',
+        file: 'icon.png',
+      });
     expect(res.status).toBe(201);
   });
 
@@ -83,7 +91,12 @@ describe('PUT /api/authors/:id', () => {
     const res = await request(app)
       .put(`/api/authors/${seededAuthorId}`)
       .set('x-auth-token', adminToken)
-      .send({ name: 'Updated Author Name', profession: 'Senior Tester', email: 'tester@test.com', mobile: '123456789' });
+      .send({
+        name: 'Updated Author Name',
+        profession: 'Senior Tester',
+        email: 'tester@test.com',
+        mobile: '123456789',
+      });
     expect(res.status).toBe(200);
     expect(res.body.data.name).toBe('Updated Author Name');
   });

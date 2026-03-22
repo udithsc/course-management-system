@@ -14,7 +14,9 @@ let seededCategoryId: string;
 beforeAll(async () => {
   const [aR, sR] = await Promise.all([
     request(app).post('/api/auth/login').send({ email: 'admin@test.com', password: 'admin123' }),
-    request(app).post('/api/auth/login').send({ email: 'student@test.com', password: 'student123' }),
+    request(app)
+      .post('/api/auth/login')
+      .send({ email: 'student@test.com', password: 'student123' }),
   ]);
   adminToken = aR.body.data.accessToken;
   studentToken = sR.body.data.accessToken;
@@ -46,7 +48,10 @@ describe('POST /api/categories', () => {
     const res = await request(app)
       .post('/api/categories')
       .set('x-auth-token', adminToken)
-      .send({ name: `IC${Math.floor(Math.random() * 99999)}`, file: 'icon.png' });
+      .send({
+        name: `IC${Math.floor(Math.random() * 99999)}`,
+        file: 'icon.png',
+      });
     expect(res.status).toBe(201);
   });
 

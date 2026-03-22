@@ -18,7 +18,7 @@ const {
 } = require('../models/user.model');
 const prisma = require('../db');
 
-// ─── Login ──────────────────────────────────────────────
+// Login
 router.post('/login', validate(validateLogin), async (req, res) => {
   const user = await prisma.user.findUnique({
     where: { email: req.body.email },
@@ -41,7 +41,7 @@ router.post('/login', validate(validateLogin), async (req, res) => {
   return success(res, { accessToken, refreshToken });
 });
 
-// ─── Signup ─────────────────────────────────────────────
+// Signup
 router.post('/signup', validate(validateModel), async (req, res) => {
   const { username, email, firstName, lastName, mobile, password } = req.body;
 
@@ -76,7 +76,7 @@ router.post('/signup', validate(validateModel), async (req, res) => {
   // Send verification email (non-blocking — don't crash if email fails)
   try {
     const transporter = nodemailer.createTransport(
-      nodemailerSendgrid({ apiKey: process.env.SENDGRID_API_KEY })
+      nodemailerSendgrid({ apiKey: process.env.SENDGRID_API_KEY }),
     );
 
     await transporter.sendMail({
@@ -89,12 +89,16 @@ router.post('/signup', validate(validateModel), async (req, res) => {
     logger.warn(`Failed to send verification email to ${user.email}: ${emailErr.message}`);
   }
 
-  return success(res, {
-    message: `A verification email has been sent to ${user.email}.`,
-  }, 201);
+  return success(
+    res,
+    {
+      message: `A verification email has been sent to ${user.email}.`,
+    },
+    201,
+  );
 });
 
-// ─── Email Confirmation ─────────────────────────────────
+// Email Confirmation
 router.get('/confirmation/:email/:token', async (req, res) => {
   const token = await prisma.token.findFirst({
     where: { token: req.params.token },
@@ -108,7 +112,9 @@ router.get('/confirmation/:email/:token', async (req, res) => {
   });
   if (!user) throw new AppError('User not found.', 404);
   if (user.isVerified) {
-    return success(res, { message: 'Account is already verified. Please login.' });
+    return success(res, {
+      message: 'Account is already verified. Please login.',
+    });
   }
 
   await prisma.user.update({
@@ -116,10 +122,12 @@ router.get('/confirmation/:email/:token', async (req, res) => {
     data: { isVerified: true },
   });
 
-  return success(res, { message: 'Your account has been successfully verified.' });
+  return success(res, {
+    message: 'Your account has been successfully verified.',
+  });
 });
 
-// ─── Resend Verification Link ───────────────────────────
+// Resend Verification Link
 router.get('/resendLink/:email', async (req, res) => {
   const user = await prisma.user.findFirst({
     where: { email: req.params.email },
@@ -138,7 +146,7 @@ router.get('/resendLink/:email', async (req, res) => {
 
   try {
     const transporter = nodemailer.createTransport(
-      nodemailerSendgrid({ apiKey: process.env.SENDGRID_API_KEY })
+      nodemailerSendgrid({ apiKey: process.env.SENDGRID_API_KEY }),
     );
 
     await transporter.sendMail({
@@ -156,7 +164,7 @@ router.get('/resendLink/:email', async (req, res) => {
   });
 });
 
-// ─── Forgot Password (sends reset token instead of changing password) ───
+// Forgot Password (sends reset token instead of changing password)
 router.post('/forgotPassword', async (req, res) => {
   const { email } = req.body;
   if (!email) throw new AppError('Email is required.', 400);
@@ -164,7 +172,9 @@ router.post('/forgotPassword', async (req, res) => {
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) {
     // Don't reveal whether user exists — return same response
-    return success(res, { message: 'If that email is registered, a reset code has been sent.' });
+    return success(res, {
+      message: 'If that email is registered, a reset code has been sent.',
+    });
   }
 
   // Generate a 6-character reset code
@@ -181,7 +191,7 @@ router.post('/forgotPassword', async (req, res) => {
 
   try {
     const transporter = nodemailer.createTransport(
-      nodemailerSendgrid({ apiKey: process.env.SENDGRID_API_KEY })
+      nodemailerSendgrid({ apiKey: process.env.SENDGRID_API_KEY }),
     );
 
     await transporter.sendMail({
@@ -194,10 +204,12 @@ router.post('/forgotPassword', async (req, res) => {
     logger.warn(`Failed to send reset email: ${emailErr.message}`);
   }
 
-  return success(res, { message: 'If that email is registered, a reset code has been sent.' });
+  return success(res, {
+    message: 'If that email is registered, a reset code has been sent.',
+  });
 });
 
-// ─── Change Password (authenticated) ───────────────────
+// Change Password (authenticated)
 router.post('/changePassword', [auth, validate(validateChangePassword)], async (req, res) => {
   const user = await prisma.user.findUnique({ where: { id: req.user.id } });
   if (!user) throw new AppError('User not found.', 404);
@@ -217,7 +229,7 @@ router.post('/changePassword', [auth, validate(validateChangePassword)], async (
   return success(res, { message: 'Password changed successfully.' });
 });
 
-// ─── Refresh Token ──────────────────────────────────────
+// Refresh Token
 router.get('/tokens/:token', async (req, res) => {
   const token = req.params.token;
   if (!token) throw new AppError('Refresh token is required.', 400);

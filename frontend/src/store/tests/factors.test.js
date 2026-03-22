@@ -16,13 +16,13 @@ const factors = {
           lower: null,
           operator: null,
           upper: null,
-          value: 'SIM_BANKING'
-        }
-      ]
-    }
+          value: 'SIM_BANKING',
+        },
+      ],
+    },
   ],
   pageSize: null,
-  totalPages: null
+  totalPages: null,
 };
 
 describe('factorsSlice', () => {
@@ -38,8 +38,8 @@ describe('factorsSlice', () => {
 
   const createState = () => ({
     factors: {
-      list: []
-    }
+      list: [],
+    },
   });
 
   describe('loading factors', () => {

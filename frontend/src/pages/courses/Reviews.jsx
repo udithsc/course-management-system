@@ -29,9 +29,9 @@ function Reviews({ recordForEdit }) {
               field: 'review',
               headerName: 'review',
               width: 300,
-              renderCell: (params) => <Rating readOnly value={params.value} />
+              renderCell: (params) => <Rating readOnly value={params.value} />,
             },
-            { field: 'comment', headerName: 'comment', width: 300 }
+            { field: 'comment', headerName: 'comment', width: 300 },
           ]}
           pageSize={5}
           rowsPerPageOptions={[5]}

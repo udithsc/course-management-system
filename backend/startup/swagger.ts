@@ -8,15 +8,15 @@ module.exports = (app) => {
       info: {
         title: 'Library API',
         version: '1.0.0',
-        description: 'A simple Express Library API'
+        description: 'A simple Express Library API',
       },
       servers: [
         {
-          url: process.env.BACKEND_URL || 'http://localhost:3001'
-        }
-      ]
+          url: process.env.BACKEND_URL || 'http://localhost:3001',
+        },
+      ],
     },
-    apis: ['./routes/*.ts']
+    apis: ['./routes/*.ts'],
   };
 
   const specs = swaggerJsDoc(options);
