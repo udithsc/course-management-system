@@ -7,6 +7,7 @@ import { ToastContainer } from 'react-toastify';
 import App from './App';
 import { ColorModeProvider } from './ColorModeProvider';
 import configureStore from './store/configureStore';
+import GlobalErrorBoundary from './components/layout/GlobalErrorBoundary';
 import './index.css';
 import 'react-toastify/dist/ReactToastify.css';
 import '@fontsource/inter';
@@ -22,7 +23,9 @@ root.render(
       <BrowserRouter>
         <ColorModeProvider>
           <CssBaseline />
-          <App />
+          <GlobalErrorBoundary>
+            <App />
+          </GlobalErrorBoundary>
           <ToastContainer />
         </ColorModeProvider>
       </BrowserRouter>
