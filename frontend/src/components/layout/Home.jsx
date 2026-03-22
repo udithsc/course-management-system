@@ -186,7 +186,7 @@ function KpiCard({ title, value, icon, color, trend, trendLabel, spark, delay })
         elevation={0}
         sx={{
           p: 3,
-          borderRadius: 4,
+          borderRadius: 2,
           border: '1px solid',
           borderColor: 'divider',
           bgcolor: 'background.paper',
@@ -220,7 +220,7 @@ function KpiCard({ title, value, icon, color, trend, trendLabel, spark, delay })
             {icon}
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5,
-            px: 1, py: 0.35, borderRadius: 2,
+            px: 2, py: 0.35, borderRadius: 1.5,
             bgcolor: pos ? 'rgba(16,185,129,0.1)' : 'rgba(244,63,94,0.1)',
             color: pos ? '#10B981' : '#F43F5E',
             fontSize: '0.72rem', fontWeight: 700,
@@ -340,7 +340,7 @@ export default function Home() {
 
   const isDark = theme.palette.mode === 'dark';
   const cardSx = {
-    p: 3.5, borderRadius: 4, border: '1px solid', borderColor: 'divider',
+    p: 3.5, borderRadius: 2, border: '1px solid', borderColor: 'divider',
     bgcolor: 'background.paper', position: 'relative', overflow: 'hidden',
   };
 
@@ -361,7 +361,7 @@ export default function Home() {
         transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
         sx={{
           mb: 4, p: { xs: 3, md: 4.5 },
-          borderRadius: 5,
+            borderRadius: 2,
           background: isDark
             ? 'linear-gradient(135deg, #1E1B4B 0%, #1A2035 40%, #064E3B 100%)'
             : 'linear-gradient(135deg, #4F46E5 0%, #6366F1 40%, #10B981 100%)',
@@ -446,7 +446,7 @@ export default function Home() {
               { label: 'Instructors', value: authors.length, icon: <PersonOutlinedIcon /> },
             ].map((s) => (
               <Box key={s.label} sx={{
-                px: 2, py: 1.5, borderRadius: 3,
+                px: 2, py: 1.5, borderRadius: 2,
                 bgcolor: 'rgba(255,255,255,0.12)',
                 border: '1px solid rgba(255,255,255,0.18)',
                 backdropFilter: 'blur(8px)',
@@ -560,7 +560,7 @@ export default function Home() {
 
         {/* Recent Courses Table */}
         <Grid item xs={12} xl={8}>
-          <Paper {...fadUp(0.35)} elevation={0} sx={{ borderRadius: 4, border: '1px solid', borderColor: 'divider', bgcolor: 'background.paper', overflow: 'hidden' }}>
+          <Paper {...fadUp(0.35)} elevation={0} sx={{ borderRadius: 2, border: '1px solid', borderColor: 'divider', bgcolor: 'background.paper', overflow: 'hidden' }}>
             <Box sx={{ px: 3.5, pt: 3, pb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Box>
                 <Typography variant="h6" fontWeight={700}>Recent Courses</Typography>
@@ -601,7 +601,7 @@ export default function Home() {
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                             <Avatar
                               src={course.image ? `${import.meta.env.VITE_API_URL}/files/${course.image}` : undefined}
-                              sx={{ width: 40, height: 40, borderRadius: 2.5, bgcolor: `${ACCENT[i % ACCENT.length]}22`, color: ACCENT[i % ACCENT.length], fontWeight: 800, fontSize: '0.85rem', border: `1px solid ${ACCENT[i % ACCENT.length]}33` }}
+                              sx={{ width: 40, height: 40, borderRadius: 2, bgcolor: `${ACCENT[i % ACCENT.length]}22`, color: ACCENT[i % ACCENT.length], fontWeight: 800, fontSize: '0.85rem', border: `1px solid ${ACCENT[i % ACCENT.length]}33` }}
                             >
                               {course.name?.charAt(0).toUpperCase()}
                             </Avatar>
@@ -684,7 +684,7 @@ export default function Home() {
                 {systemStats.map((s) => (
                   <Box key={s.label} sx={{
                     display: 'flex', alignItems: 'center', gap: 1.5,
-                    p: 1.5, borderRadius: 2.5,
+                    p: 1.5, borderRadius: 2,
                     bgcolor: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(15,23,42,0.025)',
                     border: '1px solid', borderColor: 'divider',
                   }}>
@@ -724,7 +724,7 @@ export default function Home() {
                   { label: 'Completion', val: '85%' },
                   { label: 'Satisfaction', val: '4.8★' },
                 ].map((s) => (
-                  <Box key={s.label} sx={{ flex: 1, textAlign: 'center', bgcolor: 'rgba(255,255,255,0.1)', py: 1.5, borderRadius: 2.5, border: '1px solid rgba(255,255,255,0.15)' }}>
+                  <Box key={s.label} sx={{ flex: 1, textAlign: 'center', bgcolor: 'rgba(255,255,255,0.1)', py: 1.5, borderRadius: 1.5, border: '1px solid rgba(255,255,255,0.15)' }}>
                     <Typography variant="subtitle1" fontWeight={800}>{s.val}</Typography>
                     <Typography variant="caption" sx={{ opacity: 0.75 }}>{s.label}</Typography>
                   </Box>

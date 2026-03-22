@@ -32,7 +32,7 @@ export default function Popup({ title, subtitle, icon, children, openPopup, setO
             exit:       { opacity: 0, scale: 0.92, y: 24 },
             transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] },
             sx: {
-              borderRadius: '20px',
+              borderRadius: '12px',
               border: '1px solid',
               borderColor: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(15,23,42,0.08)',
               bgcolor: 'background.paper',

@@ -33,7 +33,7 @@ export default function ConfirmDialog({ confirmDialog, setConfirmDialog }) {
             exit:       { opacity: 0, scale: 0.88, y: 16 },
             transition: { duration: 0.26, ease: [0.22, 1, 0.36, 1] },
             sx: {
-              borderRadius: '20px',
+              borderRadius: '12px',
               border: '1px solid',
               borderColor: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(15,23,42,0.08)',
               bgcolor: 'background.paper',
@@ -88,7 +88,7 @@ export default function ConfirmDialog({ confirmDialog, setConfirmDialog }) {
               variant="outlined"
               onClick={handleClose}
               sx={{
-                flex: 1, borderRadius: 2.5, py: 1.1, fontWeight: 700,
+                flex: 1, borderRadius: 2, py: 1.1, fontWeight: 700,
                 borderColor: 'divider',
                 color: 'text.secondary',
                 '&:hover': { borderColor: 'text.secondary', bgcolor: 'transparent' },
@@ -104,7 +104,7 @@ export default function ConfirmDialog({ confirmDialog, setConfirmDialog }) {
                 handleClose();
               }}
               sx={{
-                flex: 1, borderRadius: 2.5, py: 1.1, fontWeight: 700,
+                flex: 1, borderRadius: 2, py: 1.1, fontWeight: 700,
                 background: 'linear-gradient(135deg, #F43F5E, #E11D48)',
                 boxShadow: '0 4px 14px rgba(244,63,94,0.4)',
                 '&:hover': { boxShadow: '0 6px 20px rgba(244,63,94,0.5)' },
