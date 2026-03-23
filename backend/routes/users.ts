@@ -1,12 +1,13 @@
-const router = require('express').Router();
-const validate = require('../middleware/validate');
-const auth = require('../middleware/auth');
-const admin = require('../middleware/admin');
-const AppError = require('../utils/AppError');
-const { success, created, paginated, message } = require('../utils/response');
-const { validateModel } = require('../models/user.model');
-const { createUpload, getFileUrl } = require('../utils/upload');
-const prisma = require('../db');
+import express from 'express';
+const router = express.Router();
+import validate from '../middleware/validate';
+import auth from '../middleware/auth';
+import admin from '../middleware/admin';
+import AppError from '../utils/AppError';
+import { success, created, paginated, message } from '../utils/response';
+import { validateModel } from '../models/user.model';
+import { createUpload, getFileUrl } from '../utils/upload';
+import prisma from '../db';
 
 const upload = createUpload('users');
 
@@ -28,32 +29,20 @@ const USER_SELECT = {
   updatedAt: true,
 };
 
+import { paginate } from '../utils/pagination';
+
 // List Users (paginated)
-router.get('/', [auth], async (req, res) => {
-  const pageNo = parseInt(req.query.pageNo, 10) || 0;
-  const pageSize = parseInt(req.query.pageSize, 10) || 10;
-  const name = req.query.name || '';
-
-  const where = {
-    firstName: { contains: name, mode: 'insensitive' },
-  };
-
-  const totalElements = await prisma.user.count({ where });
-  const totalPages = Math.ceil(totalElements / pageSize);
-
-  const data = await prisma.user.findMany({
-    where,
-    skip: pageNo * pageSize,
-    take: pageSize,
-    orderBy: { firstName: 'asc' },
+router.get('/', [auth], async (req: any, res: any) => {
+  const result = await paginate(prisma.user, req.query, {
+    searchField: 'firstName',
     select: USER_SELECT,
   });
-
-  return paginated(res, { data, totalElements, pageNo, totalPages });
+  return paginated(res, result);
 });
 
+
 // Create User
-router.post('/', [auth, admin, validate(validateModel)], async (req, res) => {
+router.post('/', [auth, admin, validate(validateModel)], async (req: any, res: any) => {
   const { username, email, firstName, lastName, mobile } = req.body;
 
   const user = await prisma.user.create({
@@ -71,7 +60,7 @@ router.post('/', [auth, admin, validate(validateModel)], async (req, res) => {
 });
 
 // Update User
-router.put('/:id', [auth, admin, validate(validateModel)], async (req, res) => {
+router.put('/:id', [auth, admin, validate(validateModel)], async (req: any, res: any) => {
   // Never allow password to be set through this endpoint
   const { password, ...updateData } = req.body;
 
@@ -88,7 +77,7 @@ router.put('/:id', [auth, admin, validate(validateModel)], async (req, res) => {
 });
 
 // Delete User
-router.delete('/:id', [auth, admin], async (req, res) => {
+router.delete('/:id', [auth, admin], async (req: any, res: any) => {
   try {
     await prisma.user.delete({ where: { id: req.params.id } });
     return message(res, 'User deleted successfully.');
@@ -98,7 +87,7 @@ router.delete('/:id', [auth, admin], async (req, res) => {
 });
 
 // Change User Role
-router.patch('/:id/role', [auth, admin], async (req, res) => {
+router.patch('/:id/role', [auth, admin], async (req: any, res: any) => {
   const { role } = req.body;
   const VALID_ROLES = ['ADMIN', 'INSTRUCTOR', 'STUDENT'];
   if (!VALID_ROLES.includes(role)) {
@@ -118,7 +107,7 @@ router.patch('/:id/role', [auth, admin], async (req, res) => {
 });
 
 // Get Current User
-router.get('/me', [auth], async (req, res) => {
+router.get('/me', [auth], async (req: any, res: any) => {
   const user = await prisma.user.findUnique({
     where: { id: req.user.id },
     select: { ...USER_SELECT, subscriptions: true },
@@ -128,7 +117,7 @@ router.get('/me', [auth], async (req, res) => {
 });
 
 // Close Account
-router.delete('/closeAccount', [auth], async (req, res) => {
+router.delete('/closeAccount', [auth], async (req: any, res: any) => {
   try {
     await prisma.user.delete({ where: { id: req.user.id } });
     return message(res, 'Account closed successfully.');
@@ -138,7 +127,7 @@ router.delete('/closeAccount', [auth], async (req, res) => {
 });
 
 // Dashboard Data
-router.get('/dashboard', [auth], async (req, res) => {
+router.get('/dashboard', [auth], async (req: any, res: any) => {
   const user = await prisma.user.findUnique({
     where: { id: req.user.id },
     select: { ...USER_SELECT, subscriptions: true },
@@ -154,10 +143,10 @@ router.get('/dashboard', [auth], async (req, res) => {
   });
 
   const subscriptions = user.subscriptions
-    .map((sub) => {
-      const subCourse = courses.find((o) => o.id === sub.courseId);
+    .map((sub: any) => {
+      const subCourse = courses.find((o: any) => o.id === sub.courseId);
       if (!subCourse) return null;
-      const subCategory = categories.find((o) => o.id === subCourse.categoryId);
+      const subCategory = categories.find((o: any) => o.id === subCourse.categoryId);
       const percentage =
         subCourse.lessons.length > 0
           ? (sub.watchedVideoId.length / subCourse.lessons.length) * 100
@@ -182,7 +171,7 @@ router.get('/dashboard', [auth], async (req, res) => {
 });
 
 // Subscribe to Course
-router.post('/subscribe', [auth], async (req, res) => {
+router.post('/subscribe', [auth], async (req: any, res: any) => {
   const courseId = req.body.course || req.body.id;
   if (!courseId) throw new AppError('Course ID is required.', 400);
 
@@ -205,7 +194,7 @@ router.post('/subscribe', [auth], async (req, res) => {
 });
 
 // Unsubscribe from Course
-router.post('/unsubscribe', [auth], async (req, res) => {
+router.post('/unsubscribe', [auth], async (req: any, res: any) => {
   const courseId = req.body.id;
   if (!courseId) throw new AppError('Course ID is required.', 400);
 
@@ -225,7 +214,7 @@ router.post('/unsubscribe', [auth], async (req, res) => {
 });
 
 // Bookmark Course
-router.post('/bookmark', [auth], async (req, res) => {
+router.post('/bookmark', [auth], async (req: any, res: any) => {
   const { id } = req.body;
   if (!id) throw new AppError('Course ID is required.', 400);
 
@@ -243,20 +232,20 @@ router.post('/bookmark', [auth], async (req, res) => {
 });
 
 // Remove Bookmark
-router.delete('/bookmark/:id', [auth], async (req, res) => {
+router.delete('/bookmark/:id', [auth], async (req: any, res: any) => {
   const user = await prisma.user.findUnique({ where: { id: req.user.id } });
   if (!user) throw new AppError('User not found.', 404);
 
   await prisma.user.update({
     where: { id: req.user.id },
-    data: { bookmarks: user.bookmarks.filter((b) => b !== req.params.id) },
+    data: { bookmarks: user.bookmarks.filter((b: string) => b !== req.params.id) },
   });
 
   return message(res, 'Bookmark removed.');
 });
 
 // Mark Video as Watched
-router.post('/watch', [auth], async (req, res) => {
+router.post('/watch', [auth], async (req: any, res: any) => {
   const { id, video } = req.body;
   if (!id || !video) throw new AppError('Course ID and video ID are required.', 400);
 
@@ -276,7 +265,7 @@ router.post('/watch', [auth], async (req, res) => {
 });
 
 // Upload Profile Image
-router.post('/image', [auth, upload.single('file')], async (req, res) => {
+router.post('/image', [auth, upload.single('file')], async (req: any, res: any) => {
   const result = await prisma.user.update({
     where: { id: req.user.id },
     data: {
@@ -288,7 +277,7 @@ router.post('/image', [auth, upload.single('file')], async (req, res) => {
 });
 
 // Remove Profile Image
-router.delete('/image', [auth], async (req, res) => {
+router.delete('/image', [auth], async (req: any, res: any) => {
   const result = await prisma.user.update({
     where: { id: req.user.id },
     data: { image: '' },
@@ -297,4 +286,4 @@ router.delete('/image', [auth], async (req, res) => {
   return success(res, result);
 });
 
-module.exports = router;
+export default router;

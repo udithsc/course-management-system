@@ -103,7 +103,7 @@ export const selectNotification = (state) => state.authors.notification;
 export const selectTotalElements = (state) => state.authors.totalElements;
 
 export const loadAuthors =
-  (page, rowsPerPage, searchText = '') =>
+  (page?: number, rowsPerPage?: number, searchText = '') =>
   (dispatch, getState) => {
     const { lastFetch } = getState().authors;
     const diffInSeconds = dayjs().diff(dayjs(lastFetch), 'seconds');
@@ -125,7 +125,6 @@ export const addAuthor = (data) =>
     method: 'post',
     data,
     onSuccess: authorAdded.type,
-    onSuccessOther: loadAuthors,
   });
 
 export const updateAuthor = (data) =>
@@ -134,7 +133,6 @@ export const updateAuthor = (data) =>
     method: 'put',
     data,
     onSuccess: authorUpdated.type,
-    onSuccessOther: loadAuthors,
   });
 
 export const deleteAuthor = (id) =>
@@ -143,5 +141,4 @@ export const deleteAuthor = (id) =>
     method: 'delete',
     data: id,
     onSuccess: authorDeleted.type,
-    onSuccessOther: loadAuthors,
   });

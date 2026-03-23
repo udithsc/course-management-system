@@ -1,15 +1,16 @@
-const Joi = require('joi');
+import { z } from 'zod';
+import { validateSchema } from '../utils/validation';
 
-function validateAuthor(author) {
-  const schema = {
-    name: Joi.string().min(3).max(50).required(),
-    profession: Joi.string().min(3).max(50).required(),
-    image: Joi.string(),
-    mobile: Joi.string(),
-    email: Joi.string().min(5).max(255).email(),
-  };
+export function validateModel(author: any) {
+  const schema = z
+    .object({
+      name: z.string().min(3).max(50),
+      profession: z.string().min(3).max(50),
+      image: z.string().optional().nullable(),
+      mobile: z.string().optional().nullable(),
+      email: z.string().min(5).max(255).email().optional().nullable(),
+    })
+    .passthrough();
 
-  return Joi.object().keys(schema).unknown(true).validate(author);
+  return validateSchema(schema, author);
 }
-
-exports.validateModel = validateAuthor;

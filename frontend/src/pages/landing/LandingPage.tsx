@@ -881,7 +881,6 @@ const LandingPage = () => {
     >
       {/* NAVBAR */}
       <MotionBox
-        component="nav"
         style={{ backgroundColor: headerBg, backdropFilter: headerBlur }}
         sx={{
           position: 'fixed',
@@ -1686,7 +1685,7 @@ const LandingPage = () => {
       >
         <Container maxWidth="lg">
           <Grid container spacing={6}>
-            <Grid item xs={12} md={5}>
+            <Grid size={{ xs: 12, md: 5 }}>
               <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 3 }}>
                 <Box
                   sx={{
@@ -1735,7 +1734,7 @@ const LandingPage = () => {
                 ))}
               </Stack>
             </Grid>
-            <Grid item xs={12} md={7}>
+            <Grid size={{ xs: 12, md: 7 }}>
               <Stack
                 direction="row"
                 spacing={{ xs: 6, md: 10 }}

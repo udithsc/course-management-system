@@ -1,22 +1,13 @@
-/**
- * Shared multer upload configuration.
- * Eliminates repeated multer setup across every route file.
- */
-const multer = require('multer');
-const fs = require('fs');
-const { dirname } = require('path');
+import multer from 'multer';
+import fs from 'fs';
+import path from 'path';
 
-const appDir = dirname(require.main.filename);
+export const appDir = process.cwd();
 
-/**
- * Creates a multer upload instance for the given subdirectory.
- * @param {string} subDir - The subdirectory under data/uploads/ (e.g., 'courses', 'authors')
- * @returns {multer.Multer} Configured multer instance
- */
-const createUpload = (subDir) => {
+export const createUpload = (subDir: string) => {
   const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-      const dir = `${appDir}/data/uploads/${subDir}`;
+      const dir = path.join(appDir, 'uploads', subDir);
       if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
       cb(null, dir);
     },
@@ -28,16 +19,7 @@ const createUpload = (subDir) => {
   return multer({ storage });
 };
 
-/**
- * Builds a full URL to an uploaded file.
- * @param {object} req - Express request object
- * @param {string} subDir - Upload subdirectory
- * @param {string} filename - The uploaded filename
- * @returns {string} Full URL
- */
-const getFileUrl = (req, subDir, filename) => {
+export const getFileUrl = (req: any, subDir: string, filename: string) => {
   const protocol = req.protocol || 'http';
   return `${protocol}://${req.headers.host}/files/${subDir}/${filename}`;
 };
-
-module.exports = { createUpload, getFileUrl, appDir };

@@ -14,7 +14,7 @@ export default function useTable(records, headCells, totalRecords) {
   const pages = [5, 10, 15];
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(pages[page]);
-  const [order, setOrder] = useState();
+  const [order, setOrder] = useState<'asc' | 'desc' | undefined>(undefined);
   const [orderBy, setOrderBy] = useState();
 
   const handleChangePage = (event, newPage) => setPage(newPage);

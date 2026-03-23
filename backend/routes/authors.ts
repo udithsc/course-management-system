@@ -1,40 +1,27 @@
-const router = require('express').Router();
-const validate = require('../middleware/validate');
-const auth = require('../middleware/auth');
-const admin = require('../middleware/admin');
-const AppError = require('../utils/AppError');
-const { success, created, paginated, message } = require('../utils/response');
-const { validateModel } = require('../models/author.model');
-const { createUpload, getFileUrl } = require('../utils/upload');
-const prisma = require('../db');
+import express from 'express';
+const router = express.Router();
+import validate from '../middleware/validate';
+import auth from '../middleware/auth';
+import admin from '../middleware/admin';
+import AppError from '../utils/AppError';
+import { success, created, paginated, message } from '../utils/response';
+import { validateModel } from '../models/author.model';
+import { createUpload, getFileUrl } from '../utils/upload';
+import prisma from '../db';
 
 const upload = createUpload('authors');
 
+import { paginate } from '../utils/pagination';
+
 // List Authors (paginated)
-router.get('/', [auth], async (req, res) => {
-  const pageNo = parseInt(req.query.pageNo, 10) || 0;
-  const pageSize = parseInt(req.query.pageSize, 10) || 10;
-  const name = req.query.name || '';
-
-  const where = {
-    name: { contains: name, mode: 'insensitive' },
-  };
-
-  const totalElements = await prisma.author.count({ where });
-  const totalPages = Math.ceil(totalElements / pageSize);
-
-  const data = await prisma.author.findMany({
-    where,
-    skip: pageNo * pageSize,
-    take: pageSize,
-    orderBy: { name: 'asc' },
-  });
-
-  return paginated(res, { data, totalElements, pageNo, totalPages });
+router.get('/', [auth], async (req: any, res: any) => {
+  const result = await paginate(prisma.author, req.query);
+  return paginated(res, result);
 });
 
+
 // Get Single Author
-router.get('/:id', [auth], async (req, res) => {
+router.get('/:id', [auth], async (req: any, res: any) => {
   const author = await prisma.author.findUnique({
     where: { id: req.params.id },
   });
@@ -46,7 +33,7 @@ router.get('/:id', [auth], async (req, res) => {
 router.post(
   '/',
   [auth, admin, upload.single('file'), validate(validateModel)],
-  async (req, res) => {
+  async (req: any, res: any) => {
     const { name, profession, email, mobile } = req.body;
 
     const author = await prisma.author.create({
@@ -67,7 +54,7 @@ router.post(
 router.put(
   '/:id',
   [auth, admin, upload.single('file'), validate(validateModel)],
-  async (req, res) => {
+  async (req: any, res: any) => {
     const { name, profession, email, mobile } = req.body;
 
     try {
@@ -89,13 +76,19 @@ router.put(
 );
 
 // Delete Author
-router.delete('/:id', [auth, admin], async (req, res) => {
+router.delete('/:id', [auth, admin], async (req: any, res: any) => {
   try {
     await prisma.author.delete({ where: { id: req.params.id } });
     return message(res, 'Author deleted successfully.');
-  } catch (e) {
+  } catch (e: any) {
+    if (e.code === 'P2003') {
+      throw new AppError(
+        'Cannot delete author because they are assigned to existing courses.',
+        400,
+      );
+    }
     throw new AppError('Author not found.', 404);
   }
 });
 
-module.exports = router;
+export default router;

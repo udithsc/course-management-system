@@ -8,47 +8,53 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import * as Muicon from '@mui/icons-material';
 import configData from '../../data.json';
 
-const MainListItem = styled(ListItem, { shouldForwardProp: (p) => p !== 'open' })(
-  ({ theme, open }) => ({
-    '&.MuiListItem-root': {
-      borderRadius: '12px',
-      margin: open ? '6px 16px' : '8px 12px',
-      padding: open ? '12px 16px' : '14px 0',
-      transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-      justifyContent: open ? 'flex-start' : 'center',
-      width: 'auto',
-      position: 'relative',
-      overflow: 'hidden',
-      cursor: 'pointer',
-      color: theme.palette.mode === 'dark' ? '#D1D5DB' : '#475569',
-    },
+interface CustomListItemProps {
+  open?: boolean;
+  selected?: boolean;
+  onClick?: () => void;
+}
+
+const MainListItem = styled(ListItem, {
+  shouldForwardProp: (p) => p !== 'open',
+})<CustomListItemProps>(({ theme, open }) => ({
+  '&.MuiListItem-root': {
+    borderRadius: '12px',
+    margin: open ? '6px 16px' : '8px 12px',
+    padding: open ? '12px 16px' : '14px 0',
+    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+    justifyContent: open ? 'flex-start' : 'center',
+    width: 'auto',
+    position: 'relative',
+    overflow: 'hidden',
+    cursor: 'pointer',
+    color: theme.palette.mode === 'dark' ? '#D1D5DB' : '#475569',
+  },
+  '& .MuiListItemIcon-root': {
+    minWidth: open ? 40 : 'auto',
+    justifyContent: 'center',
+    color: theme.palette.mode === 'dark' ? '#9CA3AF' : '#64748B',
+    transition: 'all 0.2s ease-in-out',
+  },
+  '&.MuiListItem-root.Mui-selected': {
+    color: '#ffffff',
+    background: 'linear-gradient(135deg, #4F46E5 0%, #4338CA 100%)',
+    boxShadow: '0 6px 16px rgba(79, 70, 229, 0.35)',
     '& .MuiListItemIcon-root': {
-      minWidth: open ? 40 : 'auto',
-      justifyContent: 'center',
-      color: theme.palette.mode === 'dark' ? '#9CA3AF' : '#64748B',
-      transition: 'all 0.2s ease-in-out',
-    },
-    '&.MuiListItem-root.Mui-selected': {
       color: '#ffffff',
-      background: 'linear-gradient(135deg, #4F46E5 0%, #4338CA 100%)',
-      boxShadow: '0 6px 16px rgba(79, 70, 229, 0.35)',
-      '& .MuiListItemIcon-root': {
-        color: '#ffffff',
-        transform: open ? 'scale(1.1)' : 'scale(1.15)',
-      },
-      '&:hover': {
-        background: 'linear-gradient(135deg, #4338CA 0%, #3730A3 100%)',
-      }
+      transform: open ? 'scale(1.1)' : 'scale(1.15)',
     },
-    '&.MuiListItem-root:hover:not(.Mui-selected)': {
-      backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
-      color: theme.palette.mode === 'dark' ? '#ffffff' : '#0F172A',
-      '& .MuiListItemIcon-root': {
-        color: theme.palette.primary.main,
-      },
+    '&:hover': {
+      background: 'linear-gradient(135deg, #4338CA 0%, #3730A3 100%)',
     },
-  })
-);
+  },
+  '&.MuiListItem-root:hover:not(.Mui-selected)': {
+    backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
+    color: theme.palette.mode === 'dark' ? '#ffffff' : '#0F172A',
+    '& .MuiListItemIcon-root': {
+      color: theme.palette.primary.main,
+    },
+  },
+}));
 
 function ListItems({ open }) {
   const location = useLocation();
@@ -86,7 +92,7 @@ function ListItems({ open }) {
             }}
           >
             <ListItemIcon>{GenerateIcon(route.icon)}</ListItemIcon>
-            
+
             {open && (
               <ListItemText
                 primary={route.title}
@@ -99,14 +105,10 @@ function ListItems({ open }) {
                 sx={{ opacity: 1, transition: 'opacity 0.2s', m: 0 }}
               />
             )}
-            
+
             {open && route.subMenu.length > 0 && (
               <Box sx={{ display: 'flex', color: 'inherit', opacity: 0.7 }}>
-                {nestedMenuOpen ? (
-                  <ExpandLess fontSize="small" />
-                ) : (
-                  <ExpandMore fontSize="small" />
-                )}
+                {nestedMenuOpen ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
               </Box>
             )}
           </MainListItem>
@@ -119,7 +121,9 @@ function ListItems({ open }) {
               <Tooltip title={route.title} placement="right" arrow>
                 {itemContent}
               </Tooltip>
-            ) : itemContent}
+            ) : (
+              itemContent
+            )}
 
             {route.subMenu.length > 0 && (
               <Collapse in={nestedMenuOpen && open} timeout="auto" unmountOnExit>
@@ -158,28 +162,34 @@ function ListItems({ open }) {
                           width: 'auto',
                           cursor: 'pointer',
                           transition: 'all 0.2s',
-                          color: isSubSelected 
-                            ? 'primary.main' 
-                            : (theme) => theme.palette.mode === 'dark' ? '#9CA3AF' : '#64748B',
-                          background: isSubSelected 
-                            ? (theme) => theme.palette.mode === 'dark' ? 'rgba(99,102,241,0.1)' : 'rgba(99,102,241,0.06)' 
+                          color: isSubSelected
+                            ? 'primary.main'
+                            : (theme) => (theme.palette.mode === 'dark' ? '#9CA3AF' : '#64748B'),
+                          background: isSubSelected
+                            ? (theme) =>
+                                theme.palette.mode === 'dark'
+                                  ? 'rgba(99,102,241,0.1)'
+                                  : 'rgba(99,102,241,0.06)'
                             : 'transparent',
                           '&:hover': {
                             color: 'primary.main',
-                            background: (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)',
-                          }
+                            background: (theme) =>
+                              theme.palette.mode === 'dark'
+                                ? 'rgba(255,255,255,0.04)'
+                                : 'rgba(0,0,0,0.02)',
+                          },
                         }}
                       >
-                        <Box 
-                          sx={{ 
-                            width: 6, 
-                            height: 6, 
-                            borderRadius: '50%', 
+                        <Box
+                          sx={{
+                            width: 6,
+                            height: 6,
+                            borderRadius: '50%',
                             mr: 2,
                             bgcolor: isSubSelected ? 'primary.main' : 'divider',
                             transition: 'all 0.2s',
-                            boxShadow: isSubSelected ? '0 0 6px rgba(79, 70, 229, 0.4)' : 'none'
-                          }} 
+                            boxShadow: isSubSelected ? '0 0 6px rgba(79, 70, 229, 0.4)' : 'none',
+                          }}
                         />
                         <ListItemText
                           primary={subRoute.title}

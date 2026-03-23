@@ -1,6 +1,6 @@
-const AppError = require('../utils/AppError');
+import AppError from '../utils/AppError';
 
-module.exports = (req, res, next) => {
+export default (req: any, res: any, next: any) => {
   if (process.env.REQUIRES_AUTH === 'false') return next();
 
   if (!req.user.isAdmin) {

@@ -14,6 +14,7 @@ import ProtectedRoute from './protectedRoute';
 import CourseManager from './pages/courses/CourseManager';
 import CourseIndex from './pages/courses/CourseIndex';
 import Account from './pages/account/Account';
+import AuditLogs from './pages/admin/AuditLogs';
 import LandingPage from './pages/landing/LandingPage';
 import ExplorePage from './pages/explore/ExplorePage';
 import CourseDetail from './pages/explore/CourseDetail';
@@ -73,6 +74,7 @@ function App() {
             <Route index element={<Home />} />
             <Route path="users" element={<User />} />
             <Route path="account" element={<Account />} />
+            <Route path="audit-logs" element={<AuditLogs />} />
             <Route path="courses" element={<CourseIndex />}>
               <Route path="courses" element={<Course />} />
               <Route path="courses/:courseId" element={<CourseManager />} />
@@ -82,7 +84,7 @@ function App() {
           </Route>
         </Route>
 
-        <Route path="*" element={<RootRedirect />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
   );

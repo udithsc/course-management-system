@@ -1,12 +1,13 @@
-const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
-const sanitizeHtml = require('sanitize-html');
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+import sanitizeHtml from 'sanitize-html';
+import hpp from 'hpp';
 
 /**
  * Custom middleware to recursively clean strings in req.body, req.query, and req.params from XSS
  */
-const xssClean = (req, res, next) => {
-  const clean = (obj) => {
+const xssClean = (req: any, res: any, next: any) => {
+  const clean = (obj: any) => {
     for (let key in obj) {
       if (typeof obj[key] === 'string') {
         obj[key] = sanitizeHtml(obj[key], {
@@ -26,7 +27,7 @@ const xssClean = (req, res, next) => {
   next();
 };
 
-module.exports = (app) => {
+export default (app: any) => {
   // 1. Set Security HTTP Headers
   app.use(helmet());
 
@@ -34,7 +35,6 @@ module.exports = (app) => {
   app.use(xssClean);
 
   // 3. Prevent HTTP Parameter Pollution
-  const hpp = require('hpp');
   app.use(hpp());
 
   // 4. Rate Limiting (General API)

@@ -1,22 +1,34 @@
-const router = require('express').Router();
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const nodemailer = require('nodemailer');
-const nodemailerSendgrid = require('nodemailer-sendgrid');
-const crypto = require('crypto');
-const validate = require('../middleware/validate');
-const auth = require('../middleware/auth');
-const logger = require('../utils/logger');
-const AppError = require('../utils/AppError');
-const { success } = require('../utils/response');
-const {
+import express from 'express';
+const router = express.Router();
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
+import validate from '../middleware/validate';
+import auth from '../middleware/auth';
+import logger from '../utils/logger';
+import AppError from '../utils/AppError';
+import { success } from '../utils/response';
+import {
   validateModel,
   validateLogin,
   validateChangePassword,
   generateAccessToken,
   generateRefreshToken,
-} = require('../models/user.model');
-const prisma = require('../db');
+} from '../models/user.model';
+import { sendVerificationEmail, sendPasswordResetEmail } from '../utils/email';
+import prisma from '../db';
+
+/**
+ * Helper to create a verification token.
+ */
+async function createVerificationToken(userId: string) {
+  return await prisma.token.create({
+    data: {
+      userId,
+      token: crypto.randomBytes(32).toString('hex'),
+    },
+  });
+}
 
 // Login
 router.post('/login', validate(validateLogin), async (req, res) => {
@@ -66,28 +78,10 @@ router.post('/signup', validate(validateModel), async (req, res) => {
     },
   });
 
-  const tokenRecord = await prisma.token.create({
-    data: {
-      userId: user.id,
-      token: crypto.randomBytes(32).toString('hex'),
-    },
-  });
+  const tokenRecord = await createVerificationToken(user.id);
 
-  // Send verification email (non-blocking — don't crash if email fails)
-  try {
-    const transporter = nodemailer.createTransport(
-      nodemailerSendgrid({ apiKey: process.env.SENDGRID_API_KEY }),
-    );
-
-    await transporter.sendMail({
-      from: 'no-reply@udith.cc',
-      to: user.email,
-      subject: 'Account Verification',
-      text: `Hello ${user.username},\n\nPlease verify your account by clicking the link:\nhttp://${req.headers.host}/api/auth/confirmation/${user.email}/${tokenRecord.token}\n\nThank You!`,
-    });
-  } catch (emailErr) {
-    logger.warn(`Failed to send verification email to ${user.email}: ${emailErr.message}`);
-  }
+  // Send verification email
+  await sendVerificationEmail(user, tokenRecord.token, req.headers.host!);
 
   return success(
     res,
@@ -97,6 +91,7 @@ router.post('/signup', validate(validateModel), async (req, res) => {
     201,
   );
 });
+
 
 // Email Confirmation
 router.get('/confirmation/:email/:token', async (req, res) => {
@@ -137,32 +132,15 @@ router.get('/resendLink/:email', async (req, res) => {
     throw new AppError('Account is already verified. Please login.', 400);
   }
 
-  const tokenRecord = await prisma.token.create({
-    data: {
-      userId: user.id,
-      token: crypto.randomBytes(32).toString('hex'),
-    },
-  });
+  const tokenRecord = await createVerificationToken(user.id);
 
-  try {
-    const transporter = nodemailer.createTransport(
-      nodemailerSendgrid({ apiKey: process.env.SENDGRID_API_KEY }),
-    );
-
-    await transporter.sendMail({
-      from: 'no-reply@udith.cc',
-      to: user.email,
-      subject: 'Account Verification',
-      text: `Hello ${user.username},\n\nPlease verify your account by clicking the link:\nhttp://${req.headers.host}/api/auth/confirmation/${user.email}/${tokenRecord.token}\n\nThank You!`,
-    });
-  } catch (emailErr) {
-    logger.warn(`Failed to send verification email: ${emailErr.message}`);
-  }
+  await sendVerificationEmail(user, tokenRecord.token, req.headers.host!);
 
   return success(res, {
     message: `A verification email has been sent to ${user.email}.`,
   });
 });
+
 
 // Forgot Password (sends reset token instead of changing password)
 router.post('/forgotPassword', async (req, res) => {
@@ -189,25 +167,13 @@ router.post('/forgotPassword', async (req, res) => {
     },
   });
 
-  try {
-    const transporter = nodemailer.createTransport(
-      nodemailerSendgrid({ apiKey: process.env.SENDGRID_API_KEY }),
-    );
-
-    await transporter.sendMail({
-      from: 'no-reply@udith.cc',
-      to: user.email,
-      subject: 'Password Reset Code',
-      text: `Hello ${user.username},\n\nYour password reset code is: ${resetCode}\n\nThis code will expire in 24 hours.\n\nThank You!`,
-    });
-  } catch (emailErr) {
-    logger.warn(`Failed to send reset email: ${emailErr.message}`);
-  }
+  await sendPasswordResetEmail(user, resetCode);
 
   return success(res, {
     message: 'If that email is registered, a reset code has been sent.',
   });
 });
+
 
 // Change Password (authenticated)
 router.post('/changePassword', [auth, validate(validateChangePassword)], async (req, res) => {
@@ -254,4 +220,4 @@ router.get('/tokens/:token', async (req, res) => {
   return success(res, { accessToken, refreshToken });
 });
 
-module.exports = router;
+export default router;

@@ -4,7 +4,7 @@ import { Box, Grid } from '@mui/material';
 
 function Subscribers({ recordForEdit }) {
   return (
-    <Grid container xs={12} md={6} sx={{ height: 370 }}>
+    <Grid container sx={{ height: 370 }} size={{ xs: 12, md: 6 }}>
       <DataGrid
         rows={recordForEdit.tokens}
         columns={[
@@ -12,8 +12,8 @@ function Subscribers({ recordForEdit }) {
           { field: 'token', headerName: 'Token', width: 200 },
           { field: 'user', headerName: 'User', width: 200 },
         ]}
-        pageSize={5}
-        rowsPerPageOptions={[5]}
+        initialState={{ pagination: { paginationModel: { pageSize: 5 } } }}
+        pageSizeOptions={[5]}
       />
     </Grid>
   );

@@ -19,7 +19,6 @@ import PropTypes from 'prop-types';
 import AddIcon from '@mui/icons-material/Add';
 import { red } from '@mui/material/colors';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { Form } from '../../hooks/useForm';
 import { loadCourses, removeVideo, selectCourses, uploadVideo } from '../../store/courses';
 import Controls from '../../components/controls/Controls';
 import Popup from '../../components/ui/Popup';
@@ -28,8 +27,8 @@ export default function Videos({ recordForEdit }) {
   const dispatch = useDispatch();
   const courses = useSelector(selectCourses);
   const [video, setVideo] = useState({ preview: '', data: '' });
-  const [course, setCourse] = useState({});
-  const [data, setData] = useState({ title: '', description: '' });
+  const [course, setCourse] = useState<any>({});
+  const [data, setData] = useState<any>({ title: '', description: '' });
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const [openPopup, setOpenPopup] = useState(false);
@@ -89,7 +88,7 @@ export default function Videos({ recordForEdit }) {
         <Grid container spacing={2} sx={{ p: 1 }}>
           {course.lessons &&
             course.lessons.map((item) => (
-              <Grid item key={item.id}>
+              <Grid key={item.id}>
                 <Card sx={{ width: 300 }}>
                   <CardHeader
                     avatar={
@@ -150,7 +149,7 @@ export default function Videos({ recordForEdit }) {
       </Box>
       {openPopup && (
         <Popup title="Upload Course Video" openPopup={openPopup} setOpenPopup={setOpenPopup}>
-          <Form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit}>
             <Grid container sx={{ width: 400 }} direction="column">
               <TextField
                 name="title"
@@ -200,7 +199,7 @@ export default function Videos({ recordForEdit }) {
                 Submit
               </Button>
             </Grid>
-          </Form>
+          </form>
         </Popup>
       )}
     </>

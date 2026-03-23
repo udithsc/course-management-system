@@ -46,6 +46,7 @@ export default function Author() {
     isOpen: false,
     title: '',
     subTitle: '',
+    onConfirm: () => {},
   });
 
   const { TblContainer, TblHead, TblPagination, recordsAfterPagingAndSorting, page, rowsPerPage } =
@@ -113,7 +114,7 @@ export default function Author() {
         <TblContainer>
           <TblHead />
           <TableBody>
-            {records.length <= rowsPerPage &&
+            {records &&
               recordsAfterPagingAndSorting().map((item) => (
                 <TableRow key={item.id}>
                   <TableCell>{item.name}</TableCell>

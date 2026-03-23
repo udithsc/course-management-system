@@ -1,6 +1,6 @@
-const cors = require('cors');
+import cors from 'cors';
 
-module.exports = (app) => {
+export default (app: any) => {
   const allowedOrigins = [
     process.env.FRONTEND_URL || 'http://localhost:3000',
     'http://127.0.0.1:3000',
@@ -8,7 +8,10 @@ module.exports = (app) => {
 
   app.use(
     cors({
-      origin: function (origin, callback) {
+      origin: function (
+        origin: string | undefined,
+        callback: (err: Error | null, allow?: boolean) => void,
+      ) {
         if (!origin || allowedOrigins.includes(origin)) {
           callback(null, true);
         } else {

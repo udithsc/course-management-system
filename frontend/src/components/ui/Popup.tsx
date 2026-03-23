@@ -8,13 +8,16 @@ import {
   IconButton,
   useTheme,
   Divider,
+  Breakpoint,
 } from '@mui/material';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Framer‑motion needs a plain DOM element—we forward it to the MUI Dialog Paper
-const MotionPaper = motion(React.forwardRef((props, ref) => <Box ref={ref} {...props} />));
+const MotionPaper = motion(
+  React.forwardRef((props: any, ref) => <Box ref={ref} {...props} />),
+) as any;
 
 export default function Popup({
   title,
@@ -24,6 +27,14 @@ export default function Popup({
   openPopup,
   setOpenPopup,
   maxWidth = 'sm',
+}: {
+  title: string;
+  subtitle?: string;
+  icon?: React.ReactNode;
+  children: React.ReactNode;
+  openPopup: boolean;
+  setOpenPopup: (open: boolean) => void;
+  maxWidth?: Breakpoint | false;
 }) {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';

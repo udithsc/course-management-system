@@ -1,11 +1,12 @@
-const Joi = require('joi');
+import { z } from 'zod';
+import { validateSchema } from '../utils/validation';
 
-function validateCategory(category) {
-  const schema = {
-    name: Joi.string().min(3).max(10).required(),
-  };
+export function validateModel(category: any) {
+  const schema = z
+    .object({
+      name: z.string().min(3).max(10),
+    })
+    .passthrough();
 
-  return Joi.object().keys(schema).unknown(true).validate(category);
+  return validateSchema(schema, category);
 }
-
-exports.validateModel = validateCategory;

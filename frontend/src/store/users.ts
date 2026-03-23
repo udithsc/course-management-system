@@ -84,7 +84,7 @@ export const userSlice = createSlice({
 export const {
   usersRequested,
   usersReceived,
-  usersRequestFailed,
+  usersReceiveFailed,
   userAdded,
   userUpdated,
   userDeleted,
@@ -101,7 +101,7 @@ export const selectTotalElements = (state) => state.users.totalElements;
 
 // Action Creators
 export const loadUsers =
-  (page, rowsPerPage, searchText = '') =>
+  (page?: number, rowsPerPage?: number, searchText = '') =>
   (dispatch, getState) => {
     const { lastFetch } = getState().users;
     const diffInSeconds = dayjs().diff(dayjs(lastFetch), 'seconds');
@@ -123,7 +123,6 @@ export const addUser = (data) =>
     method: 'post',
     data,
     onSuccess: userAdded.type,
-    onSuccessOther: loadUsers,
   });
 
 export const updateUser = (data) =>
@@ -132,7 +131,6 @@ export const updateUser = (data) =>
     method: 'put',
     data,
     onSuccess: userUpdated.type,
-    onSuccessOther: loadUsers,
   });
 
 export const deleteUser = (id) =>
@@ -141,5 +139,4 @@ export const deleteUser = (id) =>
     method: 'delete',
     data: id,
     onSuccess: userDeleted.type,
-    onSuccessOther: loadUsers,
   });

@@ -33,8 +33,8 @@ function Reviews({ recordForEdit }) {
             },
             { field: 'comment', headerName: 'comment', width: 300 },
           ]}
-          pageSize={5}
-          rowsPerPageOptions={[5]}
+          initialState={{ pagination: { paginationModel: { pageSize: 5 } } }}
+          pageSizeOptions={[5]}
         />
       </Grid>
     </Box>

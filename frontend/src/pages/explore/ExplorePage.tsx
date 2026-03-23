@@ -194,7 +194,7 @@ export default function ExplorePage() {
             </Typography>
             <Grid container spacing={2.5}>
               {myCourses.slice(0, 4).map((course, i) => (
-                <Grid item key={course.id} xs={12} sm={6} md={4} lg={3}>
+                <Grid key={course.id} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
                   <EnrolledCourseCard course={course} />
                 </Grid>
               ))}
@@ -239,12 +239,12 @@ export default function ExplorePage() {
         <Grid container spacing={2.5}>
           {loading ? (
             Array.from({ length: 8 }).map((_, i) => (
-              <Grid item key={i} xs={12} sm={6} md={4} lg={3}>
+              <Grid key={i} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
                 <CardSkeleton />
               </Grid>
             ))
           ) : filtered.length === 0 ? (
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <Box sx={{ textAlign: 'center', py: 8 }}>
                 <SchoolOutlinedIcon sx={{ fontSize: 60, color: 'text.disabled', mb: 2 }} />
                 <Typography variant="h6" color="text.secondary">
@@ -263,7 +263,7 @@ export default function ExplorePage() {
             </Grid>
           ) : (
             filtered.map((course, i) => (
-              <Grid item key={course.id} xs={12} sm={6} md={4} lg={3}>
+              <Grid key={course.id} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
                 <CourseCard course={course} enrolled={enrolledIds.has(course.id)} index={i} />
               </Grid>
             ))

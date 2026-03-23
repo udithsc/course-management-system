@@ -43,9 +43,16 @@ export default function Auth() {
       sessionStorage.setItem('access-token', token);
       axios.defaults.headers.common['x-auth-token'] = token;
       // Role-based redirect
-      if (role === 'ADMIN') return navigate('/dashboard');
-      if (role === 'INSTRUCTOR') return navigate('/instructor');
-      return navigate('/explore'); // STUDENT default
+      if (role === 'ADMIN') {
+        navigate('/dashboard');
+        return;
+      }
+      if (role === 'INSTRUCTOR') {
+        navigate('/instructor');
+        return;
+      }
+      navigate('/explore'); // STUDENT default
+      return;
     }
     if (isSignupSuccess) setIsSignUp(false);
   }, [token, role, isSignupSuccess, navigate]);
@@ -229,7 +236,7 @@ export default function Auth() {
                   animate={{ opacity: 1, height: 'auto' }}
                 >
                   <Grid container spacing={2} sx={{ mb: 2 }}>
-                    <Grid item xs={6}>
+                    <Grid size={{ xs: 6 }}>
                       <TextField
                         name="firstName"
                         required
@@ -244,10 +251,10 @@ export default function Auth() {
                         }}
                       />
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid size={{ xs: 6 }}>
                       <TextField name="lastName" required fullWidth label="Last Name" />
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid size={{ xs: 6 }}>
                       <TextField
                         name="username"
                         required
@@ -262,7 +269,7 @@ export default function Auth() {
                         }}
                       />
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid size={{ xs: 6 }}>
                       <TextField
                         name="mobile"
                         required

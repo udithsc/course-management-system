@@ -1,17 +1,21 @@
-const express = require('express');
-const auth = require('../routes/auth');
-const users = require('../routes/users');
-const courses = require('../routes/courses');
-const categories = require('../routes/categories');
-const authors = require('../routes/authors');
-const error = require('../middleware/error');
+import express from 'express';
+import auth from '../routes/auth';
+import users from '../routes/users';
+import courses from '../routes/courses';
+import categories from '../routes/categories';
+import authors from '../routes/authors';
+import auditLogs from '../routes/auditLogs';
+import error from '../middleware/error';
+import AppError from '../utils/AppError';
 
-module.exports = (app) => {
+export default (app: any) => {
   app.use(express.json({ limit: '10mb' }));
   app.use(express.urlencoded({ extended: true }));
 
   // Health check
-  app.get('/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
+  app.get('/health', (req: any, res: any) =>
+    res.json({ status: 'ok', timestamp: new Date().toISOString() }),
+  );
 
   // API routes
   app.use('/api/auth', auth);
@@ -19,10 +23,10 @@ module.exports = (app) => {
   app.use('/api/courses', courses);
   app.use('/api/categories', categories);
   app.use('/api/authors', authors);
+  app.use('/api/audit-logs', auditLogs);
 
   // Catch-all utility for unhandled API routes (404)
-  const AppError = require('../utils/AppError');
-  app.use((req, res, next) => {
+  app.use((req: any, res: any, next: any) => {
     next(new AppError(`Can't find ${req.originalUrl} on this server.`, 404));
   });
 

@@ -3,18 +3,18 @@
  * Every API response follows the same shape for consistency.
  */
 
-const success = (res, data, statusCode = 200) => {
+export const success = (res: any, data: any, statusCode = 200) => {
   return res.status(statusCode).json({
     success: true,
     data,
   });
 };
 
-const created = (res, data) => {
+export const created = (res: any, data: any) => {
   return success(res, data, 201);
 };
 
-const paginated = (res, { data, totalElements, pageNo, totalPages }) => {
+export const paginated = (res: any, { data, totalElements, pageNo, totalPages }: any) => {
   return res.status(200).json({
     success: true,
     data,
@@ -26,11 +26,9 @@ const paginated = (res, { data, totalElements, pageNo, totalPages }) => {
   });
 };
 
-const message = (res, msg, statusCode = 200) => {
+export const message = (res: any, msg: string, statusCode = 200) => {
   return res.status(statusCode).json({
     success: true,
     message: msg,
   });
 };
-
-module.exports = { success, created, paginated, message };

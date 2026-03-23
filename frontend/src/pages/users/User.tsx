@@ -23,7 +23,7 @@ import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import SchoolIcon from '@mui/icons-material/School';
 import PersonIcon from '@mui/icons-material/Person';
 import axios from 'axios';
-import useTable from '../../hooks/useTable';
+import { DataGrid, GridColDef, GridPaginationModel } from '@mui/x-data-grid';
 import Controls from '../../components/controls/Controls';
 import Popup from '../../components/ui/Popup';
 import Notification from '../../components/ui/Notification';
@@ -37,20 +37,11 @@ import {
   closeNotification,
   selectNotification,
   selectTotalElements,
+  selectRefreshStatus,
 } from '../../store/users';
 import UserForm from './UserForm';
 import Breadcrumbs from '../../components/layout/Breadcrumbs';
 import { motion } from 'framer-motion';
-
-const headCells = [
-  { id: 'username', label: 'Username', width: '13%' },
-  { id: 'firstName', label: 'First Name', width: '13%' },
-  { id: 'lastName', label: 'Last Name', width: '13%' },
-  { id: 'mobile', label: 'Mobile', width: '12%' },
-  { id: 'email', label: 'Email', width: '19%' },
-  { id: 'role', label: 'Role', width: '15%', disableSorting: true },
-  { id: 'actions', label: 'Actions', width: '10%', disableSorting: true, align: 'center' },
-];
 
 const ROLE_CONFIG = {
   ADMIN: {
@@ -129,14 +120,86 @@ export default function User() {
   const records = useSelector(selectUsers);
   const totalRecords = useSelector(selectTotalElements);
   const notify = useSelector(selectNotification);
+  const refresh = useSelector(selectRefreshStatus);
   const [recordForEdit, setRecordForEdit] = useState(null);
   const [searchText, setSearchText] = useState('');
   const [openPopup, setOpenPopup] = useState(false);
   const [localRoles, setLocalRoles] = useState({});
-  const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, title: '', subTitle: '' });
+  const [confirmDialog, setConfirmDialog] = useState<{
+    isOpen: boolean;
+    title: string;
+    subTitle: string;
+    onConfirm?: () => void;
+  }>({ isOpen: false, title: '', subTitle: '' });
 
-  const { TblContainer, TblHead, TblPagination, recordsAfterPagingAndSorting, page, rowsPerPage } =
-    useTable(records, headCells, totalRecords);
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
+    page: 0,
+    pageSize: 10,
+  });
+
+  const columns: GridColDef[] = [
+    {
+      field: 'username',
+      headerName: 'Username',
+      flex: 1,
+      renderCell: (params) => (
+        <Typography sx={{ fontWeight: 600, fontSize: '0.875rem' }}>
+          {params.row.username}
+        </Typography>
+      ),
+    },
+    { field: 'firstName', headerName: 'First Name', flex: 1 },
+    { field: 'lastName', headerName: 'Last Name', flex: 1 },
+    { field: 'mobile', headerName: 'Mobile', width: 130 },
+    {
+      field: 'email',
+      headerName: 'Email',
+      flex: 1.5,
+      renderCell: (params) => (
+        <Chip label={params.row.email} size="small" variant="outlined" sx={{ borderRadius: 2 }} />
+      ),
+    },
+    {
+      field: 'role',
+      headerName: 'Role',
+      width: 150,
+      sortable: false,
+      renderCell: (params) => (
+        <RoleSelect
+          userId={params.row.id}
+          currentRole={localRoles[params.row.id] || params.row.role || 'STUDENT'}
+          onChanged={handleRoleChanged}
+        />
+      ),
+    },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      width: 120,
+      sortable: false,
+      align: 'center',
+      renderCell: (params) => (
+        <Box display="flex" justifyContent="center">
+          <Controls.ActionButton color="primary.light" onClick={() => openInPopup(params.row)}>
+            <EditIcon fontSize="small" />
+          </Controls.ActionButton>
+          <Controls.ActionButton
+            color="error.main"
+            onClick={() =>
+              setConfirmDialog({
+                isOpen: true,
+                title: 'Are you sure to delete this record?',
+                subTitle: "You can't undo this operation",
+                onConfirm: () => onDelete(params.row.id),
+              })
+            }
+          >
+            <CloseIcon fontSize="small" />
+          </Controls.ActionButton>
+        </Box>
+      ),
+    },
+  ];
 
   const addOrEdit = (record, resetForm) => {
     if (record.id === 0) dispatch(addUser(record));
@@ -161,8 +224,8 @@ export default function User() {
   };
 
   useEffect(() => {
-    dispatch(loadUsers(page, rowsPerPage, searchText));
-  }, [page, rowsPerPage, searchText]);
+    dispatch(loadUsers(paginationModel.page, paginationModel.pageSize, searchText));
+  }, [paginationModel.page, paginationModel.pageSize, searchText, refresh]);
 
   return (
     <>
@@ -225,54 +288,31 @@ export default function User() {
           />
         </Toolbar>
 
-        <TblContainer>
-          <TblHead />
-          <TableBody>
-            {records.length <= rowsPerPage &&
-              recordsAfterPagingAndSorting().map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell sx={{ fontWeight: 600 }}>{item.username}</TableCell>
-                  <TableCell>{item.firstName}</TableCell>
-                  <TableCell>{item.lastName}</TableCell>
-                  <TableCell>{item.mobile}</TableCell>
-                  <TableCell>
-                    <Chip
-                      label={item.email}
-                      size="small"
-                      variant="outlined"
-                      sx={{ borderRadius: 2 }}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <RoleSelect
-                      userId={item.id}
-                      currentRole={localRoles[item.id] || item.role || 'STUDENT'}
-                      onChanged={handleRoleChanged}
-                    />
-                  </TableCell>
-                  <TableCell align="center">
-                    <Controls.ActionButton color="primary.light" onClick={() => openInPopup(item)}>
-                      <EditIcon fontSize="small" />
-                    </Controls.ActionButton>
-                    <Controls.ActionButton
-                      color="error.main"
-                      onClick={() =>
-                        setConfirmDialog({
-                          isOpen: true,
-                          title: 'Are you sure to delete this record?',
-                          subTitle: "You can't undo this operation",
-                          onConfirm: () => onDelete(item.id),
-                        })
-                      }
-                    >
-                      <CloseIcon fontSize="small" />
-                    </Controls.ActionButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-          </TableBody>
-        </TblContainer>
-        {records && <TblPagination />}
+        <Box sx={{ height: 600, width: '100%', mt: 2 }}>
+          <DataGrid
+            rows={records || []}
+            columns={columns}
+            paginationMode="server"
+            rowCount={totalRecords || 0}
+            paginationModel={paginationModel}
+            onPaginationModelChange={setPaginationModel}
+            pageSizeOptions={[5, 10, 20]}
+            disableRowSelectionOnClick
+            disableColumnMenu
+            sx={{
+              border: 'none',
+              '& .MuiDataGrid-cell': {
+                borderBottom: '1px solid',
+                borderColor: 'divider',
+              },
+              '& .MuiDataGrid-columnHeaders': {
+                borderBottom: '1px solid',
+                borderColor: 'divider',
+                backgroundColor: 'background.paper',
+              },
+            }}
+          />
+        </Box>
       </Paper>
 
       <Popup

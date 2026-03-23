@@ -5,12 +5,12 @@ import Tooltip from '@mui/material/Tooltip';
 
 export default function Button({
   text,
-  size,
-  variant,
-  onClick,
-  textColor,
-  style,
-  tooltip,
+  size = 'small',
+  variant = 'contained',
+  onClick = () => {},
+  textColor = 'inherit',
+  style = {},
+  tooltip = '',
   ...other
 }) {
   return (
@@ -23,8 +23,8 @@ export default function Button({
           },
           ...style,
         }}
-        variant={variant}
-        size={size}
+        variant={variant as any}
+        size={size as any}
         onClick={onClick}
         {...other}
       >

@@ -1,7 +1,7 @@
-const logger = require('../utils/logger');
-const prisma = require('../db');
+import logger from '../utils/logger';
+import prisma from '../db';
 
-module.exports = async () => {
+export default async () => {
   try {
     await prisma.$connect();
     logger.info(`Connected to PostgreSQL via Prisma`);

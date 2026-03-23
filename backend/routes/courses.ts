@@ -1,52 +1,40 @@
-const router = require('express').Router();
-const moment = require('moment');
-const randomstring = require('randomstring');
-const fs = require('fs');
-const { randomUUID } = require('crypto');
-const auth = require('../middleware/auth');
-const admin = require('../middleware/admin');
-const instructor = require('../middleware/instructor');
-const validate = require('../middleware/validate');
-const AppError = require('../utils/AppError');
-const { success, created, paginated, message } = require('../utils/response');
-const { validateModel } = require('../models/course.model');
-const { createUpload, getFileUrl, appDir } = require('../utils/upload');
-const prisma = require('../db');
-const { routeCache, clearCachePrefix } = require('../middleware/cache');
-
+import express from 'express';
+const router = express.Router();
+import moment from 'moment';
+import randomstring from 'randomstring';
+import fs from 'fs';
+import { randomUUID } from 'crypto';
+import auth from '../middleware/auth';
+import admin from '../middleware/admin';
+import instructor from '../middleware/instructor';
+import validate from '../middleware/validate';
+import AppError from '../utils/AppError';
+import { success, created, paginated, message } from '../utils/response';
+import { validateModel } from '../models/course.model';
+import { createUpload, getFileUrl } from '../utils/upload';
+import prisma from '../db';
+import { routeCache } from '../middleware/cache';
 const upload = createUpload('courses');
+const appDir = process.cwd();
+
+import { paginate } from '../utils/pagination';
 
 // List Courses (paginated)
-router.get('/', [auth, routeCache(60)], async (req, res) => {
-  const pageNo = parseInt(req.query.pageNo, 10) || 0;
-  const pageSize = parseInt(req.query.pageSize, 10) || 100;
-  const name = req.query.name || '';
-
-  const where = {
-    name: { contains: name, mode: 'insensitive' },
-  };
-
-  const totalElements = await prisma.course.count({ where });
-  const totalPages = Math.ceil(totalElements / pageSize);
-
-  const data = await prisma.course.findMany({
-    where,
-    skip: pageNo * pageSize,
-    take: pageSize,
+router.get('/', [auth, routeCache(60)], async (req: any, res: any) => {
+  const result = await paginate(prisma.course, req.query, {
     include: {
       author: true,
       category: true,
       reviews: true,
       lessons: true,
     },
-    orderBy: { name: 'asc' },
   });
-
-  return paginated(res, { data, totalElements, pageNo, totalPages });
+  return paginated(res, result);
 });
 
+
 // Get Single Course
-router.get('/:id', [auth], async (req, res) => {
+router.get('/:id', [auth], async (req: any, res: any) => {
   const course = await prisma.course.findUnique({
     where: { id: req.params.id },
     include: {
@@ -62,7 +50,7 @@ router.get('/:id', [auth], async (req, res) => {
 });
 
 // Delete Course
-router.delete('/:id', [auth, admin], async (req, res) => {
+router.delete('/:id', [auth, admin], async (req: any, res: any) => {
   try {
     await prisma.course.delete({ where: { id: req.params.id } });
     return message(res, 'Course deleted successfully.');
@@ -75,7 +63,7 @@ router.delete('/:id', [auth, admin], async (req, res) => {
 router.post(
   '/',
   [auth, admin, upload.single('file'), validate(validateModel)],
-  async (req, res) => {
+  async (req: any, res: any) => {
     const category = await prisma.category.findUnique({
       where: { id: req.body.category },
     });
@@ -109,8 +97,8 @@ router.post(
       },
     });
 
-    // Create directory structure for course assets
-    const dir = `${appDir}/data/uploads/courses/${course.id}`;
+    // Create course directory
+    const dir = `${appDir}/uploads/courses/${course.id}`;
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
       fs.mkdirSync(`${dir}/addons`, { recursive: true });
@@ -126,7 +114,7 @@ router.post(
 router.put(
   '/:id',
   [auth, admin, upload.single('file'), validate(validateModel)],
-  async (req, res) => {
+  async (req: any, res: any) => {
     const category = await prisma.category.findUnique({
       where: { id: req.body.category },
     });
@@ -161,7 +149,7 @@ router.put(
 );
 
 // Rate Course
-router.patch('/rate/:id', [auth], async (req, res) => {
+router.patch('/rate/:id', [auth], async (req: any, res: any) => {
   const { rating, comment } = req.body;
   if (!rating) throw new AppError('Rating is required.', 400);
 
@@ -179,7 +167,7 @@ router.patch('/rate/:id', [auth], async (req, res) => {
 });
 
 // Delete Rating
-router.delete('/rate/:id', [auth, admin], async (req, res) => {
+router.delete('/rate/:id', [auth, admin], async (req: any, res: any) => {
   await prisma.review.deleteMany({
     where: {
       courseId: req.params.id,
@@ -190,7 +178,7 @@ router.delete('/rate/:id', [auth, admin], async (req, res) => {
 });
 
 // Get Course Reviews
-router.get('/rate/:id', [auth], async (req, res) => {
+router.get('/rate/:id', [auth], async (req: any, res: any) => {
   const course = await prisma.course.findUnique({
     where: { id: req.params.id },
     include: { reviews: true },
@@ -198,9 +186,9 @@ router.get('/rate/:id', [auth], async (req, res) => {
   if (!course) throw new AppError('Course not found.', 404);
 
   const reviews = course.reviews;
-  const userReview = reviews.find((r) => r.userId === req.user.id) || null;
+  const userReview = reviews.find((r: any) => r.userId === req.user.id) || null;
 
-  const totalRating = reviews.reduce((sum, r) => sum + r.rating, 0);
+  const totalRating = reviews.reduce((sum: number, r: any) => sum + r.rating, 0);
   const avgRating = reviews.length ? totalRating / reviews.length : 0;
 
   return success(res, {
@@ -212,7 +200,7 @@ router.get('/rate/:id', [auth], async (req, res) => {
 });
 
 // Get Course Videos
-router.get('/video/:id', [auth], async (req, res) => {
+router.get('/video/:id', [auth], async (req: any, res: any) => {
   const course = await prisma.course.findUnique({
     where: { id: req.params.id },
     select: { lessons: true },
@@ -222,11 +210,11 @@ router.get('/video/:id', [auth], async (req, res) => {
 });
 
 // Upload Video
-router.patch('/video/:id', [auth, admin, upload.single('file')], async (req, res) => {
+router.patch('/video/:id', [auth, admin, upload.single('file')], async (req: any, res: any) => {
   if (!req.file) throw new AppError('Video file is required.', 400);
 
-  const basePath = `${appDir}/data/uploads/courses/${req.params.id}/videos/`;
-  const courseDir = `${appDir}/data/uploads/courses/${req.params.id}`;
+  const basePath = `${appDir}/uploads/courses/${req.params.id}/videos/`;
+  const courseDir = `${appDir}/uploads/courses/${req.params.id}`;
   const videoDir = `${courseDir}/videos`;
 
   if (!fs.existsSync(courseDir)) fs.mkdirSync(courseDir, { recursive: true });
@@ -247,7 +235,7 @@ router.patch('/video/:id', [auth, admin, upload.single('file')], async (req, res
 });
 
 // Delete Video
-router.delete('/video/:id/:videoId', [auth, admin], async (req, res) => {
+router.delete('/video/:id/:videoId', [auth, admin], async (req: any, res: any) => {
   await prisma.lesson.deleteMany({
     where: {
       id: req.params.videoId,
@@ -258,7 +246,7 @@ router.delete('/video/:id/:videoId', [auth, admin], async (req, res) => {
 });
 
 // Activate Course (Token)
-router.patch('/activateCourse', [auth], async (req, res) => {
+router.patch('/activateCourse', [auth], async (req: any, res: any) => {
   const { course, token } = req.body;
   if (!course || !token) throw new AppError('Course ID and token are required.', 400);
 
@@ -276,7 +264,7 @@ router.patch('/activateCourse', [auth], async (req, res) => {
 });
 
 // Get Course Addons
-router.get('/addons/:id', [auth], async (req, res) => {
+router.get('/addons/:id', [auth], async (req: any, res: any) => {
   const course = await prisma.course.findUnique({
     where: { id: req.params.id },
     include: { addons: true },
@@ -286,10 +274,10 @@ router.get('/addons/:id', [auth], async (req, res) => {
 });
 
 // Upload Addon
-router.patch('/addons/:id', [auth, admin, upload.single('file')], async (req, res) => {
+router.patch('/addons/:id', [auth, admin, upload.single('file')], async (req: any, res: any) => {
   if (!req.file) throw new AppError('Addon file is required.', 400);
 
-  const courseDir = `${appDir}/data/uploads/courses/${req.params.id}`;
+  const courseDir = `${appDir}/uploads/courses/${req.params.id}`;
   const addonDir = `${courseDir}/addons`;
 
   if (!fs.existsSync(courseDir)) fs.mkdirSync(courseDir, { recursive: true });
@@ -308,7 +296,7 @@ router.patch('/addons/:id', [auth, admin, upload.single('file')], async (req, re
           id: randomUUID(),
           image: getFileUrl(req, `courses/${req.params.id}/addons`, req.file.filename),
         },
-      ],
+      ] as any,
     },
   });
 
@@ -316,7 +304,7 @@ router.patch('/addons/:id', [auth, admin, upload.single('file')], async (req, re
 });
 
 // Delete Addon
-router.delete('/addons/:courseId/:addonId', [auth, admin], async (req, res) => {
+router.delete('/addons/:courseId/:addonId', [auth, admin], async (req: any, res: any) => {
   await prisma.addon.deleteMany({
     where: {
       id: req.params.addonId,
@@ -327,7 +315,7 @@ router.delete('/addons/:courseId/:addonId', [auth, admin], async (req, res) => {
 });
 
 // Subscribe to Course (direct / free)
-router.post('/subscribe/:id', [auth], async (req, res) => {
+router.post('/subscribe/:id', [auth], async (req: any, res: any) => {
   const courseId = req.params.id;
   const userId = req.user.id;
 
@@ -352,19 +340,19 @@ router.post('/subscribe/:id', [auth], async (req, res) => {
 });
 
 // Get My Subscriptions
-router.get('/subscriptions/me', [auth], async (req, res) => {
+router.get('/subscriptions/me', [auth], async (req: any, res: any) => {
   const subs = await prisma.subscription.findMany({
     where: { userId: req.user.id },
   });
 
-  const courseIds = subs.map((s) => s.courseId);
+  const courseIds = subs.map((s: any) => s.courseId);
   const courses = await prisma.course.findMany({
     where: { id: { in: courseIds } },
     include: { author: true, category: true, lessons: true },
   });
 
-  const result = courses.map((c) => {
-    const sub = subs.find((s) => s.courseId === c.id);
+  const result = courses.map((c: any) => {
+    const sub = subs.find((s: any) => s.courseId === c.id);
     return {
       ...c,
       watchedVideoId: sub?.watchedVideoId ?? [],
@@ -376,7 +364,7 @@ router.get('/subscriptions/me', [auth], async (req, res) => {
 });
 
 // Mark Video Watched (progress)
-router.patch('/progress/:courseId', [auth], async (req, res) => {
+router.patch('/progress/:courseId', [auth], async (req: any, res: any) => {
   const { lessonId } = req.body;
   if (!lessonId) throw new AppError('lessonId is required.', 400);
 
@@ -396,7 +384,7 @@ router.patch('/progress/:courseId', [auth], async (req, res) => {
 });
 
 // Check Subscription Status
-router.get('/subscribe/:courseId/status', [auth], async (req, res) => {
+router.get('/subscribe/:courseId/status', [auth], async (req: any, res: any) => {
   const sub = await prisma.subscription.findFirst({
     where: { userId: req.user.id, courseId: req.params.courseId },
   });
@@ -404,7 +392,7 @@ router.get('/subscribe/:courseId/status', [auth], async (req, res) => {
 });
 
 // Instructor: My Courses Overview
-router.get('/instructor/my-courses', [auth, instructor], async (req, res) => {
+router.get('/instructor/my-courses', [auth, instructor], async (req: any, res: any) => {
   // Find the instructor's author profile
   const author = await prisma.author.findUnique({
     where: { userId: req.user.id },
@@ -423,17 +411,17 @@ router.get('/instructor/my-courses', [auth, instructor], async (req, res) => {
       reviews: { select: { rating: true } },
       category: true,
     },
-    orderBy: { createdAt: 'desc' },
+    orderBy: { createdAt: 'desc' as const },
   });
 
   // Enrich with subscription count per course
   const enriched = await Promise.all(
-    courses.map(async (c) => {
+    courses.map(async (c: any) => {
       const subCount = await prisma.subscription.count({
         where: { courseId: c.id },
       });
       const avgRating = c.reviews.length
-        ? c.reviews.reduce((s, r) => s + r.rating, 0) / c.reviews.length
+        ? c.reviews.reduce((s: number, r: any) => s + r.rating, 0) / c.reviews.length
         : 0;
       return {
         ...c,
@@ -447,7 +435,7 @@ router.get('/instructor/my-courses', [auth, instructor], async (req, res) => {
 });
 
 // Instructor: Course Analytics (detailed)
-router.get('/instructor/analytics/:courseId', [auth, instructor], async (req, res) => {
+router.get('/instructor/analytics/:courseId', [auth, instructor], async (req: any, res: any) => {
   const courseId = req.params.courseId;
 
   const course = await prisma.course.findUnique({
@@ -479,8 +467,8 @@ router.get('/instructor/analytics/:courseId', [auth, instructor], async (req, re
   const lessonCount = course.lessons.length;
 
   // Per-lesson completion rate
-  const lessonStats = course.lessons.map((lesson) => {
-    const watched = subscriptions.filter((s) => s.watchedVideoId.includes(lesson.id)).length;
+  const lessonStats = course.lessons.map((lesson: any) => {
+    const watched = subscriptions.filter((s: any) => s.watchedVideoId.includes(lesson.id)).length;
     return {
       lessonId: lesson.id,
       title: lesson.title,
@@ -492,11 +480,11 @@ router.get('/instructor/analytics/:courseId', [auth, instructor], async (req, re
 
   // Students with full completion
   const completedStudents = subscriptions.filter(
-    (s) => lessonCount > 0 && s.watchedVideoId.length >= lessonCount,
+    (s: any) => lessonCount > 0 && s.watchedVideoId.length >= lessonCount,
   ).length;
 
   const avgRating = course.reviews.length
-    ? course.reviews.reduce((s, r) => s + r.rating, 0) / course.reviews.length
+    ? course.reviews.reduce((s: number, r: any) => s + r.rating, 0) / course.reviews.length
     : 0;
 
   return success(res, {
@@ -512,4 +500,4 @@ router.get('/instructor/analytics/:courseId', [auth, instructor], async (req, re
   });
 });
 
-module.exports = router;
+export default router;

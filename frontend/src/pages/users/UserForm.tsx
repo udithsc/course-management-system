@@ -1,14 +1,15 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useEffect } from 'react';
 import { Box, Grid } from '@mui/material';
-import Joi from 'joi';
 import PropTypes from 'prop-types';
 import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
 import BadgeOutlinedIcon from '@mui/icons-material/BadgeOutlined';
 import PhoneOutlinedIcon from '@mui/icons-material/PhoneOutlined';
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 import Controls from '../../components/controls/Controls';
-import { useForm, Form } from '../../hooks/useForm';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 
 const initialFormValues = {
   id: 0,
@@ -19,93 +20,117 @@ const initialFormValues = {
   email: '',
 };
 
-const schema = {
-  username: Joi.string().required(),
-  firstName: Joi.string().required(),
-  lastName: Joi.string().required(),
-  mobile: Joi.string().required(),
-  email: Joi.string().required(),
-};
+const schema = z.object({
+  id: z.union([z.number(), z.string()]).optional(),
+  username: z.string().min(1, 'Username is required'),
+  firstName: z.string().min(1, 'First Name is required'),
+  lastName: z.string().min(1, 'Last Name is required'),
+  mobile: z.union([z.string().min(1, 'Mobile is required'), z.number()]),
+  email: z.string().email('Valid email is required').min(1, 'Email is required'),
+});
 
 export default function UserForm({ recordForEdit, addOrEdit }) {
-  const { values, setValues, errors, handleInputChange, resetForm, validate } = useForm(
-    initialFormValues,
-    schema,
-  );
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(schema),
+    defaultValues: recordForEdit || initialFormValues,
+  });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const formErrors = validate();
-    if (!formErrors) addOrEdit(values, resetForm);
+  const onSubmit = (data) => {
+    addOrEdit(data, reset);
   };
 
   useEffect(() => {
-    if (recordForEdit) setValues({ ...recordForEdit });
-  }, [recordForEdit]);
+    if (recordForEdit) {
+      reset(recordForEdit);
+    } else {
+      reset(initialFormValues);
+    }
+  }, [recordForEdit, reset]);
 
   return (
-    <Form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <Grid container spacing={0}>
-        <Grid item xs={12} sm={6} sx={{ pr: { sm: 1 } }}>
-          <Controls.Input
+        <Grid sx={{ pr: { sm: 1 } }} size={{ xs: 12, sm: 6 }}>
+          <Controller
             name="firstName"
-            label="First Name"
-            value={values.firstName}
-            onChange={handleInputChange}
-            error={errors.firstName}
-            InputProps={{
-              startAdornment: (
-                <PersonOutlinedIcon sx={{ mr: 1, fontSize: 18, color: 'text.disabled' }} />
-              ),
-            }}
+            control={control}
+            render={({ field }) => (
+              <Controls.Input
+                {...field}
+                label="First Name"
+                error={errors.firstName?.message}
+                InputProps={{
+                  startAdornment: (
+                    <PersonOutlinedIcon sx={{ mr: 1, fontSize: 18, color: 'text.disabled' }} />
+                  ),
+                }}
+              />
+            )}
           />
         </Grid>
-        <Grid item xs={12} sm={6} sx={{ pl: { sm: 1 } }}>
-          <Controls.Input
+        <Grid sx={{ pl: { sm: 1 } }} size={{ xs: 12, sm: 6 }}>
+          <Controller
             name="lastName"
-            label="Last Name"
-            value={values.lastName}
-            onChange={handleInputChange}
-            error={errors.lastName}
+            control={control}
+            render={({ field }) => (
+              <Controls.Input {...field} label="Last Name" error={errors.lastName?.message} />
+            )}
           />
         </Grid>
       </Grid>
 
-      <Controls.Input
+      <Controller
         name="username"
-        label="Username"
-        value={values.username}
-        onChange={handleInputChange}
-        error={errors.username}
-        InputProps={{
-          startAdornment: (
-            <BadgeOutlinedIcon sx={{ mr: 1, fontSize: 18, color: 'text.disabled' }} />
-          ),
-        }}
+        control={control}
+        render={({ field }) => (
+          <Controls.Input
+            {...field}
+            label="Username"
+            error={errors.username?.message}
+            InputProps={{
+              startAdornment: (
+                <BadgeOutlinedIcon sx={{ mr: 1, fontSize: 18, color: 'text.disabled' }} />
+              ),
+            }}
+          />
+        )}
       />
-      <Controls.Input
+      <Controller
         name="email"
-        label="Email Address"
-        value={values.email}
-        onChange={handleInputChange}
-        error={errors.email}
-        InputProps={{
-          startAdornment: (
-            <EmailOutlinedIcon sx={{ mr: 1, fontSize: 18, color: 'text.disabled' }} />
-          ),
-        }}
+        control={control}
+        render={({ field }) => (
+          <Controls.Input
+            {...field}
+            label="Email Address"
+            error={errors.email?.message}
+            InputProps={{
+              startAdornment: (
+                <EmailOutlinedIcon sx={{ mr: 1, fontSize: 18, color: 'text.disabled' }} />
+              ),
+            }}
+          />
+        )}
       />
-      <Controls.Input
+      <Controller
         name="mobile"
-        label="Mobile Number"
-        value={values.mobile}
-        onChange={handleInputChange}
-        error={errors.mobile}
-        InputProps={{
-          startAdornment: (
-            <PhoneOutlinedIcon sx={{ mr: 1, fontSize: 18, color: 'text.disabled' }} />
-          ),
-        }}
+        control={control}
+        render={({ field }) => (
+          <Controls.Input
+            {...field}
+            label="Mobile Number"
+            error={errors.mobile?.message}
+            InputProps={{
+              startAdornment: (
+                <PhoneOutlinedIcon sx={{ mr: 1, fontSize: 18, color: 'text.disabled' }} />
+              ),
+            }}
+          />
+        )}
       />
 
       <Box
@@ -121,7 +146,7 @@ export default function UserForm({ recordForEdit, addOrEdit }) {
       >
         <Controls.Button
           text="Reset"
-          onClick={resetForm}
+          onClick={() => reset(initialFormValues)}
           variant="outlined"
           sx={{
             borderRadius: '10px',
@@ -144,7 +169,7 @@ export default function UserForm({ recordForEdit, addOrEdit }) {
           }}
         />
       </Box>
-    </Form>
+    </form>
   );
 }
 

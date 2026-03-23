@@ -247,7 +247,7 @@ export default function MyLearning() {
             { label: 'In Progress', value: inProgress.length, color: '#F59E0B' },
             { label: 'Completed', value: completed.length, color: '#10B981' },
           ].map((s) => (
-            <Grid item key={s.label} xs={4}>
+            <Grid key={s.label} size={{ xs: 4 }}>
               <Box
                 sx={{
                   p: 2.5,
@@ -274,7 +274,7 @@ export default function MyLearning() {
       {loading && (
         <Grid container spacing={2.5}>
           {Array.from({ length: 6 }).map((_, i) => (
-            <Grid item key={i} xs={12} sm={6} md={4}>
+            <Grid key={i} size={{ xs: 12, sm: 6, md: 4 }}>
               <Skeleton variant="rectangular" height={260} sx={{ borderRadius: '12px' }} />
             </Grid>
           ))}
@@ -314,7 +314,7 @@ export default function MyLearning() {
           </Typography>
           <Grid container spacing={2.5}>
             {inProgress.map((c, i) => (
-              <Grid item key={c.id} xs={12} sm={6} md={4}>
+              <Grid key={c.id} size={{ xs: 12, sm: 6, md: 4 }}>
                 <ProgressCard course={c} index={i} />
               </Grid>
             ))}
@@ -330,7 +330,7 @@ export default function MyLearning() {
           </Typography>
           <Grid container spacing={2.5}>
             {notStarted.map((c, i) => (
-              <Grid item key={c.id} xs={12} sm={6} md={4}>
+              <Grid key={c.id} size={{ xs: 12, sm: 6, md: 4 }}>
                 <ProgressCard course={c} index={i} />
               </Grid>
             ))}
@@ -346,7 +346,7 @@ export default function MyLearning() {
           </Typography>
           <Grid container spacing={2.5}>
             {completed.map((c, i) => (
-              <Grid item key={c.id} xs={12} sm={6} md={4}>
+              <Grid key={c.id} size={{ xs: 12, sm: 6, md: 4 }}>
                 <ProgressCard course={c} index={i} />
               </Grid>
             ))}

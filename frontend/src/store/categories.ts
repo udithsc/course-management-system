@@ -13,6 +13,7 @@ const initialState = {
     type: '',
   },
   refresh: false,
+  totalElements: 0,
 };
 
 const url = '/categories';
@@ -61,7 +62,7 @@ export const categorySlice = createSlice({
       state.refresh = true;
       state.notification = {
         isOpen: true,
-        message: 'Factor Deleted ',
+        message: 'Category Deleted',
         type: 'error',
       };
     },
@@ -102,7 +103,7 @@ export const selectNotification = (state) => state.categories.notification;
 export const selectTotalElements = (state) => state.categories.totalElements;
 
 export const loadCategories =
-  (page, rowsPerPage, searchText = '') =>
+  (page?: number, rowsPerPage?: number, searchText = '') =>
   (dispatch, getState) => {
     const { lastFetch } = getState().categories;
     const diffInSeconds = dayjs().diff(dayjs(lastFetch), 'seconds');
@@ -124,16 +125,14 @@ export const addCategory = (data) =>
     method: 'post',
     data,
     onSuccess: categoryAdded.type,
-    onSuccessOther: loadCategories,
   });
 
 export const updateCategory = (data) =>
   apiCallBegan({
-    url: `${url}/${data.get('id')}`,
+    url: `${url}/${data.id}`,
     method: 'put',
     data,
     onSuccess: categoryUpdated.type,
-    onSuccessOther: loadCategories,
   });
 
 export const deleteCategory = (id) =>
@@ -142,5 +141,4 @@ export const deleteCategory = (id) =>
     method: 'delete',
     data: id,
     onSuccess: categoryDeleted.type,
-    onSuccessOther: loadCategories,
   });

@@ -13,6 +13,14 @@
       "breadcrumbs": ["/dashboard"],
       "roles": ["ADMIN"]
     },
+    {
+      "path": "/dashboard/audit-logs",
+      "icon": "History",
+      "title": "Audit Logs",
+      "subMenu": [],
+      "breadcrumbs": ["/dashboard/audit-logs"],
+      "roles": ["ADMIN"]
+    },
 
     {
       "path": "/dashboard/users",

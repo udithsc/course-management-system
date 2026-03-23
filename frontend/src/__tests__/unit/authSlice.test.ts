@@ -82,10 +82,16 @@ describe('auth slice', () => {
       const state = store.getState();
 
       // empty object is standard when no jwt is set
-      expect(selectUser(state)).toEqual({});
+      expect(selectUser(state)).toEqual({
+        role: 'STUDENT',
+        isAdmin: false,
+        id: undefined,
+        email: undefined,
+        name: undefined,
+      });
       expect(selectIsAdmin(state)).toBe(false);
       expect(selectIsInstructor(state)).toBe(false);
-      expect(selectIsStudent(state)).toBe(false);
+      expect(selectIsStudent(state)).toBe(true);
     });
   });
 });

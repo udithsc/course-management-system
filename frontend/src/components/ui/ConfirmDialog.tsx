@@ -12,7 +12,9 @@ import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded';
 import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const MotionPaper = motion(React.forwardRef((props, ref) => <Box ref={ref} {...props} />));
+const MotionPaper = motion(
+  React.forwardRef((props: any, ref) => <Box ref={ref} {...props} />),
+) as any;
 
 export default function ConfirmDialog({ confirmDialog, setConfirmDialog }) {
   const theme = useTheme();

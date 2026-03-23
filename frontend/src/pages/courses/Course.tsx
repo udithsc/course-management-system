@@ -32,6 +32,7 @@ import {
   deleteCourse,
   closeNotification,
   selectTotalElements,
+  selectRefreshStatus,
 } from '../../store/courses';
 import Breadcrumbs from '../../components/layout/Breadcrumbs';
 import { motion } from 'framer-motion';
@@ -49,6 +50,7 @@ export default function Course() {
   const dispatch = useDispatch();
   const records = useSelector(selectCourses);
   const notify = useSelector(selectNotification);
+  const refresh = useSelector(selectRefreshStatus);
   const navigate = useNavigate();
   const totalRecords = useSelector(selectTotalElements);
   const [searchText, setSearchText] = useState('');
@@ -58,6 +60,7 @@ export default function Course() {
     isOpen: false,
     title: '',
     subTitle: '',
+    onConfirm: () => {},
   });
 
   const { TblContainer, TblHead, TblPagination, recordsAfterPagingAndSorting, page, rowsPerPage } =
@@ -83,7 +86,7 @@ export default function Course() {
 
   useEffect(() => {
     dispatch(loadCourses(page, rowsPerPage, searchText));
-  }, [page, rowsPerPage, searchText]);
+  }, [page, rowsPerPage, searchText, refresh]);
 
   return (
     <>
@@ -140,7 +143,7 @@ export default function Course() {
         <TblContainer>
           <TblHead />
           <TableBody>
-            {records.length <= rowsPerPage &&
+            {records &&
               recordsAfterPagingAndSorting().map((item) => (
                 <TableRow key={item.id}>
                   <TableCell sx={{ fontWeight: 600 }}>{item.name}</TableCell>

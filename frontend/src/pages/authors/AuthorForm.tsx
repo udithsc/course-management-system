@@ -1,14 +1,15 @@
+import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, useTheme } from '@mui/material';
-import Joi from 'joi';
-import PropTypes from 'prop-types';
+import Controls from '../../components/controls/Controls';
 import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
 import WorkOutlineIcon from '@mui/icons-material/WorkOutline';
 import PhoneOutlinedIcon from '@mui/icons-material/PhoneOutlined';
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
-import Controls from '../../components/controls/Controls';
-import { useForm, Form } from '../../hooks/useForm';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 
 const initialFormValues = {
   id: 0,
@@ -19,22 +20,30 @@ const initialFormValues = {
   image: '',
 };
 
-const schema = {
-  name: Joi.string().min(3).max(50).required(),
-  profession: Joi.string().min(3).max(20).required(),
-  mobile: Joi.number().required(),
-  email: Joi.string().required(),
-};
+const schema = z.object({
+  id: z.union([z.number(), z.string()]).optional(),
+  name: z.string().min(3, 'Name must be at least 3 characters').max(50, 'Name max length 50'),
+  profession: z.string().min(3, 'Profession must be at least 3 characters').max(50),
+  mobile: z.union([z.string().min(1, 'Mobile is required'), z.number()]),
+  email: z.string().email('Invalid email'),
+  image: z.any().optional(),
+});
 
 export default function AuthorForm({ recordForEdit, addOrEdit }) {
   const [image, setImage] = useState({ preview: '', data: '' });
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
 
-  const { values, setValues, errors, handleInputChange, resetForm, validate } = useForm(
-    initialFormValues,
-    schema,
-  );
+  const {
+    control,
+    handleSubmit,
+    reset,
+    watch,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(schema),
+    defaultValues: recordForEdit || initialFormValues,
+  });
 
   const handleFileChange = (e) => {
     e.preventDefault();
@@ -43,30 +52,28 @@ export default function AuthorForm({ recordForEdit, addOrEdit }) {
     setImage({ preview: URL.createObjectURL(file), data: file });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const formErrors = validate();
-
+  const onSubmit = (data) => {
     const formData = new FormData();
-    formData.append('file', image.data || values.image);
-    formData.append('name', values.name);
-    formData.append('profession', values.profession);
-    formData.append('mobile', values.mobile);
-    formData.append('email', values.email);
-    if (values.id !== 0) formData.append('id', values.id);
-    if (!formErrors) addOrEdit(formData, resetForm);
+    formData.append('file', image.data || data.image);
+    formData.append('name', data.name);
+    formData.append('profession', data.profession);
+    formData.append('mobile', data.mobile);
+    formData.append('email', data.email);
+    if (data.id && data.id !== 0) formData.append('id', data.id);
+    addOrEdit(formData, () => reset(initialFormValues));
   };
 
   useEffect(() => {
-    if (recordForEdit) setValues({ ...recordForEdit });
-  }, [recordForEdit]);
+    if (recordForEdit) reset(recordForEdit);
+    else reset(initialFormValues);
+  }, [recordForEdit, reset]);
 
   const previewSrc =
     image.preview ||
-    (values.image ? `${import.meta.env.VITE_API_URL}/files/${values.image}` : null);
+    (watch('image') ? `${import.meta.env.VITE_API_URL}/files/${watch('image')}` : null);
 
   return (
-    <Form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit(onSubmit)}>
       {/* Avatar upload */}
       <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
         <label htmlFor="author-image-upload" style={{ cursor: 'pointer' }}>
@@ -139,52 +146,70 @@ export default function AuthorForm({ recordForEdit, addOrEdit }) {
         Click avatar to change photo
       </Typography>
 
-      <Controls.Input
+      <Controller
         name="name"
-        label="Full Name"
-        value={values.name}
-        onChange={handleInputChange}
-        error={errors.name}
-        InputProps={{
-          startAdornment: (
-            <PersonOutlinedIcon sx={{ mr: 1, fontSize: 18, color: 'text.disabled' }} />
-          ),
-        }}
+        control={control}
+        render={({ field }) => (
+          <Controls.Input
+            {...field}
+            label="Full Name"
+            error={errors.name?.message}
+            InputProps={{
+              startAdornment: (
+                <PersonOutlinedIcon sx={{ mr: 1, fontSize: 18, color: 'text.disabled' }} />
+              ),
+            }}
+          />
+        )}
       />
-      <Controls.Input
+      <Controller
         name="profession"
-        label="Profession / Title"
-        value={values.profession}
-        onChange={handleInputChange}
-        error={errors.profession}
-        InputProps={{
-          startAdornment: <WorkOutlineIcon sx={{ mr: 1, fontSize: 18, color: 'text.disabled' }} />,
-        }}
+        control={control}
+        render={({ field }) => (
+          <Controls.Input
+            {...field}
+            label="Profession / Title"
+            error={errors.profession?.message}
+            InputProps={{
+              startAdornment: (
+                <WorkOutlineIcon sx={{ mr: 1, fontSize: 18, color: 'text.disabled' }} />
+              ),
+            }}
+          />
+        )}
       />
-      <Controls.Input
+      <Controller
         name="mobile"
-        label="Mobile Number"
-        type="number"
-        value={values.mobile}
-        onChange={handleInputChange}
-        error={errors.mobile}
-        InputProps={{
-          startAdornment: (
-            <PhoneOutlinedIcon sx={{ mr: 1, fontSize: 18, color: 'text.disabled' }} />
-          ),
-        }}
+        control={control}
+        render={({ field }) => (
+          <Controls.Input
+            {...field}
+            label="Mobile Number"
+            type="number"
+            error={errors.mobile?.message}
+            InputProps={{
+              startAdornment: (
+                <PhoneOutlinedIcon sx={{ mr: 1, fontSize: 18, color: 'text.disabled' }} />
+              ),
+            }}
+          />
+        )}
       />
-      <Controls.Input
+      <Controller
         name="email"
-        label="Email Address"
-        value={values.email}
-        onChange={handleInputChange}
-        error={errors.email}
-        InputProps={{
-          startAdornment: (
-            <EmailOutlinedIcon sx={{ mr: 1, fontSize: 18, color: 'text.disabled' }} />
-          ),
-        }}
+        control={control}
+        render={({ field }) => (
+          <Controls.Input
+            {...field}
+            label="Email Address"
+            error={errors.email?.message}
+            InputProps={{
+              startAdornment: (
+                <EmailOutlinedIcon sx={{ mr: 1, fontSize: 18, color: 'text.disabled' }} />
+              ),
+            }}
+          />
+        )}
       />
 
       <Box
@@ -200,7 +225,10 @@ export default function AuthorForm({ recordForEdit, addOrEdit }) {
       >
         <Controls.Button
           text="Reset"
-          onClick={resetForm}
+          onClick={() => {
+            reset(initialFormValues);
+            setImage({ preview: '', data: '' });
+          }}
           variant="outlined"
           sx={{
             borderRadius: '10px',
@@ -223,7 +251,7 @@ export default function AuthorForm({ recordForEdit, addOrEdit }) {
           }}
         />
       </Box>
-    </Form>
+    </form>
   );
 }
 

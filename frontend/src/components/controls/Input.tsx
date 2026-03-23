@@ -2,7 +2,14 @@ import React from 'react';
 import { TextField, useTheme } from '@mui/material';
 import PropTypes from 'prop-types';
 
-export default function Input({ name, label, value, error, onChange, ...other }) {
+export default function Input({
+  name = '',
+  label = '',
+  value,
+  error = null,
+  onChange,
+  ...other
+}: any) {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
 
@@ -38,16 +45,22 @@ export default function Input({ name, label, value, error, onChange, ...other })
           },
         },
         '& .MuiInputLabel-root': {
-          fontSize: '0.875rem',
-          '&.Mui-focused': { color: 'primary.main' },
+          color: 'text.secondary',
+          fontSize: '0.85rem',
+          transform: 'translate(14px, 9px) scale(1)', // Center label
+          '&.Mui-focused, &.MuiFormLabel-filled': {
+            transform: 'translate(14px, -9px) scale(0.85)', // Move up on focus/fill
+            color: 'primary.main',
+            fontWeight: 600,
+          },
         },
-        '& .MuiInputBase-input': {
+        '& .MuiOutlinedInput-input': {
+          padding: '8.5px 14px',
           fontSize: '0.9rem',
-          py: 1.1,
+          color: 'text.primary',
         },
         '& .MuiFormHelperText-root': {
-          mt: 0.5,
-          ml: 0.25,
+          marginLeft: 0.25,
           fontSize: '0.75rem',
         },
         ...other.sx,

@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Grid, Box, Typography, Avatar, useTheme } from '@mui/material';
-import Joi from 'joi';
-import PropTypes from 'prop-types';
+import CategoryOutlinedIcon from '@mui/icons-material/CategoryOutlined';
 import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
 import SchoolOutlinedIcon from '@mui/icons-material/SchoolOutlined';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
-import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
-import CategoryOutlinedIcon from '@mui/icons-material/CategoryOutlined';
-import { useForm, Form } from '../../hooks/useForm';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { loadCategories, selectCategoryNames } from '../../store/categories';
 import { loadAuthors, selectAuthorsNames } from '../../store/authors';
 import Controls from '../../components/controls/Controls';
@@ -23,11 +22,15 @@ const initialFormValues = {
   fee: '',
 };
 
-const schema = {
-  name: Joi.string().required(),
-  description: Joi.string().required(),
-  fee: Joi.number().required(),
-};
+const schema = z.object({
+  id: z.union([z.number(), z.string()]).optional(),
+  name: z.string().min(1, 'Course Name is required'),
+  description: z.string().min(1, 'Description is required'),
+  fee: z.union([z.string().min(1, 'Fee is required'), z.number()]),
+  author: z.object({ id: z.union([z.string(), z.number()]).optional() }).optional(),
+  category: z.object({ id: z.union([z.string(), z.number()]).optional() }).optional(),
+  image: z.any().optional(),
+});
 
 export default function CourseForm({ recordForEdit, addOrEdit }) {
   const dispatch = useDispatch();
@@ -37,25 +40,27 @@ export default function CourseForm({ recordForEdit, addOrEdit }) {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
 
-  const { values, setValues, errors, setErrors, handleInputChange, resetForm, validate } = useForm(
-    initialFormValues,
-    schema,
-  );
+  const {
+    control,
+    handleSubmit,
+    reset,
+    watch,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(schema),
+    defaultValues: recordForEdit || initialFormValues,
+  });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const errs = validate();
-    setErrors({ ...errs });
-
+  const onSubmit = (data) => {
     const formData = new FormData();
     formData.append('file', image.data);
-    formData.append('name', values.name);
-    formData.append('description', values.description);
-    formData.append('author', values.author.id);
-    formData.append('category', values.category.id);
-    formData.append('fee', values.fee);
-    if (values.id !== 0) formData.append('id', values.id);
-    if (!errs) addOrEdit(formData, resetForm);
+    formData.append('name', data.name);
+    formData.append('description', data.description);
+    if (data.author?.id) formData.append('author', data.author.id);
+    if (data.category?.id) formData.append('category', data.category.id);
+    formData.append('fee', data.fee);
+    if (data.id && data.id !== 0) formData.append('id', data.id);
+    addOrEdit(formData, () => reset(initialFormValues));
   };
 
   const handleFileChange = (e) => {
@@ -68,86 +73,111 @@ export default function CourseForm({ recordForEdit, addOrEdit }) {
   useEffect(() => {
     dispatch(loadAuthors());
     dispatch(loadCategories());
-    if (recordForEdit) setValues({ ...recordForEdit });
-  }, [recordForEdit]);
+    if (recordForEdit) reset(recordForEdit);
+    else reset(initialFormValues);
+  }, [recordForEdit, reset]);
 
   const previewSrc =
-    image.preview || values.image
-      ? image.preview || `${import.meta.env.VITE_API_URL}/files/${values.image}`
+    image.preview || watch('image')
+      ? image.preview || `${import.meta.env.VITE_API_URL}/files/${watch('image')}`
       : null;
 
   return (
-    <Form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <Grid container spacing={3}>
         {/* Left column: fields */}
-        <Grid item xs={12} md={7}>
-          <Controls.Input
+        <Grid size={{ xs: 12, md: 7 }}>
+          <Controller
             name="name"
-            label="Course Name"
-            value={values.name}
-            onChange={handleInputChange}
-            error={errors.name}
-            InputProps={{
-              startAdornment: (
-                <SchoolOutlinedIcon sx={{ mr: 1, fontSize: 18, color: 'text.disabled' }} />
-              ),
-            }}
+            control={control}
+            render={({ field }) => (
+              <Controls.Input
+                {...field}
+                label="Course Name"
+                error={errors.name?.message}
+                InputProps={{
+                  startAdornment: (
+                    <SchoolOutlinedIcon sx={{ mr: 1, fontSize: 18, color: 'text.disabled' }} />
+                  ),
+                }}
+              />
+            )}
           />
-          <Controls.Input
+          <Controller
             name="description"
-            label="Description"
-            value={values.description}
-            onChange={handleInputChange}
-            error={errors.description}
-            multiline
-            rows={3}
-            InputProps={{
-              startAdornment: (
-                <DescriptionOutlinedIcon
-                  sx={{
-                    mr: 1,
-                    mt: 0.5,
-                    fontSize: 18,
-                    color: 'text.disabled',
-                    alignSelf: 'flex-start',
-                  }}
-                />
-              ),
-            }}
+            control={control}
+            render={({ field }) => (
+              <Controls.Input
+                {...field}
+                label="Description"
+                error={errors.description?.message}
+                multiline
+                rows={3}
+                InputProps={{
+                  startAdornment: (
+                    <DescriptionOutlinedIcon
+                      sx={{
+                        mr: 1,
+                        mt: 0.5,
+                        fontSize: 18,
+                        color: 'text.disabled',
+                        alignSelf: 'flex-start',
+                      }}
+                    />
+                  ),
+                }}
+              />
+            )}
           />
-          <Controls.Input
+          <Controller
             name="fee"
-            label="Course Fee (USD)"
-            type="number"
-            value={values.fee}
-            onChange={handleInputChange}
-            error={errors.fee}
-            InputProps={{
-              startAdornment: (
-                <AttachMoneyIcon sx={{ mr: 0.5, fontSize: 18, color: 'text.disabled' }} />
-              ),
-            }}
+            control={control}
+            render={({ field }) => (
+              <Controls.Input
+                {...field}
+                label="Course Fee (USD)"
+                type="number"
+                error={errors.fee?.message}
+                InputProps={{
+                  startAdornment: (
+                    <AttachMoneyIcon sx={{ mr: 0.5, fontSize: 18, color: 'text.disabled' }} />
+                  ),
+                }}
+              />
+            )}
           />
-          <Controls.Select
+          <Controller
             name="author"
-            label="Instructor"
-            options={authors}
-            value={values.author?.id ?? ''}
-            onChange={(e) => setValues({ ...values, author: { id: e.target.value } })}
-            error={errors.author}
+            control={control}
+            render={({ field }) => (
+              <Controls.Select
+                {...field}
+                label="Instructor"
+                options={authors}
+                value={field.value?.id ?? ''}
+                onChange={(e) => field.onChange({ id: e.target.value })}
+                error={(errors.author as any)?.id?.message as string}
+              />
+            )}
           />
-          <Controls.Select
+          <Controller
             name="category"
-            label="Category"
-            options={categories}
-            value={values.category?.id ?? ''}
-            onChange={(e) => setValues({ ...values, category: { id: e.target.value } })}
-            error={errors.category}
+            control={control}
+            render={({ field }) => (
+              <Controls.Select
+                {...field}
+                label="Category"
+                options={categories}
+                value={field.value?.id ?? ''}
+                onChange={(e) => field.onChange({ id: e.target.value })}
+                error={(errors.category as any)?.id?.message as string}
+              />
+            )}
           />
         </Grid>
 
         {/* Right column: image upload */}
-        <Grid item xs={12} md={5}>
+        <Grid size={{ xs: 12, md: 5 }}>
           <Typography
             variant="caption"
             fontWeight={700}
@@ -267,7 +297,10 @@ export default function CourseForm({ recordForEdit, addOrEdit }) {
       >
         <Controls.Button
           text="Reset"
-          onClick={resetForm}
+          onClick={() => {
+            reset(initialFormValues);
+            setImage({ preview: '', data: '' });
+          }}
           variant="outlined"
           sx={{
             borderRadius: '10px',
@@ -291,17 +324,6 @@ export default function CourseForm({ recordForEdit, addOrEdit }) {
           }}
         />
       </Box>
-    </Form>
+    </form>
   );
 }
-
-CourseForm.propTypes = {
-  addOrEdit: PropTypes.func.isRequired,
-  recordForEdit: PropTypes.shape({
-    id: PropTypes.string,
-    name: PropTypes.string,
-    fee: PropTypes.number,
-  }),
-};
-
-CourseForm.defaultProps = { recordForEdit: initialFormValues };

@@ -84,7 +84,7 @@ export default function CourseDetail() {
       <Box sx={{ p: 4 }}>
         <Skeleton variant="rectangular" height={300} sx={{ borderRadius: '12px', mb: 3 }} />
         <Grid container spacing={4}>
-          <Grid item xs={12} md={8}>
+          <Grid size={{ xs: 12, md: 8 }}>
             <Skeleton height={40} sx={{ mb: 1 }} />
             <Skeleton height={20} width="60%" />
           </Grid>
@@ -148,7 +148,7 @@ export default function CourseDetail() {
         </Button>
 
         <Grid container spacing={5} alignItems="center">
-          <Grid item xs={12} md={7}>
+          <Grid size={{ xs: 12, md: 7 }}>
             {course.category?.name && (
               <Chip
                 label={course.category.name}
@@ -246,7 +246,7 @@ export default function CourseDetail() {
           </Grid>
 
           {/* CTA Card */}
-          <Grid item xs={12} md={5}>
+          <Grid size={{ xs: 12, md: 5 }}>
             <Box
               sx={{
                 bgcolor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.1)',
@@ -368,7 +368,7 @@ export default function CourseDetail() {
       {/* Body */}
       <Box sx={{ px: { xs: 2, md: 8 }, py: 5, maxWidth: 1200, mx: 'auto' }}>
         <Grid container spacing={5}>
-          <Grid item xs={12} md={8}>
+          <Grid size={{ xs: 12, md: 8 }}>
             {/* Curriculum */}
             <Typography variant="h5" fontWeight={800} sx={{ mb: 2 }}>
               Course Curriculum
@@ -557,7 +557,7 @@ export default function CourseDetail() {
           </Grid>
 
           {/* Sidebar: Instructor card */}
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             {course.author && (
               <Box
                 sx={{

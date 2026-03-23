@@ -1,9 +1,9 @@
-const AppError = require('../utils/AppError');
+import AppError from '../utils/AppError';
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-module.exports = (validator, queryValidator = null, paramsValidator = null) => {
-  return (req, res, next) => {
+const validate = (validator: any, queryValidator: any = null, paramsValidator: any = null) => {
+  return (req: any, res: any, next: any) => {
     // 1. Quick sanity check on any incoming ID format in payload
     if (req.body.id && !UUID_REGEX.test(req.body.id)) {
       throw new AppError('Invalid ID format in payload.', 400);
@@ -30,3 +30,5 @@ module.exports = (validator, queryValidator = null, paramsValidator = null) => {
     next();
   };
 };
+
+export default validate;

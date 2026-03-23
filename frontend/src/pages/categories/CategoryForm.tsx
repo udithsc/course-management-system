@@ -1,15 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, useTheme, Chip } from '@mui/material';
-import Joi from 'joi';
-import PropTypes from 'prop-types';
 import CategoryOutlinedIcon from '@mui/icons-material/CategoryOutlined';
+import PropTypes from 'prop-types';
 import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
 import Controls from '../../components/controls/Controls';
-import { useForm, Form } from '../../hooks/useForm';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 
-const initialFormValues = { id: 0, name: '' };
-const schema = { name: Joi.string().min(3).max(10).required() };
+const initialFormValues = { id: 0, name: '', icon: '' };
+const schema = z.object({
+  id: z.union([z.number(), z.string()]).optional(),
+  name: z
+    .string()
+    .min(3, 'Name must be at least 3 characters')
+    .max(20, 'Name length must be less than or equal to 20'),
+  icon: z.any().optional(),
+});
 
 // Colour presets the user can pick for the category icon
 const PRESET_COLORS = ['#6366F1', '#10B981', '#F59E0B', '#F43F5E', '#3B82F6', '#8B5CF6', '#EC4899'];
@@ -20,10 +28,16 @@ export default function CategoryForm({ recordForEdit, addOrEdit }) {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
 
-  const { values, setValues, errors, handleInputChange, resetForm, validate } = useForm(
-    initialFormValues,
-    schema,
-  );
+  const {
+    control,
+    handleSubmit,
+    reset,
+    watch,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(schema),
+    defaultValues: recordForEdit || initialFormValues,
+  });
 
   const handleFileChange = (e) => {
     e.preventDefault();
@@ -32,26 +46,25 @@ export default function CategoryForm({ recordForEdit, addOrEdit }) {
     setImage({ preview: URL.createObjectURL(file), data: file });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const formErrors = validate();
-
+  const onSubmit = (data) => {
     const formData = new FormData();
-    formData.append('file', image.data || values.icon);
-    formData.append('name', values.name);
-    if (values.id !== 0) formData.append('id', values.id);
-    if (!formErrors) addOrEdit(formData, resetForm);
+    formData.append('file', image.data || data.icon);
+    formData.append('name', data.name);
+    if (data.id && data.id !== 0) formData.append('id', data.id);
+    addOrEdit(formData, () => reset(initialFormValues));
   };
 
   useEffect(() => {
-    if (recordForEdit) setValues({ ...recordForEdit });
-  }, [recordForEdit]);
+    if (recordForEdit) reset(recordForEdit);
+    else reset(initialFormValues);
+  }, [recordForEdit, reset]);
 
   const previewSrc =
-    image.preview || (values.icon ? `${import.meta.env.VITE_API_URL}/files/${values.icon}` : null);
+    image.preview ||
+    (watch('icon') ? `${import.meta.env.VITE_API_URL}/files/${watch('icon')}` : null);
 
   return (
-    <Form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit(onSubmit)}>
       {/* Icon preview */}
       <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3.5 }}>
         <Box
@@ -81,17 +94,21 @@ export default function CategoryForm({ recordForEdit, addOrEdit }) {
         </Box>
       </Box>
 
-      <Controls.Input
+      <Controller
         name="name"
-        label="Category Name"
-        value={values.name}
-        onChange={handleInputChange}
-        error={errors.name}
-        InputProps={{
-          startAdornment: (
-            <CategoryOutlinedIcon sx={{ mr: 1, fontSize: 18, color: 'text.disabled' }} />
-          ),
-        }}
+        control={control}
+        render={({ field }) => (
+          <Controls.Input
+            {...field}
+            label="Category Name"
+            error={errors.name?.message}
+            InputProps={{
+              startAdornment: (
+                <CategoryOutlinedIcon sx={{ mr: 1, fontSize: 18, color: 'text.disabled' }} />
+              ),
+            }}
+          />
+        )}
       />
 
       {/* Colour picker */}
@@ -213,7 +230,7 @@ export default function CategoryForm({ recordForEdit, addOrEdit }) {
         <Controls.Button
           text="Reset"
           onClick={() => {
-            resetForm();
+            reset(initialFormValues);
             setImage({ preview: '', data: '' });
           }}
           variant="outlined"
@@ -238,7 +255,7 @@ export default function CategoryForm({ recordForEdit, addOrEdit }) {
           }}
         />
       </Box>
-    </Form>
+    </form>
   );
 }
 

@@ -17,7 +17,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     display: 'flex',
     '& .MuiDrawer-paper': {
       width: open ? configData.DRAWER_WIDTH : theme.spacing(9),
-      height: '100vh',   // Fix height to 100% viewport
+      height: '100vh', // Fix height to 100% viewport
       position: 'fixed', // Anchor perfectly
       left: 0,
       top: 0,
@@ -26,15 +26,18 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
       boxSizing: 'border-box',
       border: 'none',
       overflowX: 'hidden',
-      borderRight: theme.palette.mode === 'dark'
-        ? '1px solid rgba(255,255,255,0.08)'
-        : '1px solid rgba(15,23,42,0.06)',
-      background: theme.palette.mode === 'dark'
-        ? 'linear-gradient(180deg, #0B0F19 0%, #111827 100%)'
-        : 'linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%)',
-      boxShadow: theme.palette.mode === 'dark'
-        ? '4px 0 24px rgba(0,0,0,0.6)'
-        : '4px 0 24px rgba(15,23,42,0.03)',
+      borderRight:
+        theme.palette.mode === 'dark'
+          ? '1px solid rgba(255,255,255,0.08)'
+          : '1px solid rgba(15,23,42,0.06)',
+      background:
+        theme.palette.mode === 'dark'
+          ? 'linear-gradient(180deg, #0B0F19 0%, #111827 100%)'
+          : 'linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%)',
+      boxShadow:
+        theme.palette.mode === 'dark'
+          ? '4px 0 24px rgba(0,0,0,0.6)'
+          : '4px 0 24px rgba(15,23,42,0.03)',
       transition: theme.transitions.create('width', {
         easing: theme.transitions.easing.sharp,
         duration: open
@@ -49,7 +52,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
         ? theme.transitions.duration.enteringScreen
         : theme.transitions.duration.leavingScreen,
     }),
-  })
+  }),
 );
 
 function SideBar({ open }) {
@@ -88,21 +91,38 @@ function SideBar({ open }) {
             flexShrink: 0,
             transition: 'transform 0.2s',
             '&:hover': { transform: 'scale(1.05) rotate(-5deg)' },
-            cursor: 'pointer'
+            cursor: 'pointer',
           }}
         >
           U
         </Box>
         {open && (
-          <Box sx={{ animation: 'fadeIn 0.3s', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+          <Box
+            sx={{
+              animation: 'fadeIn 0.3s',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+            }}
+          >
             <Typography
               variant="subtitle1"
               fontWeight={800}
-              sx={{ lineHeight: 1.1, letterSpacing: '-0.5px', color: 'text.primary', fontSize: '1.15rem' }}
+              sx={{
+                lineHeight: 1.1,
+                letterSpacing: '-0.5px',
+                color: 'text.primary',
+                fontSize: '1.15rem',
+              }}
             >
               UDT Core
             </Typography>
-            <Typography variant="caption" fontWeight={700} color="primary.main" sx={{ letterSpacing: '0.05em' }}>
+            <Typography
+              variant="caption"
+              fontWeight={700}
+              color="primary.main"
+              sx={{ letterSpacing: '0.05em' }}
+            >
               MANAGEMENT
             </Typography>
           </Box>
@@ -110,15 +130,18 @@ function SideBar({ open }) {
       </Box>
 
       {/* Primary Navigation */}
-      <Box 
-        sx={{ 
-          flexGrow: 1, 
-          overflowY: 'auto', 
-          overflowX: 'hidden', 
-          py: 2.5, 
+      <Box
+        sx={{
+          flexGrow: 1,
+          overflowY: 'auto',
+          overflowX: 'hidden',
+          py: 2.5,
           px: open ? 1.5 : 1,
           '&::-webkit-scrollbar': { width: '4px' },
-          '&::-webkit-scrollbar-thumb': { borderRadius: '10px', backgroundColor: 'rgba(0,0,0,0.1)' }
+          '&::-webkit-scrollbar-thumb': {
+            borderRadius: '10px',
+            backgroundColor: 'rgba(0,0,0,0.1)',
+          },
         }}
       >
         <ListItems open={open} />
@@ -131,7 +154,7 @@ function SideBar({ open }) {
           borderTop: '1px solid',
           borderColor: 'divider',
           transition: 'all 0.3s',
-          background: (theme) => 
+          background: (theme) =>
             theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.01)',
         }}
       >
@@ -153,13 +176,15 @@ function SideBar({ open }) {
             '&:hover': {
               bgcolor: (theme) =>
                 theme.palette.mode === 'dark' ? 'rgba(99,102,241,0.12)' : 'rgba(99,102,241,0.08)',
-              transform: 'translateY(-2px)'
-            }
+              transform: 'translateY(-2px)',
+            },
           }}
         >
           <Box sx={{ position: 'relative' }}>
             <Avatar
-              src={user?.avatar ? `${import.meta.env.VITE_API_URL}/files/${user.avatar}` : undefined}
+              src={
+                user?.avatar ? `${import.meta.env.VITE_API_URL}/files/${user.avatar}` : undefined
+              }
               sx={{
                 width: open ? 38 : 34,
                 height: open ? 38 : 34,
@@ -168,22 +193,27 @@ function SideBar({ open }) {
                 fontWeight: 800,
                 flexShrink: 0,
                 boxShadow: '0 4px 12px rgba(99,102,241,0.3)',
-                transition: 'all 0.3s'
+                transition: 'all 0.3s',
               }}
             >
               {user?.name?.charAt(0)?.toUpperCase() || 'A'}
             </Avatar>
             {!open && (
-              <Box 
-                sx={{ 
-                  position: 'absolute', bottom: -2, right: -2, 
-                  width: 10, height: 10, borderRadius: '50%', 
-                  bgcolor: '#10B981', border: '2px solid white' 
-                }} 
+              <Box
+                sx={{
+                  position: 'absolute',
+                  bottom: -2,
+                  right: -2,
+                  width: 10,
+                  height: 10,
+                  borderRadius: '50%',
+                  bgcolor: '#10B981',
+                  border: '2px solid white',
+                }}
               />
             )}
           </Box>
-          
+
           {open && (
             <Box sx={{ overflow: 'hidden', minWidth: 0, flex: 1 }}>
               <Typography
@@ -197,15 +227,23 @@ function SideBar({ open }) {
               <Typography
                 variant="caption"
                 fontWeight={600}
-                sx={{ 
+                sx={{
                   color: 'text.secondary',
                   display: 'flex',
                   alignItems: 'center',
                   gap: 0.5,
-                  mt: 0.25
+                  mt: 0.25,
                 }}
               >
-                <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: '#10B981', boxShadow: '0 0 4px #10B981' }} />
+                <Box
+                  sx={{
+                    width: 6,
+                    height: 6,
+                    borderRadius: '50%',
+                    bgcolor: '#10B981',
+                    boxShadow: '0 0 4px #10B981',
+                  }}
+                />
                 Online
               </Typography>
             </Box>

@@ -2,6 +2,14 @@ import { createSlice } from '@reduxjs/toolkit';
 import { jwtDecode } from 'jwt-decode';
 import { apiCallBegan } from './api';
 
+interface CustomJwtPayload extends Object {
+  id?: string | number;
+  name?: string;
+  email?: string;
+  role?: string;
+  isAdmin?: boolean;
+}
+
 const initialState = {
   isLoading: false,
   accessToken: '',
@@ -16,6 +24,8 @@ const initialState = {
     message: '',
     type: '',
   },
+  message: '',
+  isSignUp: false,
 };
 
 /**
@@ -38,9 +48,9 @@ function extractRefreshToken(payload) {
 }
 
 /** Decode the JWT to populate the user slice. */
-function decodeUser(token) {
+function decodeUser(token: string) {
   try {
-    const decoded = jwtDecode(token);
+    const decoded = jwtDecode<CustomJwtPayload>(token);
     // Use explicit role field from JWT; fall back to isAdmin for legacy tokens
     const role = decoded.role || (decoded.isAdmin ? 'ADMIN' : 'STUDENT');
     return {

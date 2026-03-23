@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '@mui/material/styles';
-import MuiAppBar from '@mui/material/AppBar';
+import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import {
   Typography,
   IconButton,
@@ -32,9 +32,13 @@ import configData from '../../data.json';
 import { selectUser, loggedOut } from '../../store/auth';
 import { useColorMode } from '../../ColorModeProvider';
 
-const AppBar = styled(MuiAppBar, {
+interface AppBarProps extends MuiAppBarProps {
+  open?: boolean;
+}
+
+const AppBar: React.FC<AppBarProps> = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
-})(({ theme, open }) => ({
+})<AppBarProps>(({ theme, open }) => ({
   zIndex: theme.zIndex.drawer + 1,
   backgroundImage: 'none',
   backgroundColor:

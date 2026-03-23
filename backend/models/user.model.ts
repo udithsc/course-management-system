@@ -1,11 +1,12 @@
-const jwt = require('jsonwebtoken');
-const Joi = require('joi');
+import jwt from 'jsonwebtoken';
+import { z } from 'zod';
+import { validateSchema } from '../utils/validation';
 
 // Token expiry constants
 const ACCESS_TOKEN_EXPIRY = '15m';
 const REFRESH_TOKEN_EXPIRY = '7d';
 
-function generateAccessToken(user) {
+export function generateAccessToken(user: any) {
   return jwt.sign(
     {
       id: user.id,
@@ -14,12 +15,12 @@ function generateAccessToken(user) {
       role: user.role || 'STUDENT',
       isAdmin: user.isAdmin,
     },
-    process.env.ACCESS_TOKEN_SECRET,
+    process.env.ACCESS_TOKEN_SECRET!,
     { expiresIn: ACCESS_TOKEN_EXPIRY },
   );
 }
 
-function generateRefreshToken(user) {
+export function generateRefreshToken(user: any) {
   return jwt.sign(
     {
       id: user.id,
@@ -28,44 +29,43 @@ function generateRefreshToken(user) {
       role: user.role || 'STUDENT',
       isAdmin: user.isAdmin,
     },
-    process.env.REFRESH_TOKEN_SECRET,
+    process.env.REFRESH_TOKEN_SECRET!,
     { expiresIn: REFRESH_TOKEN_EXPIRY },
   );
 }
 
-function validateUser(user) {
-  const schema = Joi.object({
-    username: Joi.string().min(3).max(50).required(),
-    firstName: Joi.string().min(2).max(50).required(),
-    lastName: Joi.string().min(2).max(50).required(),
-    mobile: Joi.string().required(),
-    email: Joi.string().min(5).max(255).required().email(),
-    password: Joi.string().min(5).max(255),
-  }).unknown(true);
+export function validateUser(user: any) {
+  const schema = z
+    .object({
+      username: z.string().min(3).max(50),
+      firstName: z.string().min(2).max(50),
+      lastName: z.string().min(2).max(50),
+      mobile: z.string(),
+      email: z.string().min(5).max(255).email(),
+      password: z.string().min(5).max(255).optional(),
+    })
+    .passthrough();
 
-  return schema.validate(user);
+  return validateSchema(schema, user);
 }
 
-function validateLogin(data) {
-  const schema = Joi.object({
-    email: Joi.string().min(5).max(255).required().email(),
-    password: Joi.string().min(5).max(255).required(),
+export function validateLogin(data: any) {
+  const schema = z.object({
+    email: z.string().min(5).max(255).email(),
+    password: z.string().min(5).max(255),
   });
 
-  return schema.validate(data);
+  return validateSchema(schema, data);
 }
 
-function validateChangePassword(data) {
-  const schema = Joi.object({
-    password: Joi.string().min(5).max(255).required(),
-    newPassword: Joi.string().min(5).max(255).required(),
+export function validateChangePassword(data: any) {
+  const schema = z.object({
+    password: z.string().min(5).max(255),
+    newPassword: z.string().min(5).max(255),
   });
 
-  return schema.validate(data);
+  return validateSchema(schema, data);
 }
 
-exports.validateModel = validateUser;
-exports.validateLogin = validateLogin;
-exports.validateChangePassword = validateChangePassword;
-exports.generateAccessToken = generateAccessToken;
-exports.generateRefreshToken = generateRefreshToken;
+export const validateModel = validateUser;
+

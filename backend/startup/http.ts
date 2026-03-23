@@ -1,14 +1,15 @@
-var morgan = require('morgan');
-const moment = require('moment');
-var rfs = require('rotating-file-stream'); // version 2.x
-const { dirname, resolve } = require('path');
-const appDir = dirname(require.main?.filename || resolve(__dirname, '../index.ts'));
+import morgan from 'morgan';
+import moment from 'moment';
+import * as rfs from 'rotating-file-stream';
+import path from 'path';
 
-module.exports = (app) => {
+const appDir = process.cwd();
+
+export default (app: any) => {
   // create a rotating write stream
   var accessLogStream = rfs.createStream(`${moment().format('YYYYMMDD')}-access.log`, {
     interval: '1d', // rotate daily
-    path: `${appDir}/data/logs/`,
+    path: path.join(appDir, 'data/logs/'),
   });
 
   // setup the logger

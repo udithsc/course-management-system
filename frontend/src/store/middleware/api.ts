@@ -1,6 +1,7 @@
 import axios from 'axios';
 import * as actions from '../api';
 import { loggedOut } from '../auth';
+import { toast } from 'react-toastify';
 
 const api =
   ({ dispatch }) =>
@@ -29,10 +30,17 @@ const api =
       if (onSuccess) dispatch({ type: onSuccess, payload: response.data, data });
       if (onSuccessOther) dispatch(onSuccessOther(data?.page, data?.rowsPerPage));
     } catch (error) {
-      const errorMessage = error.response ? error.response.data?.msg : error.message;
+      const errorMessage = error.response
+        ? error.response.data?.msg || error.response.data?.error || 'An error occurred'
+        : error.message;
 
       // General
       dispatch(actions.apiCallFailed(errorMessage));
+
+      // Don't show toast for 403 / unauthenticated since it logs out anyway, or don't double show
+      if (error.response?.status !== 401 && error.response?.status !== 403) {
+        toast.error(errorMessage);
+      }
 
       // Specific
       if (onError)

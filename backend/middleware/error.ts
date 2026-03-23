@@ -1,11 +1,7 @@
-const logger = require('../utils/logger');
-const AppError = require('../utils/AppError');
+import logger from '../utils/logger';
+import AppError from '../utils/AppError';
 
-/**
- * Global error handling middleware.
- * Catches all errors thrown in route handlers (including async ones via express-async-errors).
- */
-module.exports = (err, req, res, next) => {
+export default (err: any, req: any, res: any, next: any) => {
   // Default to 500 for unexpected errors
   let statusCode = err.statusCode || 500;
   let isOperational = err.isOperational || false;

@@ -347,7 +347,7 @@ export default function InstructorDashboard() {
               delay: 0.21,
             },
           ].map((s, i) => (
-            <Grid item xs={12} md={3} key={s.label}>
+            <Grid key={s.label} size={{ xs: 12, md: 3 }}>
               <StatCard {...s} />
             </Grid>
           ))}
@@ -355,7 +355,7 @@ export default function InstructorDashboard() {
 
         <Grid container spacing={3}>
           {/* My Courses */}
-          <Grid item xs={12} md={7}>
+          <Grid size={{ xs: 12, md: 7 }}>
             <Box
               sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}
             >
@@ -412,7 +412,7 @@ export default function InstructorDashboard() {
           </Grid>
 
           {/* Quick Tips / Analytics */}
-          <Grid item xs={12} md={5}>
+          <Grid size={{ xs: 12, md: 5 }}>
             <Typography variant="h6" fontWeight={800} sx={{ mb: 2 }}>
               📊 Engagement Snapshot
             </Typography>

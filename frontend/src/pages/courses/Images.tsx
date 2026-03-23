@@ -23,15 +23,18 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { styled } from '@mui/material/styles';
 import AddIcon from '@mui/icons-material/Add';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Form } from '../../hooks/useForm';
 import { createAddon, loadCourses, removeAddon, selectCourses } from '../../store/courses';
 import Controls from '../../components/controls/Controls';
 import Popup from '../../components/ui/Popup';
 
-const ExpandMore = styled((props) => {
+interface ExpandMoreProps {
+  expand: boolean;
+  [key: string]: any;
+}
+const ExpandMore = styled((props: ExpandMoreProps) => {
   const { expand, ...other } = props;
   return <IconButton {...other} />;
-})(({ theme, expand }) => ({
+})<{ expand: boolean }>(({ theme, expand }) => ({
   transform: !expand ? 'rotate(0deg)' : 'rotate(180deg)',
   marginLeft: 'auto',
   transition: theme.transitions.create('transform', {
@@ -43,8 +46,8 @@ export default function Images({ recordForEdit }) {
   const dispatch = useDispatch();
   const courses = useSelector(selectCourses);
   const [image, setImage] = useState({ preview: '', data: '' });
-  const [course, setCourse] = useState({});
-  const [data, setData] = useState({
+  const [course, setCourse] = useState<any>({});
+  const [data, setData] = useState<any>({
     title: '',
     description: '',
   });
@@ -103,7 +106,7 @@ export default function Images({ recordForEdit }) {
         <Grid container spacing={2} sx={{ p: 1 }}>
           {course.addons &&
             course.addons.map((item) => (
-              <Grid item key={item.id}>
+              <Grid key={item.id}>
                 <Card variant="outlined" sx={{ width: 300 }}>
                   <CardHeader
                     avatar={
@@ -193,7 +196,7 @@ export default function Images({ recordForEdit }) {
       </Box>
       {openPopup && (
         <Popup title="Upload Course Images" openPopup={openPopup} setOpenPopup={setOpenPopup}>
-          <Form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit}>
             <Grid container direction="column" sx={{ width: 400 }}>
               <TextField
                 name="title"
@@ -251,7 +254,7 @@ export default function Images({ recordForEdit }) {
                 Submit
               </Button>
             </Grid>
-          </Form>
+          </form>
         </Popup>
       )}
     </>

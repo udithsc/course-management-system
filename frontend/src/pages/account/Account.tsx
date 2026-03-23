@@ -36,7 +36,7 @@ export default function Account() {
         <Divider sx={{ my: 4 }} />
 
         <Grid container spacing={3}>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
               <Email color="action" sx={{ mr: 2 }} />
               <Box>
@@ -49,7 +49,7 @@ export default function Account() {
               </Box>
             </Box>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
               <Person color="action" sx={{ mr: 2 }} />
               <Box>
@@ -62,7 +62,7 @@ export default function Account() {
               </Box>
             </Box>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
               <Person color="action" sx={{ mr: 2 }} />
               <Box>
@@ -75,7 +75,7 @@ export default function Account() {
               </Box>
             </Box>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
               <Person color="action" sx={{ mr: 2 }} />
               <Box>

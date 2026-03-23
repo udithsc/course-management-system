@@ -1,13 +1,9 @@
-const NodeCache = require('node-cache');
+import NodeCache from 'node-cache';
 const cache = new NodeCache({ stdTTL: 60 }); // Default Cache for 60 seconds
 
-/**
- * Middleware to cache GET responses in memory.
- * Intercepts res.json() to save payloads to cache before emitting.
- */
-const routeCache =
+export const routeCache =
   (durationInSeconds = 60) =>
-  (req, res, next) => {
+  (req: any, res: any, next: any) => {
     if (req.method !== 'GET') {
       return next();
     }
@@ -22,24 +18,20 @@ const routeCache =
     }
 
     // Intercept res.json
-    const originalJson = res.json;
-    res.json = (body) => {
+    const originalJson = res.json.bind(res);
+    res.json = (body: any) => {
       cache.set(key, body, durationInSeconds);
       // Call the original res.json
-      originalJson.call(res, body);
+      return originalJson(body);
     };
 
     next();
   };
 
-/**
- * Helper to manually invalidate cache prefixes on mutations (POST/PUT/DELETE)
- */
-const clearCachePrefix =
+export const clearCachePrefix =
   (prefix = '/api/') =>
-  (req, res, next) => {
+  (req: any, res: any, next: any) => {
     // Clear cache AFTER the mutation finishes successfully
-    // so hook into res.on('finish') or just clear it now.
     res.on('finish', () => {
       if (res.statusCode >= 200 && res.statusCode < 300) {
         const keys = cache.keys();
@@ -53,5 +45,3 @@ const clearCachePrefix =
     });
     next();
   };
-
-module.exports = { routeCache, clearCachePrefix };

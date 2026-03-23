@@ -13,6 +13,7 @@ const initialState = {
     type: '',
   },
   totalElements: 0,
+  refresh: false,
 };
 
 const url = '/courses';
@@ -29,6 +30,7 @@ export const courseSlice = createSlice({
     courseReceived: (state, action) => {
       state.list = action.payload.data;
       state.loading = false;
+      state.refresh = false;
       state.lastFetch = Date.now();
       state.notification = initialState.notification;
       state.totalElements = action.payload.totalElements;
@@ -39,6 +41,7 @@ export const courseSlice = createSlice({
     },
 
     courseAdded: (state, action) => {
+      state.refresh = true;
       state.notification = {
         isOpen: true,
         message: 'Course Added',
@@ -47,6 +50,7 @@ export const courseSlice = createSlice({
     },
 
     courseUpdated: (state, action) => {
+      state.refresh = true;
       state.notification = {
         isOpen: true,
         message: 'Course Updated',
@@ -55,6 +59,7 @@ export const courseSlice = createSlice({
     },
 
     courseDeleted: (state, action) => {
+      state.refresh = true;
       state.notification = {
         isOpen: true,
         message: 'Deleted Successfully',
@@ -93,9 +98,10 @@ export const selectCourses = (state) => state.courses.list;
 export const selectDataStatus = (state) => state.courses.loading;
 export const selectNotification = (state) => state.courses.notification;
 export const selectTotalElements = (state) => state.courses.totalElements;
+export const selectRefreshStatus = (state) => state.courses.refresh;
 
 export const loadCourses =
-  (page, rowsPerPage, searchText = '') =>
+  (page?: number, rowsPerPage?: number, searchText = '') =>
   (dispatch, getState) => {
     const { lastFetch } = getState().courses;
     const diffInSeconds = dayjs().diff(dayjs(lastFetch), 'seconds');
@@ -117,7 +123,6 @@ export const addCourse = (data) =>
     method: 'post',
     data,
     onSuccess: courseAdded.type,
-    onSuccessOther: loadCourses,
   });
 
 export const updateCourse = (data) =>
@@ -126,7 +131,6 @@ export const updateCourse = (data) =>
     method: 'put',
     data,
     onSuccess: courseUpdated.type,
-    onSuccessOther: loadCourses,
   });
 
 export const deleteCourse = (id) =>
@@ -135,7 +139,6 @@ export const deleteCourse = (id) =>
     method: 'delete',
     data: id,
     onSuccess: courseDeleted.type,
-    onSuccessOther: loadCourses,
   });
 
 export const createAddon = (data) =>
@@ -144,7 +147,6 @@ export const createAddon = (data) =>
     method: 'patch',
     data,
     onSuccess: courseUpdated.type,
-    onSuccessOther: loadCourses,
   });
 
 export const removeAddon = (courseId, addonId) =>
@@ -152,7 +154,6 @@ export const removeAddon = (courseId, addonId) =>
     url: `${url}/addons/${courseId}/${addonId}`,
     method: 'delete',
     onSuccess: courseUpdated.type,
-    onSuccessOther: loadCourses,
   });
 
 export const uploadVideo = (data) =>
@@ -161,7 +162,6 @@ export const uploadVideo = (data) =>
     method: 'patch',
     data,
     onSuccess: courseUpdated.type,
-    onSuccessOther: loadCourses,
   });
 
 export const removeVideo = (courseId, videoNo) =>
@@ -169,5 +169,4 @@ export const removeVideo = (courseId, videoNo) =>
     url: `${url}/video/${courseId}/${videoNo}`,
     method: 'delete',
     onSuccess: courseUpdated.type,
-    onSuccessOther: loadCourses,
   });

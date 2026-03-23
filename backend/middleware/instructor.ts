@@ -1,13 +1,7 @@
-const AppError = require('../utils/AppError');
+import AppError from '../utils/AppError';
 
-/**
- * Middleware that allows access only for INSTRUCTOR or ADMIN roles.
- * Must be used AFTER the `auth` middleware.
- */
-function instructor(req, res, next) {
+export default function instructor(req: any, res: any, next: any) {
   const role = req.user?.role;
   if (role === 'INSTRUCTOR' || role === 'ADMIN') return next();
   throw new AppError('Access denied. Instructor or Admin role required.', 403);
 }
-
-module.exports = instructor;

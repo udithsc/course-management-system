@@ -1,30 +1,61 @@
-const { createLogger, transports, format } = require('winston');
-const moment = require('moment');
-const { combine, timestamp, printf, colorize, simple } = format;
-const { dirname, resolve } = require('path');
-const appDir = dirname(require.main?.filename || resolve(__dirname, '../index.ts'));
+import { createLogger, transports, format } from 'winston';
+import Transport from 'winston-transport';
+const { combine, timestamp, colorize, simple } = format;
+import prisma from '../db';
 
-const logFormat = printf(({ level, message, timestamp }) => `${timestamp}|${level}|${message}`);
+class PrismaTransport extends Transport {
+  constructor(opts) {
+    super(opts);
+  }
+  log(info: any, callback: () => void) {
+    setImmediate(() => {
+      this.emit('logged', info);
+    });
+
+    const level = info.level || 'info';
+    const message = info.message || '';
+
+    // Prevent logging DB connection errors to prevent infinite loops
+    if (message.includes('PrismaClient') || typeof message !== 'string') {
+      callback();
+      return;
+    }
+
+    if (!(prisma as any)?.systemLog) {
+      // Fallback gracefully so we don't crash the server
+      console.log(`[Winston Fallback] ${level}: ${message}`);
+      callback();
+      return;
+    }
+
+    (prisma as any).systemLog
+      .create({
+        data: {
+          level,
+          message,
+        },
+      })
+      .catch((err: any) => {
+        console.error('Winston-Prisma Sync Error:', err.message);
+      });
+
+    callback();
+  }
+}
 
 const logger = createLogger({
   level: 'info',
-  format: combine(timestamp(), logFormat),
+  format: combine(timestamp(), format.json()),
   transports: [
     new transports.Console({
-      level: 'info',
       format: combine(colorize(), simple()),
     }),
-    new transports.File({
-      filename: `${appDir}/data/logs/${moment().format('YYYYMMDD')}-error.log`,
-      level: 'error',
+    new PrismaTransport({
       handleExceptions: true,
       handleRejections: true,
     }),
-    new transports.File({
-      filename: `${appDir}/data/logs/${moment().format('YYYYMMDD')}-info.log`,
-    }),
   ],
-  exitOnError: true,
+  exitOnError: false, // DON'T exit on logger errors
 });
 
-module.exports = logger;
+export default logger;

@@ -11,7 +11,12 @@ import { selectAccessToken, loggedIn, selectUserRole } from './store/auth';
  *   allowedRoles  string[]  — if provided, only these roles can access
  *   redirectTo    string    — where to send unauthorised users (default: /login)
  */
-function ProtectedRoute({ allowedRoles, redirectTo = '/login' }) {
+interface ProtectedRouteProps {
+  allowedRoles?: string[];
+  redirectTo?: string;
+}
+
+function ProtectedRoute({ allowedRoles, redirectTo = '/login' }: ProtectedRouteProps) {
   const dispatch = useDispatch();
   const token = useSelector(selectAccessToken);
   const role = useSelector(selectUserRole);

@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Paper, TableBody, TableRow, TableCell, Toolbar, InputAdornment } from '@mui/material';
+import { Paper, Toolbar, InputAdornment, Box } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
 import CategoryOutlinedIcon from '@mui/icons-material/CategoryOutlined';
-import useTable from '../../hooks/useTable';
+import { DataGrid, GridColDef, GridPaginationModel } from '@mui/x-data-grid';
 import Controls from '../../components/controls/Controls';
 import Popup from '../../components/ui/Popup';
 import Notification from '../../components/ui/Notification';
@@ -25,12 +25,6 @@ import {
 } from '../../store/categories';
 import Breadcrumbs from '../../components/layout/Breadcrumbs';
 
-const headCells = [
-  { id: 'name', label: 'Name', width: '30%' },
-  { id: 'createdAt', label: 'Date Created', width: '50%' },
-  { id: 'actions', label: 'Actions', disableSorting: true, align: 'center', width: '10%' },
-];
-
 export default function Category() {
   const dispatch = useDispatch();
   const records = useSelector(selectCategories);
@@ -40,14 +34,53 @@ export default function Category() {
   const [recordForEdit, setRecordForEdit] = useState(null);
   const [searchText, setSearchText] = useState('');
   const [openPopup, setOpenPopup] = useState(false);
-  const [confirmDialog, setConfirmDialog] = useState({
+  const [confirmDialog, setConfirmDialog] = useState<{
+    isOpen: boolean;
+    title: string;
+    subTitle: string;
+    onConfirm?: () => void;
+  }>({
     isOpen: false,
     title: '',
     subTitle: '',
   });
 
-  const { TblContainer, TblHead, TblPagination, recordsAfterPagingAndSorting, page, rowsPerPage } =
-    useTable(records, headCells, totalRecords);
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
+    page: 0,
+    pageSize: 10,
+  });
+
+  const columns: GridColDef[] = [
+    { field: 'name', headerName: 'Name', flex: 1 },
+    { field: 'createdAt', headerName: 'Date Created', flex: 1 },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      width: 120,
+      sortable: false,
+      align: 'center',
+      renderCell: (params) => (
+        <Box display="flex" justifyContent="center">
+          <Controls.ActionButton color="primary.light" onClick={() => openInPopup(params.row)}>
+            <EditIcon fontSize="small" />
+          </Controls.ActionButton>
+          <Controls.ActionButton
+            color="error.main"
+            onClick={() =>
+              setConfirmDialog({
+                isOpen: true,
+                title: 'Are you sure to delete this record?',
+                subTitle: "You can't undo this operation",
+                onConfirm: () => onDelete(params.row.id),
+              })
+            }
+          >
+            <CloseIcon fontSize="small" />
+          </Controls.ActionButton>
+        </Box>
+      ),
+    },
+  ];
 
   const addOrEdit = (record, resetForm) => {
     if (record.has('id')) dispatch(updateCategory(record));
@@ -69,8 +102,8 @@ export default function Category() {
   };
 
   useEffect(() => {
-    dispatch(loadCategories(page, rowsPerPage, searchText));
-  }, [page, rowsPerPage, searchText, refresh]);
+    dispatch(loadCategories(paginationModel.page, paginationModel.pageSize, searchText));
+  }, [paginationModel.page, paginationModel.pageSize, searchText, refresh]);
 
   return (
     <>
@@ -110,44 +143,31 @@ export default function Category() {
             }}
           />
         </Toolbar>
-        <TblContainer>
-          <TblHead />
-          <TableBody>
-            {records.length <= rowsPerPage &&
-              recordsAfterPagingAndSorting().map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell>{item.name}</TableCell>
-                  <TableCell>{item.createdAt}</TableCell>
-                  <TableCell align="center">
-                    <Controls.ActionButton
-                      color="primary.light"
-                      onClick={() => {
-                        openInPopup(item);
-                      }}
-                    >
-                      <EditIcon fontSize="small" />
-                    </Controls.ActionButton>
-                    <Controls.ActionButton
-                      color="error.main"
-                      onClick={() => {
-                        setConfirmDialog({
-                          isOpen: true,
-                          title: 'Are you sure to delete this record?',
-                          subTitle: "You can't undo this operation",
-                          onConfirm: () => {
-                            onDelete(item.id);
-                          },
-                        });
-                      }}
-                    >
-                      <CloseIcon fontSize="small" />
-                    </Controls.ActionButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-          </TableBody>
-        </TblContainer>
-        {records && <TblPagination />}
+        <Box sx={{ height: 600, width: '100%', mt: 2 }}>
+          <DataGrid
+            rows={records || []}
+            columns={columns}
+            paginationMode="server"
+            rowCount={totalRecords || 0}
+            paginationModel={paginationModel}
+            onPaginationModelChange={setPaginationModel}
+            pageSizeOptions={[5, 10, 20]}
+            disableRowSelectionOnClick
+            disableColumnMenu
+            sx={{
+              border: 'none',
+              '& .MuiDataGrid-cell': {
+                borderBottom: '1px solid',
+                borderColor: 'divider',
+              },
+              '& .MuiDataGrid-columnHeaders': {
+                borderBottom: '1px solid',
+                borderColor: 'divider',
+                backgroundColor: 'background.paper',
+              },
+            }}
+          />
+        </Box>
       </Paper>
       <Popup
         title={recordForEdit ? 'Edit Category' : 'New Category'}

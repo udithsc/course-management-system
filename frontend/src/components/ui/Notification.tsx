@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 
 export default function Notification({ notify, closeNotification }) {
   const dispatch = useDispatch();
-  const handleClose = (event, reason) => {
+  const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') return;
     dispatch(closeNotification());
   };
