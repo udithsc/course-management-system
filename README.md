@@ -36,7 +36,7 @@ Before running the application, you must configure the environment variables for
 
 1.  **Backend Environment**:
     - Copy `backend/.env.example` to `backend/.env`.
-    - Set your `DATABASE_URL` (PostgreSQL) and a secure `JWT_SECRET`.
+    - Set your `DATABASE_URL` (PostgreSQL), `ACCESS_TOKEN_SECRET`, and `REFRESH_TOKEN_SECRET`.
 2.  **Frontend Environment**:
     - Copy `frontend/.env.example` to `frontend/.env`.
     - Ensure `VITE_API_URL` points to your backend index (default: `http://localhost:3001`).
@@ -76,6 +76,113 @@ cd frontend
 npm install
 npm start          # Starts Vite dev server
 ```
+
+---
+
+## 🚀 Deployment Guide
+
+This project can be deployed with Docker Compose or as two separate services: a static frontend and a Node.js backend. The backend requires a PostgreSQL database; the compose files in this repository do not start a database container, so use a managed database such as Supabase, Neon, Railway, Render, or your own PostgreSQL server.
+
+### 1. Prepare Production Environment Variables
+
+Create production values before building or starting the services.
+
+**Backend variables:**
+
+```env
+DATABASE_URL="postgresql://user:password@host:5432/dbname"
+PORT=3001
+BACKEND_URL="https://api.your-domain.com"
+FRONTEND_URL="https://your-domain.com"
+ACCESS_TOKEN_SECRET="replace_with_a_long_random_secret"
+REFRESH_TOKEN_SECRET="replace_with_a_long_random_secret"
+SENDGRID_API_KEY="your_sendgrid_key_or_test"
+REQUIRES_AUTH=true
+```
+
+**Frontend variables:**
+
+```env
+VITE_API_URL="https://api.your-domain.com"
+```
+
+For Vite, `VITE_API_URL` is baked into the frontend during `npm run build`, so make sure it is set before building the production frontend image or static files.
+
+### 2. Deploy with Docker Compose
+
+For local development, use:
+
+```bash
+docker-compose up --build
+```
+
+For production-style deployment, create a root `.env` file with the backend and frontend production variables, then run:
+
+```bash
+docker compose -f docker-compose.prod.yml up --build -d
+```
+
+The production compose file exposes:
+
+- Frontend: `http://server-ip:3000`
+- Backend API: `http://server-ip:3001`
+- API docs: `http://server-ip:3001/api-docs`
+- Health check: `http://server-ip:3001/health`
+
+Place Nginx, Caddy, Traefik, or your hosting provider's reverse proxy in front of these ports to serve HTTPS domains such as:
+
+- `https://your-domain.com` -> frontend service on port `3000`
+- `https://api.your-domain.com` -> backend service on port `3001`
+
+### 3. Database Setup
+
+The backend entrypoint runs Prisma automatically when the container starts:
+
+```bash
+npx prisma generate
+npx prisma db push --accept-data-loss
+npm start
+```
+
+For a first deployment, you can seed initial data manually:
+
+```bash
+docker compose -f docker-compose.prod.yml exec backend npm run db:seed
+```
+
+If you run without Docker, use:
+
+```bash
+cd backend
+npm install
+npx prisma generate
+npm run db:push
+npm run db:seed
+npm start
+```
+
+### 4. Verify Deployment
+
+After deployment, check:
+
+```bash
+curl https://api.your-domain.com/health
+```
+
+Then open:
+
+- Frontend: `https://your-domain.com`
+- Swagger docs: `https://api.your-domain.com/api-docs`
+
+If the frontend loads but API calls fail, confirm that `VITE_API_URL` points to the deployed backend URL and that `FRONTEND_URL` on the backend matches the public frontend origin.
+
+### 5. Production Notes
+
+- Use strong, unique values for `ACCESS_TOKEN_SECRET` and `REFRESH_TOKEN_SECRET`.
+- Keep `.env` files out of Git.
+- The production compose file stores backend uploads and logs in Docker volumes.
+- Use a managed PostgreSQL backup policy before serving real users.
+- Avoid running `prisma db push --accept-data-loss` against sensitive production data unless you have reviewed the schema changes and have a fresh backup.
 
 ---
 

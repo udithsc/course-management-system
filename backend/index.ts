@@ -26,8 +26,10 @@ dbStartup();
 
 app.use('/files', express.static(path.join(process.cwd(), 'uploads')));
 
-// Start server
 const port = process.env.PORT || 3001;
-const server = app.listen(port, () => logger.info(`Listening on port ${port}...`));
 
-export default server;
+if (!process.env.VERCEL) {
+  app.listen(port, () => logger.info(`Listening on port ${port}...`));
+}
+
+export default app;

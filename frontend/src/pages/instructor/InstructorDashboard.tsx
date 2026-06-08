@@ -185,7 +185,7 @@ export default function InstructorDashboard() {
     const load = async () => {
       try {
         const { data } = await axios.get(
-          `${import.meta.env.VITE_API_URL}/courses/instructor/my-courses`,
+          `${import.meta.env.VITE_API_URL}/api/courses/instructor/my-courses`,
         );
         setCourses(data.data ?? []);
       } catch (e) {

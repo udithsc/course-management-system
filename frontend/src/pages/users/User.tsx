@@ -80,7 +80,9 @@ function RoleSelect({ userId, currentRole, onChanged }) {
     setVal(newRole);
     setBusy(true);
     try {
-      await axios.patch(`${import.meta.env.VITE_API_URL}/users/${userId}/role`, { role: newRole });
+      await axios.patch(`${import.meta.env.VITE_API_URL}/api/users/${userId}/role`, {
+        role: newRole,
+      });
       onChanged?.(userId, newRole);
     } catch (err) {
       console.error('Role update failed', err);
